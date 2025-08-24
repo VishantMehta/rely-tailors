@@ -11,33 +11,19 @@ const TwitterIcon = () => (
 );
 
 const InstagramIcon = () => (
-    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.345 2.525c.636-.247 1.363-.416 2.427-.465C9.795 2.013 10.148 2 12.315 2zm-1.161 1.545a3.27 3.27 0 01-2.17.93c-1.368.048-2.27.29-2.904.532-.7.27-1.255.635-1.813 1.192-.56.56-.92 1.113-1.192 1.813-.242.633-.484 1.536-.532 2.904-.048 1.067-.06 1.412-.06 3.56s.012 2.493.06 3.56c.048 1.368.29 2.27.532 2.904.27.7.635 1.255 1.192 1.813.56.56 1.113.92 1.813 1.192.633.242 1.536.484 2.904.532 1.067.048 1.412.06 3.56.06s2.493-.012 3.56-.06c1.368-.048 2.27-.29 2.904-.532.7-.27 1.255-.635 1.813-1.192.56-.56.92-1.113 1.192-1.813.242-.633.484-1.536.532-2.904.048-1.067.06-1.412.06-3.56s-.012-2.493-.06-3.56c-.048-1.368-.29-2.27-.532-2.904-.27-.7-.635-1.255-1.192-1.813-.56-.56-1.113-.92-1.813-1.192-.633-.242-1.536-.484-2.904-.532-1.067-.048-1.412-.06-3.56-.06zM12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 1.802a3.333 3.333 0 110 6.666 3.333 3.333 0 010-6.666zm5.338-3.205a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z" clipRule="evenodd" /></svg>
+    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.345 2.525c.636-.247 1.363-.416 2.427-.465C9.795 2.013 10.148 2 12.315 2zm-1.161 1.545a3.27 3.27 0 01-2.17.93c-1.368.048-2.27.29-2.904.532-.7.27-1.255.635-1.813 1.192-.56.56-.92 1.113-1.192 1.813-.242.633-.484 1.536-.532 2.904-.048 1.067-.06 1.412-.06 3.56s.012 2.493.06 3.56c.048 1.368.29 2.27.532 2.904.27.7.635 1.255 1.192 1.813.56.56 1.113.92 1.813 1.192.633.242 1.536.484 2.904.532 1.067.048 1.412.06 3.56.06s2.493-.012 3.56-.06c1.368-.048 2.27-.29 2.904-.532.7-.27 1.255-.635-1.813-1.192.56-.56.92-1.113 1.192-1.813.242-.633.484-1.536.532-2.904.048-1.067.06-1.412.06-3.56s-.012-2.493-.06-3.56c-.048-1.368-.29-2.27-.532-2.904-.27-.7-.635-1.255-1.192-1.813-.56-.56-1.113-.92-1.813-1.192-.633-.242-1.536-.484-2.904-.532-1.067-.048-1.412-.06-3.56-.06zM12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 1.802a3.333 3.333 0 110 6.666 3.333 3.333 0 010-6.666zm5.338-3.205a1.2 1.2 0 100 2.4 1.2 1.2 0 000-2.4z" clipRule="evenodd" /></svg>
 );
 
-// New Floating SVG Icon Components
-const ScissorIcon = ({ className }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line>
-    </svg>
-);
-
-const ButtonIcon = ({ className }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="1.5"></circle><path d="M10.5 13.5l3-3M10.5 10.5l3 3"></path>
-    </svg>
-);
-
-const FloatingIcons = () => (
+const FloatingBalls = () => (
     <div className="absolute inset-0 z-10 w-full h-full overflow-hidden pointer-events-none">
-        <ScissorIcon className="absolute text-white/5 w-24 h-24 animate-float1" style={{ top: '10%', left: '5%', animationDelay: '0s' }} />
-        <ButtonIcon className="absolute text-white/5 w-16 h-16 animate-float3" style={{ top: '70%', left: '15%', animationDelay: '1s' }} />
-        <ScissorIcon className="absolute text-white/5 w-12 h-12 animate-float2" style={{ top: '85%', left: '60%', transform: 'rotate(90deg)', animationDelay: '2s' }} />
-        <ButtonIcon className="absolute text-white/5 w-28 h-28 animate-float3" style={{ top: '50%', left: '40%', animationDelay: '3s' }} />
-        <ScissorIcon className="absolute text-white/5 w-20 h-20 animate-float2" style={{ top: '20%', left: '80%', animationDelay: '4s' }} />
-        <ButtonIcon className="absolute text-white/5 w-10 h-10 animate-float1" style={{ top: '5%', left: '45%', animationDelay: '5s' }} />
+        <div className="absolute bg-amber-400 rounded-full opacity-10 w-24 h-24 animate-float1" style={{ top: '10%', left: '5%', animationDelay: '0s' }}></div>
+        <div className="absolute bg-amber-400 rounded-full opacity-10 w-16 h-16 animate-float3" style={{ top: '70%', left: '15%', animationDelay: '1s' }}></div>
+        <div className="absolute bg-amber-400 rounded-full opacity-10 w-12 h-12 animate-float2" style={{ top: '85%', left: '60%', animationDelay: '2s' }}></div>
+        <div className="absolute bg-amber-400 rounded-full opacity-10 w-28 h-28 animate-float3" style={{ top: '50%', left: '40%', animationDelay: '3s' }}></div>
+        <div className="absolute bg-amber-400 rounded-full opacity-10 w-20 h-20 animate-float2" style={{ top: '20%', left: '80%', animationDelay: '4s' }}></div>
+        <div className="absolute bg-amber-400 rounded-full opacity-10 w-10 h-10 animate-float1" style={{ top: '5%', left: '45%', animationDelay: '5s' }}></div>
     </div>
 );
-
 
 const LoginPage = () => {
   return (
@@ -50,16 +36,11 @@ const LoginPage = () => {
           className="w-full h-full object-cover"
           onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/1920x1080/1e293b/1e293b'; }}
         />
-        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm"></div>
       </div>
 
-      {/* Floating SVG Icons */}
-      <FloatingIcons />
-
-      {/* Decorative SVG Pattern - reduced opacity */}
-      <div className="absolute top-0 left-0 w-full h-full z-10 overflow-hidden opacity-5 pointer-events-none">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="a" patternUnits="userSpaceOnUse" width="40" height="80" patternTransform="scale(2) rotate(135)"><rect x="0" y="0" width="100%" height="100%" fill="hsla(0,0%,100%,0)"/><path d="M-10 40h20v40h-20zM10 0h20v40h-20z" strokeWidth="1" stroke="hsla(203, 25%, 23%, 0.5)" fill="none"/></pattern></defs><rect width="800%" height="800%" transform="translate(0,0)" fill="url(#a)"/></svg>
-      </div>
+      {/* Floating Balls Effect */}
+      <FloatingBalls />
 
       {/* Main Content */}
       <div className="relative z-20 flex min-h-screen items-center justify-center">
@@ -80,35 +61,38 @@ const LoginPage = () => {
             </div>
 
             {/* Right Side: Login Form */}
-            <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-12 bg-white/5 backdrop-blur-md">
+            <div className="w-full md:w-1/2 flex flex-col justify-center p-8 md:p-12 bg-white bg-opacity-5 backdrop-blur-md">
               <form>
                 <h2 className="text-3xl font-bold text-white mb-8">Sign In</h2>
                 
                 <div className="mb-5">
                   <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-300">Email Address</label>
-                  <input type="email" id="email" className="input-glow bg-gray-700/50 border border-gray-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-2.5 transition duration-300" placeholder="your.email@provider.com" required />
+                  <input type="email" id="email" className="input-glow bg-gray-700 bg-opacity-50 border border-gray-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-3 transition duration-300" placeholder="your.email@provider.com" required />
                 </div>
                 
                 <div className="mb-5">
                   <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-300">Password</label>
-                  <input type="password" id="password" className="input-glow bg-gray-700/50 border border-gray-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-2.5 transition duration-300" placeholder="••••••••" required />
+                  <input type="password" id="password" className="input-glow bg-gray-700 bg-opacity-50 border border-gray-600 text-white text-sm rounded-lg focus:ring-amber-500 focus:border-amber-500 block w-full p-3 transition duration-300" placeholder="••••••••" required />
                 </div>
                 
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center">
                     <input id="remember" type="checkbox" value="" className="w-4 h-4 text-amber-500 bg-gray-700 border-gray-600 rounded focus:ring-amber-600 ring-offset-gray-800 focus:ring-2" />
-                    <label htmlFor="remember" className="ms-2 text-sm font-medium text-gray-300">Remember me</label>
+                    <label htmlFor="remember" className="ml-2 text-sm font-medium text-gray-300">Remember me</label>
                   </div>
-                  <a href="#" className="text-sm text-amber-400 hover:underline">Lost password?</a>
+                  <a href="#" className="text-sm text-amber-400 hover:underline">Forgot password?</a>
                 </div>
                 
-                <button type="submit" className="btn-glow w-full text-slate-900 bg-amber-400 hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-amber-300 font-bold rounded-lg text-sm px-5 py-2.5 text-center transition duration-300">
-                  Sign In Now
-                </button>
+                <div className="space-y-4 mt-8">
+                    <button type="submit" className="btn-glow w-full text-slate-900 bg-amber-400 hover:bg-amber-500 focus:ring-4 focus:outline-none focus:ring-amber-300 font-bold rounded-lg text-sm px-5 py-3 text-center transition duration-300">
+                      Sign In
+                    </button>
+                    
+                    <Link to="/register" className="block w-full text-white text-center bg-slate-700 bg-opacity-50 hover:bg-opacity-75 font-bold rounded-lg text-sm px-5 py-3 transition duration-300">
+                      Create an Account
+                    </Link>
+                </div>
 
-                <p className="text-xs text-gray-400 mt-6 text-center">
-                  By clicking "Sign In" you agree to our <a href="#" className="underline hover:text-white">Terms of Service</a> and <a href="#" className="underline hover:text-white">Privacy Policy</a>.
-                </p>
               </form>
             </div>
           </div>
