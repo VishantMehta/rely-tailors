@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 connectDB();
 const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
+const measurementRoutes = require('./routes/measurementRoutes');
 const app = express();
 
 app.use(cors());
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/measurements', measurementRoutes);
 
 const PORT = process.env.PORT || 5000;
 
