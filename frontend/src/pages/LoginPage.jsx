@@ -104,7 +104,7 @@ const LoginPage = () => {
                     <input id="remember" type="checkbox" value="" className="w-4 h-4 text-slate-800 bg-slate-100 border-slate-300 rounded focus:ring-slate-500" />
                     <label htmlFor="remember" className="ml-2 text-slate-600">Remember me</label>
                   </div>
-                  <a href="#" className="font-semibold text-slate-600 hover:text-slate-900 hover:underline">Lost password?</a>
+                  <a href="#" className="font-semibold text-slate-600 hover:text-slate-900 hover:underline">Forgot password?</a>
                 </div>
                 
                 <div className="space-y-4 mt-8">
