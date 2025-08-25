@@ -7,7 +7,7 @@ const ProductCard = ({ product }) => {
       <Link to={`/products/${product._id}`}>
         <div className="overflow-hidden">
           <img 
-            src={product.image || 'https://placehold.co/600x400/1e293b/ffffff?text=Product'} 
+            src={product.imageURL || 'https://placehold.co/600x400/1e293b/ffffff?text=Product'} 
             alt={product.name}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
           />

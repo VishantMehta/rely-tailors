@@ -63,8 +63,8 @@ const Navbar = () => {
                             </div>
                         </div>
                     ) : (
-                         <Link to="/login" className="flex items-center space-x-2 hover:text-amber-600 transition-colors">
-                            <UserIcon />
+                         <Link to="/login" className="hover:text-amber-600 transition-colors text-sm uppercase tracking-widest">
+                            Login
                         </Link>
                     )}
                      <Link to="/cart" className="flex items-center space-x-1 hover:text-amber-600">
