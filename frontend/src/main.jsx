@@ -18,7 +18,6 @@ import ProductsPage from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminProductListPage from './pages/AdminProductListPage';
-// We will create this page next, so let's import it now
 import AdminProductEditPage from './pages/AdminProductEditPage';
 
 
@@ -40,7 +39,8 @@ const router = createBrowserRouter([
         path: '',
         element: <PrivateRoute />,
         children: [
-          { path: 'profile', element: <ProfilePage /> },
+          // Add /* to allow nested routes within ProfilePage
+          { path: 'profile/*', element: <ProfilePage /> },
         ],
       },
 
