@@ -78,7 +78,7 @@ const Navbar = () => {
                             </Link>
                             <div className="absolute top-full right-0 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto border border-slate-200 z-50">
                                 <Link to="/profile" className="block px-4 py-2 text-sm hover:bg-slate-100">My Profile</Link>
-                                <Link to="/orders" className="block px-4 py-2 text-sm hover:bg-slate-100">My Orders</Link>
+                                <Link to="/my-orders" className="block px-4 py-2 text-sm hover:bg-slate-100">My Orders</Link>
                                 <button onClick={logoutHandler} className="w-full text-left block px-4 py-2 text-sm hover:bg-slate-100">
                                     Logout
                                 </button>
@@ -119,7 +119,7 @@ const Navbar = () => {
                     {userInfo ? (
                         <>
                             <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Profile</Link>
-                            <Link to="/myorders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Orders</Link>
+                            <Link to="/my-orders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Orders</Link>
                             {userInfo.role === 'admin' && (
                                 <>
                                     <hr className="border-slate-200" />
