@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
 import { productListRequest, productListSuccess, productListFail } from '../features/products/productSlice';
+import api from '../api/AxiosAPI';
 
 const AdminProductListPage = () => {
   const dispatch = useDispatch();
@@ -12,10 +13,10 @@ const AdminProductListPage = () => {
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // Fetch all products when the component loads
     const fetchProducts = async () => {
       try {
         dispatch(productListRequest());
+        // This is a public route, so standard axios is fine here.
         const { data } = await axios.get('/api/products');
         dispatch(productListSuccess(data));
       } catch (err) {
@@ -26,15 +27,10 @@ const AdminProductListPage = () => {
   }, [dispatch]);
 
   const deleteHandler = async (id) => {
-    // A simple confirmation before deleting
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        const config = {
-          headers: {
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        };
-        await axios.delete(`/api/products/${id}`, config);
+        // Use the 'api' instance for this protected request
+        await api.delete(`/products/${id}`);
         // Refetch products after deletion
         const { data } = await axios.get('/api/products');
         dispatch(productListSuccess(data));
@@ -46,13 +42,8 @@ const AdminProductListPage = () => {
 
   const createProductHandler = async () => {
     try {
-      const config = {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      };
-      const { data } = await axios.post('/api/products', {}, config);
-      // Redirect to the edit page for the newly created product
+      // Use the 'api' instance for this protected request
+      const { data } = await api.post('/products', {});
       navigate(`/admin/product/${data._id}/edit`);
     } catch (error) {
         alert('Could not create product.');
@@ -62,7 +53,7 @@ const AdminProductListPage = () => {
   return (
     <div className="bg-[#f2f2f2] min-h-screen">
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex justify-between items-center mb-8">
+        <div className="flex justify-between items-center mb-8" data-aos="fade-down">
           <h1 className="font-marcellus text-3xl sm:text-4xl text-slate-900">
             Manage Products
           </h1>
@@ -72,7 +63,7 @@ const AdminProductListPage = () => {
         </div>
 
         {loading ? <p>Loading...</p> : error ? <p className="text-red-500">{error}</p> : (
-          <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto">
+          <div className="bg-white p-4 rounded-lg shadow-md overflow-x-auto" data-aos="fade-up">
             <table className="w-full text-sm text-left text-slate-500">
               <thead className="text-xs text-slate-700 uppercase bg-slate-50">
                 <tr>

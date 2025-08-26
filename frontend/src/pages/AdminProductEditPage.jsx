@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import axios from 'axios';
+import api from '../api/AxiosAPI'; // Make sure this path is correct
 
 const AdminProductEditPage = () => {
     const { id: productId } = useParams();
@@ -17,8 +17,6 @@ const AdminProductEditPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
-
-    const { userInfo } = useSelector((state) => state.auth);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -44,16 +42,9 @@ const AdminProductEditPage = () => {
         e.preventDefault();
         setLoadingUpdate(true);
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${userInfo.token}`,
-                },
-            };
-            await axios.put(
-                `/api/products/${productId}`,
-                { name, basePrice, imageUrl, category, description, customizations },
-                config
+            await api.put(
+                `/products/${productId}`,
+                { name, basePrice, imageUrl, category, description, customizations }
             );
             setLoadingUpdate(false);
             navigate('/admin/productlist');
