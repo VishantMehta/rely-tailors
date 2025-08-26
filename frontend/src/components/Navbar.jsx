@@ -56,9 +56,9 @@ const Navbar = () => {
                 {/* Right Side: User Actions (Desktop) */}
                 <div className="hidden md:flex items-center space-x-6">
                     {/* Admin Menu */}
-                    {userInfo && userInfo.isAdmin && (
+                    {userInfo && userInfo.role === 'admin' && (
                          <div className="relative group h-24 flex items-center">
-                             <Link to="/admin/dashboard" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
+                             <Link to="/admin/productlist" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
                                 <AdminIcon />
                                 <span>Admin</span>
                             </Link>
@@ -120,7 +120,7 @@ const Navbar = () => {
                         <>
                             <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Profile</Link>
                             <Link to="/myorders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Orders</Link>
-                            {userInfo.isAdmin && (
+                            {userInfo.role === 'admin' && (
                                 <>
                                  <hr className="border-slate-200"/>
                                  <Link to="/admin/productlist" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Admin Products</Link>

@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+
+/* Add this class to hide the scrollbar but keep it scrollable */
+.horizontal-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.horizontal-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+
+
 @layer utilities {
     @keyframes float1 {
         0% {
