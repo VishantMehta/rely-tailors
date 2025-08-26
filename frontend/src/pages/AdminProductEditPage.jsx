@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import api from '../api/AxiosAPI'; // Make sure this path is correct
-
+import api from '../api/AxiosAPI';
 const AdminProductEditPage = () => {
     const { id: productId } = useParams();
     const navigate = useNavigate();
@@ -13,7 +12,7 @@ const AdminProductEditPage = () => {
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [customizations, setCustomizations] = useState([]);
-    
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
@@ -58,7 +57,7 @@ const AdminProductEditPage = () => {
     const addCustomization = () => {
         setCustomizations([...customizations, { name: '', options: [] }]);
     };
-    
+
     const handleCustomizationNameChange = (index, value) => {
         const newCustomizations = [...customizations];
         newCustomizations[index].name = value;
@@ -76,13 +75,13 @@ const AdminProductEditPage = () => {
         newCustomizations[custIndex].options[optIndex][field] = value;
         setCustomizations(newCustomizations);
     };
-    
+
     const removeOption = (custIndex, optIndex) => {
         const newCustomizations = [...customizations];
         newCustomizations[custIndex].options.splice(optIndex, 1);
         setCustomizations(newCustomizations);
     };
-    
+
     const removeCustomization = (custIndex) => {
         const newCustomizations = [...customizations];
         newCustomizations.splice(custIndex, 1);
@@ -117,7 +116,7 @@ const AdminProductEditPage = () => {
                                     <label htmlFor="imageUrl" className="block mb-2 text-sm font-bold text-slate-700">Image URL</label>
                                     <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" />
                                 </div>
-                                 <div className="md:col-span-2">
+                                <div className="md:col-span-2">
                                     <label htmlFor="category" className="block mb-2 text-sm font-bold text-slate-700">Category</label>
                                     <input type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" />
                                 </div>
@@ -133,9 +132,9 @@ const AdminProductEditPage = () => {
                                 {customizations.map((cust, custIndex) => (
                                     <div key={custIndex} className="bg-slate-50 p-4 rounded-md mb-4 border">
                                         <div className="flex justify-between items-center mb-4">
-                                            <input 
-                                                type="text" 
-                                                placeholder="Customization Name (e.g., Fabric)" 
+                                            <input
+                                                type="text"
+                                                placeholder="Customization Name (e.g., Fabric)"
                                                 value={cust.name}
                                                 onChange={(e) => handleCustomizationNameChange(custIndex, e.target.value)}
                                                 className="w-full p-2 border border-slate-300 rounded-md font-semibold"

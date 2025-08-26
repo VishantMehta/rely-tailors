@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
 import { updateUserProfile } from '../features/auth/authSlice'; // Import the new action
+import MyMeasurements from '../pages/MyMeasurements';
 
 // --- Placeholder Components for Sidebar Navigation ---
 // You should create these as new files in your pages folder.
-const MyMeasurements = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Measurements</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
+// const MyMeasurements = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Measurements</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 const MyOrders = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Orders</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 const MyAddresses = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Addresses</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 const MyWishlist = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Wishlist</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
@@ -14,20 +15,20 @@ const Settings = () => <div className="text-center p-10 bg-white rounded-lg shad
 
 // --- Background Cubes Component ---
 const BackgroundCubes = () => (
-    <div className="absolute inset-0 z-0 overflow-hidden">
-        <ul className="circles">
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-            <li></li>
-        </ul>
-    </div>
+  <div className="absolute inset-0 z-0 overflow-hidden">
+    <ul className="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
 );
 
 // --- Sidebar Icon Components ---
@@ -43,7 +44,7 @@ const SettingsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-
 const ProfileForm = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
-  
+
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage || 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=1887&auto=format&fit=crop');
   const fileInputRef = useRef(null);
@@ -52,7 +53,7 @@ const ProfileForm = () => {
   const [name, setName] = useState(userInfo ? userInfo.name : '');
   const [email, setEmail] = useState(userInfo ? userInfo.email : '');
   const [phone, setPhone] = useState(userInfo?.phone || '+1 123 456 7890');
-  
+
   const handleSave = (e) => {
     e.preventDefault();
     // Dispatch the update action with the new data
@@ -81,23 +82,23 @@ const ProfileForm = () => {
       <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-8 pb-4 border-b border-slate-200">
         <div className="flex items-center gap-4">
           <div className="relative">
-            <img 
-              src={profileImage} 
-              alt="Profile" 
+            <img
+              src={profileImage}
+              alt="Profile"
               className="w-20 h-20 rounded-full object-cover"
             />
-            <button 
+            <button
               onClick={handleImageUpload}
               className="absolute bottom-0 right-0 bg-slate-900 text-white p-1 rounded-full hover:bg-slate-700 transition-colors"
               aria-label="Upload profile picture"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" /></svg>
             </button>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
+            <input
+              type="file"
+              ref={fileInputRef}
               onChange={handleFileChange}
-              className="hidden" 
+              className="hidden"
               accept="image/*"
             />
           </div>
@@ -106,8 +107,8 @@ const ProfileForm = () => {
             <p className="text-slate-500">{email}</p>
           </div>
         </div>
-        <button 
-          onClick={() => setIsEditing(!isEditing)} 
+        <button
+          onClick={() => setIsEditing(!isEditing)}
           className="mt-4 sm:mt-0 bg-slate-900 text-white font-bold py-2 px-6 rounded-md hover:bg-slate-800 transition-colors"
         >
           {isEditing ? 'Cancel' : 'Edit'}
@@ -118,31 +119,31 @@ const ProfileForm = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label htmlFor="fullName" className="block text-sm font-bold text-slate-600 mb-2">Full Name</label>
-            <input 
-              type="text" 
-              id="fullName" 
+            <input
+              type="text"
+              id="fullName"
               value={name}
               onChange={(e) => setName(e.target.value)}
               disabled={!isEditing}
               className="w-full p-3 border border-slate-300 rounded-md disabled:bg-slate-100"
             />
           </div>
-           <div>
+          <div>
             <label htmlFor="email" className="block text-sm font-bold text-slate-600 mb-2">Email Address</label>
-            <input 
-              type="email" 
-              id="email" 
+            <input
+              type="email"
+              id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={!isEditing}
               className="w-full p-3 border border-slate-300 rounded-md disabled:bg-slate-100"
             />
           </div>
-           <div>
+          <div>
             <label htmlFor="phone" className="block text-sm font-bold text-slate-600 mb-2">Phone Number</label>
-            <input 
-              type="tel" 
-              id="phone" 
+            <input
+              type="tel"
+              id="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               disabled={!isEditing}
@@ -150,11 +151,11 @@ const ProfileForm = () => {
             />
           </div>
         </div>
-        
+
         {isEditing && (
           <div className="mt-8 text-right">
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="bg-amber-500 text-slate-900 font-bold py-2 px-6 rounded-md hover:bg-amber-600 transition-colors"
             >
               Save Changes
@@ -186,7 +187,7 @@ const ProfilePage = () => {
       <BackgroundCubes />
       <div className="container mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
         <div className="flex flex-col md:flex-row gap-8">
-          
+
           {/* --- Left Sidebar --- */}
           <aside className="md:w-1/4" data-aos="fade-right">
             <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/20">
@@ -220,13 +221,13 @@ const ProfilePage = () => {
           {/* --- Main Content --- */}
           <main className="flex-1" data-aos="fade-up">
             <Routes>
-                <Route index element={<ProfileForm />} />
-                <Route path="measurements" element={<MyMeasurements />} />
-                <Route path="orders" element={<MyOrders />} />
-                <Route path="addresses" element={<MyAddresses />} />
-                <Route path="wishlist" element={<MyWishlist />} />
-                <Route path="reviews" element={<MyReviews />} />
-                <Route path="settings" element={<Settings />} />
+              <Route index element={<ProfileForm />} />
+              <Route path="measurements" element={<MyMeasurements />} />
+              <Route path="orders" element={<MyOrders />} />
+              <Route path="addresses" element={<MyAddresses />} />
+              <Route path="wishlist" element={<MyWishlist />} />
+              <Route path="reviews" element={<MyReviews />} />
+              <Route path="settings" element={<Settings />} />
             </Routes>
           </main>
         </div>
