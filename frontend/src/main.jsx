@@ -19,6 +19,12 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminProductListPage from './pages/AdminProductListPage';
 import AdminProductEditPage from './pages/AdminProductEditPage';
+// --- Import new order pages ---
+import CheckoutPage from './pages/CheckoutPage';
+import MyOrdersPage from './pages/MyOrdersPage';
+import OrderDetailPage from './pages/OrderDetailPage';
+import AdminOrderListPage from './pages/AdminOrderListPage';
+
 
 
 // Define your routes
@@ -39,8 +45,10 @@ const router = createBrowserRouter([
         path: '',
         element: <PrivateRoute />,
         children: [
-          // Add /* to allow nested routes within ProfilePage
           { path: 'profile/*', element: <ProfilePage /> },
+          { path: 'checkout', element: <CheckoutPage /> },
+          { path: 'my-orders', element: <MyOrdersPage /> },
+          { path: 'orders/:id', element: <OrderDetailPage /> },
         ],
       },
 
@@ -51,6 +59,7 @@ const router = createBrowserRouter([
         children: [
           { path: 'productlist', element: <AdminProductListPage /> },
           { path: 'product/:id/edit', element: <AdminProductEditPage /> },
+          { path: 'orders', element: <AdminOrderListPage /> },
         ],
       },
     ],
