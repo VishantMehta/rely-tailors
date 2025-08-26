@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-
-// Mock Product Data - Replace with API call
+import { useSelector } from 'react-redux';
+import { insta2 } from '../assets';
+// --- Mock Product Data ---
 const mockProduct = {
     _id: '1',
     name: 'The Signature Bespoke Suit',
@@ -10,55 +11,46 @@ const mockProduct = {
     basePrice: 850.00,
     category: 'Suits',
     imageUrl: 'https://images.unsplash.com/photo-1523282366825-6c71b1f35234?q=80&w=1887&auto=format&fit=crop',
+    images: [
+        'https://images.unsplash.com/photo-1523282366825-6c71b1f35234?q=80&w=1887&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1594938384914-26278a2e2604?q=80&w=1887&auto=format&fit=crop',
+        'https://images.unsplash.com/photo-1593030103066-0515674563a4?q=80&w=1887&auto=format&fit=crop',
+    ],
     customizations: [
-        {
-            name: 'Fabric',
-            options: [
-                { optionName: 'Italian Wool', additionalPrice: 0, imageUrl: 'https://images.unsplash.com/photo-1594938384914-26278a2e2604' },
-                { optionName: 'Cashmere Blend', additionalPrice: 150, imageUrl: 'https://images.unsplash.com/photo-1542033912-68575a7c2692' },
-                { optionName: 'Summer Linen', additionalPrice: 50, imageUrl: 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7' },
-            ]
-        },
-        {
-            name: 'Lapel Style',
-            options: [
-                { optionName: 'Notch Lapel', additionalPrice: 0 },
-                { optionName: 'Peak Lapel', additionalPrice: 25 },
-                { optionName: 'Shawl Lapel', additionalPrice: 40 },
-            ]
-        },
-        {
-            name: 'Button Stance',
-            options: [
-                { optionName: 'Single Button', additionalPrice: 0 },
-                { optionName: 'Two Buttons', additionalPrice: 0 },
-                { optionName: 'Double Breasted', additionalPrice: 75 },
-            ]
-        }
+        { name: 'Fabric', options: [{ optionName: 'Italian Wool', additionalPrice: 0 }, { optionName: 'Cashmere Blend', additionalPrice: 150 }, { optionName: 'Summer Linen', additionalPrice: 50 }] },
+        { name: 'Lapel Style', options: [{ optionName: 'Notch Lapel', additionalPrice: 0 }, { optionName: 'Peak Lapel', additionalPrice: 25 }, { optionName: 'Shawl Lapel', additionalPrice: 40 }] },
+        { name: 'Button Stance', options: [{ optionName: 'Single Button', additionalPrice: 0 }, { optionName: 'Two Buttons', additionalPrice: 0 }, { optionName: 'Double Breasted', additionalPrice: 75 }] }
+    ],
+    reviews: [
+        { user: 'John D.', rating: 5, comment: 'Absolutely phenomenal fit and quality. Felt like a new man at the wedding.', image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=1887&auto=format&fit=crop' },
+        { user: 'Michael B.', rating: 4, comment: 'Great suit, though the process took a bit longer than expected. Worth the wait!', image: null },
     ]
 };
 
-// Accordion Item Component
+// --- Helper Components for the Page ---
+
+// Animated Background Component
+const BackgroundCubes = () => (
+    <div className="absolute inset-0 z-0 overflow-hidden">
+        <ul className="circles">
+            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+        </ul>
+    </div>
+);
+
+// Accordion for Customizations
 const AccordionItem = ({ title, options, selectedOption, onSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
-
     return (
         <div className="border-b border-slate-200">
-            <button
-                className="w-full flex justify-between items-center py-4 text-left"
-                onClick={() => setIsOpen(!isOpen)}
-            >
+            <button className="w-full flex justify-between items-center py-4 text-left" onClick={() => setIsOpen(!isOpen)}>
                 <span className="font-bold uppercase tracking-wider text-sm">{title}</span>
                 <svg className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
             </button>
             <div className={`overflow-hidden transition-all duration-500 ease-in-out ${isOpen ? 'max-h-96' : 'max-h-0'}`}>
                 <div className="pb-4 grid grid-cols-2 sm:grid-cols-3 gap-4">
                     {options.map(option => (
-                        <div
-                            key={option.optionName}
-                            className={`p-3 border rounded-md cursor-pointer text-center transition-colors ${selectedOption === option.optionName ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 hover:border-slate-400'}`}
-                            onClick={() => onSelect(title, option)}
-                        >
+                        <div key={option.optionName} className={`p-3 border rounded-md cursor-pointer text-center transition-colors ${selectedOption === option.optionName ? 'border-slate-900 bg-slate-900 text-white' : 'border-slate-200 hover:border-slate-400'}`} onClick={() => onSelect(title, option)}>
                             <p className="font-semibold text-sm">{option.optionName}</p>
                             {option.additionalPrice > 0 && <p className="text-xs opacity-70">+${option.additionalPrice.toFixed(2)}</p>}
                         </div>
@@ -69,56 +61,74 @@ const AccordionItem = ({ title, options, selectedOption, onSelect }) => {
     );
 };
 
+// Star Rating Component
+const StarRating = ({ rating, setRating }) => {
+    return (
+        <div className="flex items-center space-x-1">
+            {[...Array(5)].map((_, index) => {
+                const ratingValue = index + 1;
+                return (
+                    <button type="button" key={ratingValue} onClick={() => setRating ? setRating(ratingValue) : null} className={setRating ? 'cursor-pointer' : ''}>
+                        <svg className={`w-6 h-6 ${ratingValue <= rating ? 'text-amber-500' : 'text-slate-300'}`} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                    </button>
+                );
+            })}
+        </div>
+    );
+};
 
+
+// --- Main Product Detail Page Component ---
 const ProductDetailPage = () => {
     const { id } = useParams();
-    const [product, setProduct] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [product, setProduct] = useState(mockProduct); // Using mock data
     const [selectedCustomizations, setSelectedCustomizations] = useState({});
-    const [totalPrice, setTotalPrice] = useState(0);
-
-    useEffect(() => {
-        // In a real app, you would fetch the product data
-        // For now, we use the mock data
-        setProduct(mockProduct);
-        setTotalPrice(mockProduct.basePrice);
-        setLoading(false);
-
-        // --- REAL API CALL ---
-        // const fetchProduct = async () => {
-        //     try {
-        //         setLoading(true);
-        //         const { data } = await axios.get(`/api/products/${id}`);
-        //         setProduct(data);
-        //         setTotalPrice(data.basePrice);
-        //         setLoading(false);
-        //     } catch (err) {
-        //         setError('Product not found.');
-        //         setLoading(false);
-        //     }
-        // };
-        // fetchProduct();
-    }, [id]);
+    const [totalPrice, setTotalPrice] = useState(mockProduct.basePrice);
+    const [activeTab, setActiveTab] = useState('description');
+    const [isFavorited, setIsFavorited] = useState(false);
+    
+    // Review Form State
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState('');
+    const [reviewImages, setReviewImages] = useState([]);
+    
+    const { userInfo } = useSelector((state) => state.auth);
 
     const handleCustomizationSelect = (customizationName, option) => {
-        const newSelections = {
-            ...selectedCustomizations,
-            [customizationName]: option
-        };
+        const newSelections = { ...selectedCustomizations, [customizationName]: option };
         setSelectedCustomizations(newSelections);
-
-        // Recalculate total price
         let newTotal = product.basePrice;
-        Object.values(newSelections).forEach(selectedOption => {
-            newTotal += selectedOption.additionalPrice;
-        });
+        Object.values(newSelections).forEach(selectedOption => { newTotal += selectedOption.additionalPrice; });
         setTotalPrice(newTotal);
     };
 
-    if (loading) return <div className="text-center py-20">Loading...</div>;
-    if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
-    if (!product) return null;
+    const handleReviewImageChange = (e) => {
+        if (e.target.files) {
+            const filesArray = Array.from(e.target.files).map(file => URL.createObjectURL(file));
+            setReviewImages(prevImages => prevImages.concat(filesArray));
+        }
+    };
+
+    const handleReviewSubmit = (e) => {
+        e.preventDefault();
+        const newReview = {
+            user: userInfo ? userInfo.name : 'Anonymous',
+            rating,
+            comment,
+            image: reviewImages.length > 0 ? reviewImages[0] : null,
+        };
+
+        // Update the product state to include the new review
+        setProduct(prevProduct => ({
+            ...prevProduct,
+            reviews: [newReview, ...prevProduct.reviews]
+        }));
+
+        // Reset the form
+        setRating(5);
+        setComment('');
+        setReviewImages([]);
+    };
 
     return (
         <div className="bg-[#f2f2f2] font-montserrat">
@@ -126,40 +136,118 @@ const ProductDetailPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
                     {/* Left Column: Sticky Image */}
                     <div className="lg:sticky top-24 h-screen max-h-[80vh]">
-                        <img 
-                            src={product.imageUrl} 
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                            data-aos="zoom-in"
-                        />
+                        <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover" data-aos="zoom-in" />
                     </div>
 
                     {/* Right Column: Details & Customizations */}
                     <div className="lg:pt-8">
                         <div data-aos="fade-left">
-                            <h1 className="font-marcellus text-4xl md:text-5xl text-slate-900">{product.name}</h1>
+                            <p className="text-sm text-slate-500 uppercase tracking-widest">{product.category}</p>
+                            <h1 className="font-marcellus text-4xl md:text-5xl text-slate-900 mt-2">{product.name}</h1>
                             <p className="text-2xl text-slate-700 my-4">${totalPrice.toFixed(2)}</p>
-                            <p className="text-slate-600 leading-relaxed">{product.description}</p>
                         </div>
                         
-                        <div className="mt-10" data-aos="fade-left" data-aos-delay="200">
-                            <h2 className="font-marcellus text-2xl mb-4">Customize Your Garment</h2>
+                        <div className="mt-8" data-aos="fade-left" data-aos-delay="200">
+                            <h2 className="font-marcellus text-xl mb-4">Customize Your Garment</h2>
                             {product.customizations.map(customization => (
-                                <AccordionItem 
-                                    key={customization.name}
-                                    title={customization.name}
-                                    options={customization.options}
-                                    selectedOption={selectedCustomizations[customization.name]?.optionName}
-                                    onSelect={handleCustomizationSelect}
-                                />
+                                <AccordionItem key={customization.name} title={customization.name} options={customization.options} selectedOption={selectedCustomizations[customization.name]?.optionName} onSelect={handleCustomizationSelect} />
                             ))}
                         </div>
 
-                        <div className="mt-10" data-aos="fade-up" data-aos-delay="400">
-                            <button className="w-full bg-slate-900 text-white font-bold py-4 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
+                        <div className="mt-10 flex items-center gap-4" data-aos="fade-up" data-aos-delay="400">
+                            <button onClick={() => setIsFavorited(!isFavorited)} className={`p-4 border rounded-md transition-colors ${isFavorited ? 'bg-red-500 border-red-500 text-white' : 'bg-white border-slate-300 hover:bg-slate-100'}`}>
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
+                            </button>
+                            <button className="flex-1 bg-slate-900 text-white font-bold py-4 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
                                 Add to Cart
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                {/* --- Bottom Section: Tabs --- */}
+                <div className="mt-24" data-aos="fade-up">
+                    <div className="border-b border-slate-300 flex space-x-8">
+                        <button onClick={() => setActiveTab('description')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'description' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Description</button>
+                        <button onClick={() => setActiveTab('reviews')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'reviews' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Reviews ({product.reviews.length})</button>
+                        <button onClick={() => setActiveTab('sizing')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'sizing' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Size & Fit</button>
+                    </div>
+
+                    <div className="py-8">
+                        {activeTab === 'description' && (
+                            <div className="prose max-w-none text-slate-600">
+                                <p>{product.description}</p>
+                                <p>Our commitment to excellence ensures each garment is not just worn, but experienced. We use traditional techniques passed down through generations, combined with modern precision to deliver a product that is truly one-of-a-kind.</p>
+                            </div>
+                        )}
+                        {activeTab === 'reviews' && (
+                            <div>
+                                {product.reviews.map((review, index) => (
+                                    <div key={index} className="border-b border-slate-200 py-6 flex gap-6">
+                                        <img src={review.image || 'https://placehold.co/100x100/f2f2f2/334155?text=Review'} alt={review.user} className="w-16 h-16 rounded-full object-cover"/>
+                                        <div>
+                                            <StarRating rating={review.rating} />
+                                            <p className="font-bold mt-2">{review.user}</p>
+                                            <p className="text-slate-600 mt-1">{review.comment}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                                <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
+                                    <h3 className="font-marcellus text-2xl mb-4">Write a Review</h3>
+                                    <form onSubmit={handleReviewSubmit}>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-bold mb-2">Your Rating</label>
+                                            <StarRating rating={rating} setRating={setRating} />
+                                        </div>
+                                        <div className="mb-4">
+                                            <label htmlFor="comment" className="block text-sm font-bold mb-2">Your Review</label>
+                                            <textarea id="comment" value={comment} onChange={(e) => setComment(e.target.value)} rows="4" className="w-full p-3 border border-slate-300 rounded-md" placeholder="Share your experience..."></textarea>
+                                        </div>
+                                        <div className="mb-4">
+                                            <label className="block text-sm font-bold mb-2">Upload Photos</label>
+                                            <input type="file" multiple onChange={handleReviewImageChange} className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"/>
+                                            <div className="mt-4 flex gap-4">
+                                                {reviewImages.map((image, index) => <img key={index} src={image} alt="Review upload preview" className="w-20 h-20 rounded-md object-cover"/>)}
+                                            </div>
+                                        </div>
+                                        <button type="submit" className="bg-slate-900 text-white font-bold py-2 px-6 rounded-md hover:bg-slate-800 transition-colors">Submit Review</button>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+                        {activeTab === 'sizing' && (
+                            <div className="prose max-w-none text-slate-600">
+                                <p>Our suits are tailored to standard sizing, but we highly recommend providing your custom measurements for a truly bespoke fit. Please refer to our measurement guide or book an appointment for a professional fitting.</p>
+                                <ul>
+                                    <li><strong>Chest:</strong> Measured around the fullest part of your chest.</li>
+                                    <li><strong>Waist:</strong> Measured around your natural waistline.</li>
+                                    <li><strong>Sleeve:</strong> Measured from the shoulder to the wrist.</li>
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            
+            {/* --- About Us Section --- */}
+            <div className="relative mt-16 bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up">
+                <BackgroundCubes />
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 items-center">
+                    <div className="p-12">
+                        <h2 className="font-marcellus text-4xl text-slate-900">The Rely Tailors Difference</h2>
+                        <p className="text-slate-600 mt-4 mb-6">
+                            For over 35 years, we have been the architects of confidence. Our philosophy is simple: a perfect suit is a blend of art, precision, and personal expression. We source only the world's finest fabrics and employ master tailors who dedicate their craft to achieving an impeccable fit, just for you.
+                        </p>
+                        <Link to="/about" className="inline-block bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
+                            Our Story
+                        </Link>
+                    </div>
+                    <div>
+                        <img 
+                            src={insta2}
+                            alt="Master tailor at work"
+                            className="w-full h-96 object-cover"
+                        />
                     </div>
                 </div>
             </div>
