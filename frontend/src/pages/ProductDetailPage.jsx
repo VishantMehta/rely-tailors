@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector } from 'react-redux';
-import { insta2 } from '../assets';
+import { insta2 } from '../assets'; // Import the new suit image
+
 // --- Mock Product Data ---
 const mockProduct = {
     _id: '1',
@@ -80,10 +81,12 @@ const StarRating = ({ rating, setRating }) => {
 
 // --- Main Product Detail Page Component ---
 const ProductDetailPage = () => {
-    const { id } = useParams();
-    const [product, setProduct] = useState(mockProduct); // Using mock data
+    const { id: productId } = useParams();
+    const [product, setProduct] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [selectedCustomizations, setSelectedCustomizations] = useState({});
-    const [totalPrice, setTotalPrice] = useState(mockProduct.basePrice);
+    const [totalPrice, setTotalPrice] = useState(0);
     const [activeTab, setActiveTab] = useState('description');
     const [isFavorited, setIsFavorited] = useState(false);
     
@@ -93,6 +96,22 @@ const ProductDetailPage = () => {
     const [reviewImages, setReviewImages] = useState([]);
     
     const { userInfo } = useSelector((state) => state.auth);
+
+    useEffect(() => {
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                const { data } = await axios.get(`/api/products/${productId}`);
+                setProduct(data);
+                setTotalPrice(data.basePrice);
+                setLoading(false);
+            } catch (err) {
+                setError('Product not found.');
+                setLoading(false);
+            }
+        };
+        fetchProduct();
+    }, [productId]);
 
     const handleCustomizationSelect = (customizationName, option) => {
         const newSelections = { ...selectedCustomizations, [customizationName]: option };
@@ -118,17 +137,19 @@ const ProductDetailPage = () => {
             image: reviewImages.length > 0 ? reviewImages[0] : null,
         };
 
-        // Update the product state to include the new review
         setProduct(prevProduct => ({
             ...prevProduct,
-            reviews: [newReview, ...prevProduct.reviews]
+            reviews: [newReview, ...(prevProduct.reviews || [])]
         }));
 
-        // Reset the form
         setRating(5);
         setComment('');
         setReviewImages([]);
     };
+
+    if (loading) return <div className="text-center py-20">Loading...</div>;
+    if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
+    if (!product) return null;
 
     return (
         <div className="bg-[#f2f2f2] font-montserrat">
@@ -149,7 +170,7 @@ const ProductDetailPage = () => {
                         
                         <div className="mt-8" data-aos="fade-left" data-aos-delay="200">
                             <h2 className="font-marcellus text-xl mb-4">Customize Your Garment</h2>
-                            {product.customizations.map(customization => (
+                            {(product.customizations || []).map(customization => (
                                 <AccordionItem key={customization.name} title={customization.name} options={customization.options} selectedOption={selectedCustomizations[customization.name]?.optionName} onSelect={handleCustomizationSelect} />
                             ))}
                         </div>
@@ -169,7 +190,7 @@ const ProductDetailPage = () => {
                 <div className="mt-24" data-aos="fade-up">
                     <div className="border-b border-slate-300 flex space-x-8">
                         <button onClick={() => setActiveTab('description')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'description' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Description</button>
-                        <button onClick={() => setActiveTab('reviews')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'reviews' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Reviews ({product.reviews.length})</button>
+                        <button onClick={() => setActiveTab('reviews')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'reviews' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Reviews ({(product.reviews || []).length})</button>
                         <button onClick={() => setActiveTab('sizing')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'sizing' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Size & Fit</button>
                     </div>
 
@@ -182,7 +203,7 @@ const ProductDetailPage = () => {
                         )}
                         {activeTab === 'reviews' && (
                             <div>
-                                {product.reviews.map((review, index) => (
+                                {(product.reviews || []).map((review, index) => (
                                     <div key={index} className="border-b border-slate-200 py-6 flex gap-6">
                                         <img src={review.image || 'https://placehold.co/100x100/f2f2f2/334155?text=Review'} alt={review.user} className="w-16 h-16 rounded-full object-cover"/>
                                         <div>
@@ -217,12 +238,22 @@ const ProductDetailPage = () => {
                         )}
                         {activeTab === 'sizing' && (
                             <div className="prose max-w-none text-slate-600">
-                                <p>Our suits are tailored to standard sizing, but we highly recommend providing your custom measurements for a truly bespoke fit. Please refer to our measurement guide or book an appointment for a professional fitting.</p>
-                                <ul>
-                                    <li><strong>Chest:</strong> Measured around the fullest part of your chest.</li>
-                                    <li><strong>Waist:</strong> Measured around your natural waistline.</li>
-                                    <li><strong>Sleeve:</strong> Measured from the shoulder to the wrist.</li>
+                                <p>For a truly bespoke fit, we tailor each garment to your unique profile. Please add or update your measurements in your dashboard.</p>
+                                <h4 className="font-bold mt-4">Key Measurements We Use:</h4>
+                                <ul className="grid grid-cols-2 gap-x-8">
+                                    <li>Neck</li>
+                                    <li>Chest</li>
+                                    <li>Waist</li>
+                                    <li>Hips</li>
+                                    <li>Sleeve Length</li>
+                                    <li>Shoulder Width</li>
+                                    <li>Shirt Length</li>
+                                    <li>Trouser Length</li>
+                                    <li>Inseam</li>
                                 </ul>
+                                <Link to="/profile/measurements" className="inline-block mt-6 bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
+                                    Manage My Measurements
+                                </Link>
                             </div>
                         )}
                     </div>
@@ -233,8 +264,8 @@ const ProductDetailPage = () => {
             <div className="relative mt-16 bg-white rounded-lg shadow-lg overflow-hidden" data-aos="fade-up">
                 <BackgroundCubes />
                 <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 items-center">
-                    <div className="p-12">
-                        <h2 className="font-marcellus text-4xl text-slate-900">The Rely Tailors Difference</h2>
+                    <div className="p-12 text-slate-800">
+                        <h2 className="font-marcellus text-4xl">The Rely Tailors Difference</h2>
                         <p className="text-slate-600 mt-4 mb-6">
                             For over 35 years, we have been the architects of confidence. Our philosophy is simple: a perfect suit is a blend of art, precision, and personal expression. We source only the world's finest fabrics and employ master tailors who dedicate their craft to achieving an impeccable fit, just for you.
                         </p>
