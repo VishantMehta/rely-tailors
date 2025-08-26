@@ -29,7 +29,7 @@ const orderSchema = mongoose.Schema(
         orderStatus: {
             type: String,
             required: true,
-            enum: ['Confirmed', 'Processing', 'Ready for Pickup', 'Completed'],
+            enum: ['Confirmed', 'Processing', 'Shipped', 'Delivered'],
             default: 'Confirmed',
         },
         paymentMethod: {
