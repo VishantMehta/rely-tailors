@@ -19,6 +19,13 @@ const SearchIcon = () => (
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
 );
+const AdminIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+);
+
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -48,6 +55,21 @@ const Navbar = () => {
 
                 {/* Right Side: User Actions (Desktop) */}
                 <div className="hidden md:flex items-center space-x-6">
+                    {/* Admin Menu */}
+                    {userInfo && userInfo.isAdmin && (
+                         <div className="relative group h-24 flex items-center">
+                             <Link to="/admin/dashboard" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
+                                <AdminIcon />
+                                <span>Admin</span>
+                            </Link>
+                            <div className="absolute top-full right-0 w-48 bg-white rounded-md shadow-lg py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none group-hover:pointer-events-auto border border-slate-200 z-50">
+                                <Link to="/admin/productlist" className="block px-4 py-2 text-sm hover:bg-slate-100">Products</Link>
+                                <Link to="/admin/orderlist" className="block px-4 py-2 text-sm hover:bg-slate-100">Orders</Link>
+                                <Link to="/admin/userlist" className="block px-4 py-2 text-sm hover:bg-slate-100">Users</Link>
+                            </div>
+                        </div>
+                    )}
+
                     {userInfo ? (
                         <div className="relative group h-24 flex items-center">
                              <Link to="/profile" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
@@ -98,6 +120,12 @@ const Navbar = () => {
                         <>
                             <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Profile</Link>
                             <Link to="/myorders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Orders</Link>
+                            {userInfo.isAdmin && (
+                                <>
+                                 <hr className="border-slate-200"/>
+                                 <Link to="/admin/productlist" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Admin Products</Link>
+                                </>
+                            )}
                             <button onClick={logoutHandler} className="text-left hover:text-amber-600">Logout</button>
                         </>
                     ) : (
