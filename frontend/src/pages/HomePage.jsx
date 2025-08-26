@@ -119,8 +119,45 @@ const testimonials = [
   {
     quote: "Stylish, comfortable, and elegant. Perfect fit for my big day!",
     author: "BRIDEGROOM"
+  },
+  {
+    quote: "Faisal tailored my sherwani perfectly, the fitting was flawless and everyone praised it.",
+    author: "Faisal Khan"
+  },
+  {
+    quote: "Adnan’s craftsmanship is next level. My three-piece suit felt like it was made just for me.",
+    author: "Adnan Ali"
+  },
+  {
+    quote: "Shahnawaz made my wedding outfit exactly how I imagined. The embroidery was breathtaking.",
+    author: "Shahnawaz Sheikh"
+  },
+  {
+    quote: "Sharzil designed my formal wear with such precision. Every detail was on point.",
+    author: "Sharzil Ahmed"
+  },
+  {
+    quote: "Suraj gave me the most comfortable kurta I’ve ever worn. Truly premium stitching.",
+    author: "Suraj Verma"
+  },
+  {
+    quote: "The linen shirt I got tailored was so light and airy, perfect for summer weddings.",
+    author: "Rahul Mehra"
+  },
+  {
+    quote: "Best bespoke tailoring experience. They really understood my style and fit preference.",
+    author: "Imran Qureshi"
+  },
+  {
+    quote: "Got a blazer stitched for an event, and people couldn’t stop asking me where it was from!",
+    author: "Arjun Sharma"
+  },
+  {
+    quote: "From measurement to delivery, everything was seamless. The fabric quality is unmatched.",
+    author: "Zeeshan Ansari"
   }
 ];
+
 
 const instagramPosts = [
   { 

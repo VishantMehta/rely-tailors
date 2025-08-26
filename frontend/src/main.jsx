@@ -5,39 +5,53 @@ import { Provider } from 'react-redux';
 import { store } from './app/store';
 import './index.css';
 
-// Import your components
+// Components
 import Layout from './components/Layout';
+import PrivateRoute from './components/routing/PrivateRoute';
+import AdminRoute from './components/routing/Admroute';
+
+// Pages
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProductsPage from './pages/ProductsPage';
-import ProductDetailPage from './pages/ProductDetailPage'; // 1. Import the new page
+import ProductDetailPage from './pages/ProductDetailPage';
+import ProfilePage from './pages/ProfilePage';
+import AdminProductListPage from './pages/AdminProductListPage';
+import AdminProductEditPage from './pages/AdminProductEditPage';
+
 
 // Define your routes
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />, // The Layout component wraps all your pages
+    element: <Layout />,
     children: [
+      // --- Public Routes ---
+      { index: true, element: <HomePage /> },
+      { path: 'login', element: <LoginPage /> },
+      { path: 'register', element: <RegisterPage /> },
+      { path: 'products', element: <ProductsPage /> },
+      { path: 'products/:id', element: <ProductDetailPage /> },
+
+      // --- Private Routes (for logged-in users) ---
       {
-        index: true, // This makes HomePage the default child route for '/'
-        element: <HomePage />,
+        path: '',
+        element: <PrivateRoute />,
+        children: [
+          // Add /* to allow nested routes within ProfilePage
+          { path: 'profile/*', element: <ProfilePage /> },
+        ],
       },
+
+      // --- Admin Routes ---
       {
-        path: 'login',
-        element: <LoginPage />,
-      },
-      {
-        path: 'register',
-        element: <RegisterPage />,
-      },
-      {
-        path: 'products',
-        element: <ProductsPage />,
-      },
-      {
-        path: 'products/:id', // 2. Add the new dynamic route
-        element: <ProductDetailPage />,
+        path: '/admin',
+        element: <AdminRoute />,
+        children: [
+          { path: 'productlist', element: <AdminProductListPage /> },
+          { path: 'product/:id/edit', element: <AdminProductEditPage /> },
+        ],
       },
     ],
   },
