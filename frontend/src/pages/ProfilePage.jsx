@@ -3,11 +3,12 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Link, Routes, Route, useLocation } from 'react-router-dom';
 import { updateUserProfile } from '../features/auth/authSlice'; // Import the new action
 import MyMeasurements from '../pages/MyMeasurements';
+import MyOrders from '../pages/MyOrdersPage';
 
 // --- Placeholder Components for Sidebar Navigation ---
 // You should create these as new files in your pages folder.
 // const MyMeasurements = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Measurements</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
-const MyOrders = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Orders</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
+// const MyOrders = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Orders</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 const MyAddresses = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Addresses</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 const MyWishlist = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Wishlist</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 const MyReviews = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Reviews</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
