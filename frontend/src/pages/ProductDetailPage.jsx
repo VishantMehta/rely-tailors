@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { addItemToCart } from '../features/cart/cartSlice'; // 1. Import the new async thunk
+import { addItemToCart } from '../features/cart/cartSlice';
 import { insta2 } from '../assets';
 import api from '../api/AxiosAPI';
 
@@ -119,7 +119,6 @@ const ProductDetailPage = () => {
         }
     };
 
-    // 2. Update the Add to Cart Handler to be async
     const addToCartHandler = async () => {
         const simpleCustomizations = {};
         for (const key in selectedCustomizations) {
@@ -134,7 +133,6 @@ const ProductDetailPage = () => {
             selectedCustomizations: simpleCustomizations,
         };
         
-        // 3. await the dispatch to ensure the API call finishes
         await dispatch(addItemToCart(newItem));
         navigate('/checkout');
     };
