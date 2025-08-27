@@ -1,38 +1,85 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import api from '../../api/AxiosAPI'; // Your configured Axios instance
 
-const cartItemsFromStorage = localStorage.getItem('cartItems')
-  ? JSON.parse(localStorage.getItem('cartItems'))
-  : [];
+// --- Async Thunks for API Calls ---
+
+export const fetchUserCart = createAsyncThunk(
+  'cart/fetchUserCart',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get('/cart');
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const addItemToCart = createAsyncThunk(
+  'cart/addItemToCart',
+  async (newItem, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post('/cart', newItem);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const removeItemFromCart = createAsyncThunk(
+  'cart/removeItemFromCart',
+  async (cartItemId, { rejectWithValue }) => {
+    try {
+      const { data } = await api.delete(`/cart/${cartItemId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+// --- Cart Slice Definition ---
 
 const initialState = {
-  cartItems: cartItemsFromStorage,
+  cartItems: [],
+  loading: false,
+  error: null,
 };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    addToCart: (state, action) => {
-      const item = action.payload;
-      // Note: A more robust implementation would generate a unique ID for each cart item
-      // based on the product ID and its selected customizations.
-      // For now, we'll just add it.
-      state.cartItems.push(item);
-      localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
-    },
-    removeFromCart: (state, action) => {
-      state.cartItems = state.cartItems.filter(
-        (x) => x.cartId !== action.payload // Assuming a unique cartId is added to each item
-      );
-      localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
-    },
     clearCart: (state) => {
       state.cartItems = [];
-      localStorage.removeItem('cartItems');
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      // Fetch Cart
+      .addCase(fetchUserCart.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUserCart.fulfilled, (state, action) => {
+        state.loading = false;
+        state.cartItems = action.payload;
+      })
+      .addCase(fetchUserCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Add Item
+      .addCase(addItemToCart.fulfilled, (state, action) => {
+        state.cartItems = action.payload; // The API returns the full updated cart
+      })
+      // Remove Item
+      .addCase(removeItemFromCart.fulfilled, (state, action) => {
+        state.cartItems = action.payload; // The API returns the full updated cart
+      });
   },
 });
 
-export const { addToCart, removeFromCart, clearCart } = cartSlice.actions;
+export const { clearCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

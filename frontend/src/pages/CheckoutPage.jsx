@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { removeFromCart, clearCart } from '../features/cart/cartSlice';
+import { removeItemFromCart, clearCart } from '../features/cart/cartSlice'; // 1. Import removeItemFromCart
 import api from '../api/AxiosAPI';
 
 // --- Background Cubes Component ---
@@ -46,6 +46,11 @@ const CheckoutPage = () => {
             alert('Could not place order.');
         }
     };
+    
+    // 2. Update the remove handler to use the new async thunk
+    const removeFromCartHandler = (id) => {
+        dispatch(removeItemFromCart(id));
+    };
 
     return (
         <div className="relative min-h-screen w-full bg-[#f2f2f2] font-montserrat text-slate-800">
@@ -70,7 +75,7 @@ const CheckoutPage = () => {
                             <h2 className="font-marcellus text-3xl text-slate-900 mb-6">Order Summary</h2>
                             <div className="space-y-6">
                                 {cartItems.map(item => (
-                                    <div key={item.cartId} className="flex items-start gap-6 border-b pb-6">
+                                    <div key={item._id} className="flex items-start gap-6 border-b pb-6">
                                         <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md"/>
                                         <div className="flex-1">
                                             <h3 className="font-bold text-lg">{item.name}</h3>
@@ -82,7 +87,8 @@ const CheckoutPage = () => {
                                         </div>
                                         <div className="text-right">
                                             <p className="font-semibold text-lg">${item.price.toFixed(2)}</p>
-                                            <button onClick={() => dispatch(removeFromCart(item.cartId))} className="text-red-500 text-xs hover:underline mt-2">Remove</button>
+                                            {/* 3. Update the button's onClick handler */}
+                                            <button onClick={() => removeFromCartHandler(item._id)} className="text-red-500 text-xs hover:underline mt-2">Remove</button>
                                         </div>
                                     </div>
                                 ))}
