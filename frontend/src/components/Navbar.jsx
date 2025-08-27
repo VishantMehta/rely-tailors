@@ -30,6 +30,7 @@ const AdminIcon = () => (
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { userInfo } = useSelector((state) => state.auth);
+    const { cartItems } = useSelector((state) => state.cart); // <-- Add this line
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -57,8 +58,8 @@ const Navbar = () => {
                 <div className="hidden md:flex items-center space-x-6">
                     {/* Admin Menu */}
                     {userInfo && userInfo.role === 'admin' && (
-                        <div className="relative group h-24 flex items-center">
-                            <Link to="/admin/productlist" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
+                         <div className="relative group h-24 flex items-center">
+                             <Link to="/admin/productlist" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
                                 <AdminIcon />
                                 <span>Admin</span>
                             </Link>
@@ -72,7 +73,7 @@ const Navbar = () => {
 
                     {userInfo ? (
                         <div className="relative group h-24 flex items-center">
-                            <Link to="/profile" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
+                             <Link to="/profile" className="flex items-center space-x-2 cursor-pointer hover:text-amber-600">
                                 <UserIcon />
                                 <span>{userInfo.name.split(' ')[0]}</span>
                             </Link>
@@ -85,13 +86,13 @@ const Navbar = () => {
                             </div>
                         </div>
                     ) : (
-                        <Link to="/login" className="hover:text-amber-600 transition-colors text-sm uppercase tracking-widest">
+                         <Link to="/login" className="hover:text-amber-600 transition-colors text-sm uppercase tracking-widest">
                             Login
                         </Link>
                     )}
-                    <Link to="/cart" className="flex items-center space-x-1 hover:text-amber-600">
-                        <CartIcon />
-                        <span>(0)</span>
+                     <Link to="/checkout" className="flex items-center space-x-1 hover:text-amber-600">
+                       <CartIcon />
+                       <span>({cartItems.length})</span>
                     </Link>
                     <button className="hover:text-amber-600">
                         <SearchIcon />
@@ -116,14 +117,14 @@ const Navbar = () => {
                     <Link to="#" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">About</Link>
                     <Link to="#" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Contact</Link>
                     <hr className="border-slate-200" />
-                    {userInfo ? (
+                     {userInfo ? (
                         <>
                             <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Profile</Link>
                             <Link to="/my-orders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Orders</Link>
                             {userInfo.role === 'admin' && (
                                 <>
-                                    <hr className="border-slate-200" />
-                                    <Link to="/admin/productlist" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Admin Products</Link>
+                                 <hr className="border-slate-200" />
+                                 <Link to="/admin/productlist" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Admin Products</Link>
                                 </>
                             )}
                             <button onClick={logoutHandler} className="text-left hover:text-amber-600">Logout</button>

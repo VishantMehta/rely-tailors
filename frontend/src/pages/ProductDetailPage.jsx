@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { addToCart } from '../features/cart/cartSlice';
 import { insta2 } from '../assets'; // Import the new suit image
 
 // --- Mock Product Data ---
@@ -82,6 +83,9 @@ const StarRating = ({ rating, setRating }) => {
 // --- Main Product Detail Page Component ---
 const ProductDetailPage = () => {
     const { id: productId } = useParams();
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -147,6 +151,24 @@ const ProductDetailPage = () => {
         setReviewImages([]);
     };
 
+    const addToCartHandler = () => {
+        const simpleCustomizations = {};
+        for (const key in selectedCustomizations) {
+            simpleCustomizations[key] = selectedCustomizations[key].optionName;
+        }
+
+        dispatch(addToCart({
+            cartId: `${product._id}-${Date.now()}`,
+            product: product._id,
+            name: product.name,
+            imageUrl: product.imageUrl,
+            price: totalPrice,
+            selectedCustomizations: simpleCustomizations,
+        }));
+        
+        navigate('/checkout');
+    };
+
     if (loading) return <div className="text-center py-20">Loading...</div>;
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
     if (!product) return null;
@@ -179,7 +201,7 @@ const ProductDetailPage = () => {
                             <button onClick={() => setIsFavorited(!isFavorited)} className={`p-4 border rounded-md transition-colors ${isFavorited ? 'bg-red-500 border-red-500 text-white' : 'bg-white border-slate-300 hover:bg-slate-100'}`}>
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.636l1.318-1.318a4.5 4.5 0 116.364 6.364L12 20.364l-7.682-7.682a4.5 4.5 0 010-6.364z" /></svg>
                             </button>
-                            <button className="flex-1 bg-slate-900 text-white font-bold py-4 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
+                            <button onClick={addToCartHandler} className="flex-1 bg-slate-900 text-white font-bold py-4 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
                                 Add to Cart
                             </button>
                         </div>
