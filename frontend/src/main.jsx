@@ -25,6 +25,7 @@ import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AdminOrderListPage from './pages/AdminOrderListPage';
 
+import AdminUserListPage from './pages/AdminUserListPage'; // <-- Import the new page
 
 
 // Define your routes
@@ -60,6 +61,7 @@ const router = createBrowserRouter([
           { path: 'productlist', element: <AdminProductListPage /> },
           { path: 'product/:id/edit', element: <AdminProductEditPage /> },
           { path: 'orders', element: <AdminOrderListPage /> },
+          { path: 'userlist', element: <AdminUserListPage /> },
         ],
       },
     ],
