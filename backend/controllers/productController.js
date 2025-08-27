@@ -35,7 +35,6 @@ const getProductById = async (req, res) => {
  * @access  Private/Admin
  */
 const createProduct = async (req, res) => {
-    // In a real app, this data comes from req.body sent by the admin form
     const product = new Product({
         name: 'Sample Product',
         description: 'Sample Description',
