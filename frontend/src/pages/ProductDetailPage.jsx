@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { addToCart } from '../features/cart/cartSlice';
+import { addItemToCart } from '../features/cart/cartSlice';
 import { insta2 } from '../assets';
 import api from '../api/AxiosAPI';
 
@@ -105,43 +105,35 @@ const ProductDetailPage = () => {
     };
 
     const handleReviewSubmit = async (e) => {
-  e.preventDefault();
-  setLoadingReview(true);
-  try {
-    await api.post(
-      `/products/${productId}/reviews`,
-      { rating, comment },
-      {
-        headers: {
-          Authorization: `Bearer ${userInfo.token}`,
-        },
-      }
-    );
+        e.preventDefault();
+        setLoadingReview(true);
+        try {
+            await api.post(`/products/${productId}/reviews`, { rating, comment });
+            setLoadingReview(false);
+            setRating(5);
+            setComment('');
+            fetchProduct(); // Re-fetch product to show the new review
+        } catch (err) {
+            setErrorReview(err.response?.data?.message || 'Error submitting review.');
+            setLoadingReview(false);
+        }
+    };
 
-    setLoadingReview(false);
-    setRating(5);
-    setComment('');
-    fetchProduct(); // Re-fetch product to show the new review
-  } catch (err) {
-    setErrorReview(err.response?.data?.message || 'Error submitting review.');
-    setLoadingReview(false);
-  }
-};
-    const addToCartHandler = () => {
+    const addToCartHandler = async () => {
         const simpleCustomizations = {};
         for (const key in selectedCustomizations) {
             simpleCustomizations[key] = selectedCustomizations[key].optionName;
         }
 
-        dispatch(addToCart({
-            cartId: `${product._id}-${Date.now()}`,
+        const newItem = {
             product: product._id,
             name: product.name,
             imageUrl: product.imageUrl,
             price: totalPrice,
             selectedCustomizations: simpleCustomizations,
-        }));
+        };
         
+        await dispatch(addItemToCart(newItem));
         navigate('/checkout');
     };
 
