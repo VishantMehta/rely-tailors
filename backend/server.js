@@ -1,3 +1,4 @@
+const path = require('path');
 const dotenv = require('dotenv');
 dotenv.config();
 const express = require('express');
@@ -9,6 +10,8 @@ const productRoutes = require('./routes/productRoutes');
 const measurementRoutes = require('./routes/measurementRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const cartRoutes = require('./routes/cartRoutes');
 
 const app = express();
 
@@ -23,6 +26,9 @@ app.use('/api/products', productRoutes);
 app.use('/api/measurements', measurementRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+app.use('/api/cart', cartRoutes);
 
 const PORT = process.env.PORT || 5000;
 
