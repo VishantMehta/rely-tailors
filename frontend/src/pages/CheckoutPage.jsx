@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import { removeItemFromCart, clearCart } from '../features/cart/cartSlice'; // 1. Import removeItemFromCart
+import { fetchUserCart, removeItemFromCart, clearCart } from '../features/cart/cartSlice';
 import api from '../api/AxiosAPI';
 
 // --- Background Cubes Component ---
@@ -16,12 +16,15 @@ const BackgroundCubes = () => (
 const CheckoutPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { cartItems } = useSelector((state) => state.cart);
+    const { cartItems, loading } = useSelector((state) => state.cart);
     const { userInfo } = useSelector((state) => state.auth);
 
-    // Calculate prices
+    useEffect(() => {
+        dispatch(fetchUserCart());
+    }, [dispatch]);
+
     const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-    const shipping = subtotal > 500 ? 0 : 50; // Example shipping logic
+    const shipping = subtotal > 500 ? 0 : 50;
     const total = subtotal + shipping;
 
     const placeOrderHandler = async () => {
@@ -30,9 +33,9 @@ const CheckoutPage = () => {
                 name: item.name,
                 imageUrl: item.imageUrl,
                 price: item.price,
-                product: item.product,
-                measurements: userInfo.measurements, // Assuming measurements are on user object
-                selectedCustomizations: item.selectedCustomizations,
+                product: item.product._id || item.product, // ensure ID
+                measurements: userInfo.measurements || {}, // safe fallback
+                selectedCustomizations: item.selectedCustomizations || {}, // safe fallback
             }));
 
             const { data } = await api.post('/orders', {
@@ -40,14 +43,19 @@ const CheckoutPage = () => {
                 totalPrice: total,
             });
 
+            // Optional: clear cart on backend (implement endpoint if needed)
+            // await api.put('/cart/clear');
+
+            // Clear Redux cart
             dispatch(clearCart());
+
             navigate(`/orders/${data._id}`);
         } catch (error) {
+            console.error('Order placement failed:', error.response?.data || error.message);
             alert('Could not place order.');
         }
     };
 
-    // 2. Update the remove handler to use the new async thunk
     const removeFromCartHandler = (id) => {
         dispatch(removeItemFromCart(id));
     };
@@ -61,7 +69,11 @@ const CheckoutPage = () => {
                     <p className="text-slate-500 mt-2">Please review your order details below.</p>
                 </div>
 
-                {cartItems.length === 0 ? (
+                {loading ? (
+                    <div className="text-center bg-white p-10 rounded-lg shadow-md" data-aos="fade-up">
+                        <p className="text-slate-500">Loading cart...</p>
+                    </div>
+                ) : cartItems.length === 0 ? (
                     <div className="text-center bg-white p-10 rounded-lg shadow-md" data-aos="fade-up">
                         <p className="text-slate-500">Your cart is empty.</p>
                         <Link to="/products" className="inline-block mt-4 bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors">
@@ -80,15 +92,15 @@ const CheckoutPage = () => {
                                         <div className="flex-1">
                                             <h3 className="font-bold text-lg">{item.name}</h3>
                                             <div className="text-xs text-slate-500 mt-1">
-                                                {Object.entries(item.selectedCustomizations ?? {}).map(([key, value]) => (
-                                                    <p key={key}><span className="font-semibold">{key}:</span> {value}</p>
-                                                ))}
-
+                                                {item.selectedCustomizations &&
+                                                    Object.entries(item.selectedCustomizations).map(([key, value]) => (
+                                                        <p key={key}><span className="font-semibold">{key}:</span> {value}</p>
+                                                    ))
+                                                }
                                             </div>
                                         </div>
                                         <div className="text-right">
                                             <p className="font-semibold text-lg">${item.price.toFixed(2)}</p>
-                                            {/* 3. Update the button's onClick handler */}
                                             <button onClick={() => removeFromCartHandler(item._id)} className="text-red-500 text-xs hover:underline mt-2">Remove</button>
                                         </div>
                                     </div>

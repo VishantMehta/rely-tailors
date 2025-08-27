@@ -39,25 +39,26 @@ const OrderDetailPage = () => {
                     <h2 className="font-marcellus text-2xl mb-6">Order Items</h2>
                     {order.orderItems.map(item => (
                         <div key={item._id} className="flex items-start sm:items-center gap-6 border-b py-6 last:border-b-0">
-                            <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md"/>
+                            <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md" />
                             <div className="flex-1">
                                 <p className="font-bold text-lg">{item.name}</p>
                                 <div className="text-sm text-slate-500 mt-2">
-                                    {Object.entries(item.selectedCustomizations).map(([key, value]) => (
+                                    {Object.entries(item.selectedCustomizations || {}).map(([key, value]) => (
                                         <p key={key}><span className="font-semibold">{key}:</span> {value}</p>
                                     ))}
+
                                 </div>
                             </div>
-                             <p className="font-semibold text-lg ml-auto">${item.price.toFixed(2)}</p>
+                            <p className="font-semibold text-lg ml-auto">${item.price.toFixed(2)}</p>
                         </div>
                     ))}
-                     <div className="flex justify-end mt-8 pt-6 border-t">
+                    <div className="flex justify-end mt-8 pt-6 border-t">
                         <div className="w-full max-w-xs space-y-2">
-                             <div className="flex justify-between">
+                            <div className="flex justify-between">
                                 <span>Subtotal</span>
                                 <span className="font-semibold">${order.totalPrice.toFixed(2)}</span>
                             </div>
-                             <div className="flex justify-between">
+                            <div className="flex justify-between">
                                 <span>Shipping</span>
                                 <span className="font-semibold">Free</span>
                             </div>

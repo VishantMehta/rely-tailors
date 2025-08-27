@@ -17,8 +17,8 @@ const orderSchema = mongoose.Schema(
                     required: true,
                     ref: 'Product',
                 },
-                measurements: { type: Object, required: true },
-                selectedCustomizations: { type: Object, required: true }, // e.g., { "Fabric": "Linen" }
+                measurements: { type: Object, required: false },
+                selectedCustomizations: { type: Object, required: false }, // e.g., { "Fabric": "Linen" }
             },
         ],
         totalPrice: {

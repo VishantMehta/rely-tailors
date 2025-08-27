@@ -1,5 +1,5 @@
 const Order = require('../models/Order.js');
-
+const User = require('../models/User.js');
 /**
  * @desc    Create a new order
  * @route   POST /api/orders
@@ -21,7 +21,11 @@ const addOrderItems = async (req, res) => {
         });
 
         const createdOrder = await order.save();
-
+        const user = await User.findById(req.user._id);
+        if (user) {
+            user.cart = [];
+            await user.save();
+        }
         res.status(201).json(createdOrder);
 
     } catch (error) {
