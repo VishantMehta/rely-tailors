@@ -46,7 +46,7 @@ const CheckoutPage = () => {
             alert('Could not place order.');
         }
     };
-    
+
     // 2. Update the remove handler to use the new async thunk
     const removeFromCartHandler = (id) => {
         dispatch(removeItemFromCart(id));
@@ -76,13 +76,14 @@ const CheckoutPage = () => {
                             <div className="space-y-6">
                                 {cartItems.map(item => (
                                     <div key={item._id} className="flex items-start gap-6 border-b pb-6">
-                                        <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md"/>
+                                        <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md" />
                                         <div className="flex-1">
                                             <h3 className="font-bold text-lg">{item.name}</h3>
                                             <div className="text-xs text-slate-500 mt-1">
-                                                {Object.entries(item.selectedCustomizations).map(([key, value]) => (
+                                                {Object.entries(item.selectedCustomizations ?? {}).map(([key, value]) => (
                                                     <p key={key}><span className="font-semibold">{key}:</span> {value}</p>
                                                 ))}
+
                                             </div>
                                         </div>
                                         <div className="text-right">
@@ -104,7 +105,7 @@ const CheckoutPage = () => {
                                         <span>Subtotal</span>
                                         <span className="font-semibold">${subtotal.toFixed(2)}</span>
                                     </div>
-                                     <div className="flex justify-between">
+                                    <div className="flex justify-between">
                                         <span>Shipping</span>
                                         <span className="font-semibold">{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
                                     </div>
@@ -113,7 +114,7 @@ const CheckoutPage = () => {
                                         <span>${total.toFixed(2)}</span>
                                     </div>
                                 </div>
-                                <button 
+                                <button
                                     onClick={placeOrderHandler}
                                     className="w-full mt-8 bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest"
                                 >

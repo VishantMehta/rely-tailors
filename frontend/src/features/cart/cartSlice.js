@@ -1,16 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/AxiosAPI'; // Your configured Axios instance
+import api from '../../api/AxiosAPI'; // Axios instance with token interceptor
 
-// --- Async Thunks for API Calls ---
+// --- Async Thunks ---
 
 export const fetchUserCart = createAsyncThunk(
   'cart/fetchUserCart',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get('/cart');
+      const { data } = await api.get('/cart'); // token auto-injected by interceptor
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -22,7 +22,7 @@ export const addItemToCart = createAsyncThunk(
       const { data } = await api.post('/cart', newItem);
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -34,12 +34,12 @@ export const removeItemFromCart = createAsyncThunk(
       const { data } = await api.delete(`/cart/${cartItemId}`);
       return data;
     } catch (error) {
-      return rejectWithValue(error.response.data.message);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
 
-// --- Cart Slice Definition ---
+// --- Slice ---
 
 const initialState = {
   cartItems: [],
@@ -63,7 +63,7 @@ const cartSlice = createSlice({
       })
       .addCase(fetchUserCart.fulfilled, (state, action) => {
         state.loading = false;
-        state.cartItems = action.payload;
+        state.cartItems = action.payload || [];
       })
       .addCase(fetchUserCart.rejected, (state, action) => {
         state.loading = false;
@@ -71,11 +71,11 @@ const cartSlice = createSlice({
       })
       // Add Item
       .addCase(addItemToCart.fulfilled, (state, action) => {
-        state.cartItems = action.payload; // The API returns the full updated cart
+        state.cartItems = action.payload || [];
       })
       // Remove Item
       .addCase(removeItemFromCart.fulfilled, (state, action) => {
-        state.cartItems = action.payload; // The API returns the full updated cart
+        state.cartItems = action.payload || [];
       });
   },
 });

@@ -4,14 +4,14 @@ const bcrypt = require('bcryptjs');
 const cartItemSchema = mongoose.Schema({
     name: { type: String, required: true },
     imageUrl: { type: String, required: true },
-    price: { type: Number, required: true }, // Final price for this item
+    price: { type: Number, required: true },
     product: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
         ref: 'Product',
     },
-    measurements: { type: Object, required: true },
-    selectedCustomizations: { type: Object, required: true },
+    measurements: { type: Object, required: false },
+    selectedCustomizations: { type: Object, required: false },
 });
 
 const userSchema = mongoose.Schema(
