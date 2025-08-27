@@ -3,31 +3,8 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
 import { addToCart } from '../features/cart/cartSlice';
-import { insta2 } from '../assets'; // Import the new suit image
-
-// --- Mock Product Data ---
-const mockProduct = {
-    _id: '1',
-    name: 'The Signature Bespoke Suit',
-    description: 'A masterpiece of tailoring, our Signature Bespoke Suit is crafted from the finest Italian wool. Each suit is fully canvassed and meticulously shaped to your body for a flawless silhouette and unparalleled comfort. Perfect for making a lasting impression at any formal event.',
-    basePrice: 850.00,
-    category: 'Suits',
-    imageUrl: 'https://images.unsplash.com/photo-1523282366825-6c71b1f35234?q=80&w=1887&auto=format&fit=crop',
-    images: [
-        'https://images.unsplash.com/photo-1523282366825-6c71b1f35234?q=80&w=1887&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1594938384914-26278a2e2604?q=80&w=1887&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1593030103066-0515674563a4?q=80&w=1887&auto=format&fit=crop',
-    ],
-    customizations: [
-        { name: 'Fabric', options: [{ optionName: 'Italian Wool', additionalPrice: 0 }, { optionName: 'Cashmere Blend', additionalPrice: 150 }, { optionName: 'Summer Linen', additionalPrice: 50 }] },
-        { name: 'Lapel Style', options: [{ optionName: 'Notch Lapel', additionalPrice: 0 }, { optionName: 'Peak Lapel', additionalPrice: 25 }, { optionName: 'Shawl Lapel', additionalPrice: 40 }] },
-        { name: 'Button Stance', options: [{ optionName: 'Single Button', additionalPrice: 0 }, { optionName: 'Two Buttons', additionalPrice: 0 }, { optionName: 'Double Breasted', additionalPrice: 75 }] }
-    ],
-    reviews: [
-        { user: 'John D.', rating: 5, comment: 'Absolutely phenomenal fit and quality. Felt like a new man at the wedding.', image: 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=1887&auto=format&fit=crop' },
-        { user: 'Michael B.', rating: 4, comment: 'Great suit, though the process took a bit longer than expected. Worth the wait!', image: null },
-    ]
-};
+import { insta2 } from '../assets';
+import api from '../api/AxiosAPI';
 
 // --- Helper Components for the Page ---
 
@@ -71,7 +48,7 @@ const StarRating = ({ rating, setRating }) => {
                 const ratingValue = index + 1;
                 return (
                     <button type="button" key={ratingValue} onClick={() => setRating ? setRating(ratingValue) : null} className={setRating ? 'cursor-pointer' : ''}>
-                        <svg className={`w-6 h-6 ${ratingValue <= rating ? 'text-amber-500' : 'text-slate-300'}`} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
+                        <svg className={`w-5 h-5 ${ratingValue <= rating ? 'text-amber-500' : 'text-slate-300'}`} fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>
                     </button>
                 );
             })}
@@ -97,23 +74,25 @@ const ProductDetailPage = () => {
     // Review Form State
     const [rating, setRating] = useState(5);
     const [comment, setComment] = useState('');
-    const [reviewImages, setReviewImages] = useState([]);
+    const [loadingReview, setLoadingReview] = useState(false);
+    const [errorReview, setErrorReview] = useState('');
     
     const { userInfo } = useSelector((state) => state.auth);
 
+    const fetchProduct = async () => {
+        try {
+            setLoading(true);
+            const { data } = await axios.get(`/api/products/${productId}`);
+            setProduct(data);
+            setTotalPrice(data.basePrice);
+            setLoading(false);
+        } catch (err) {
+            setError('Product not found.');
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchProduct = async () => {
-            try {
-                setLoading(true);
-                const { data } = await axios.get(`/api/products/${productId}`);
-                setProduct(data);
-                setTotalPrice(data.basePrice);
-                setLoading(false);
-            } catch (err) {
-                setError('Product not found.');
-                setLoading(false);
-            }
-        };
         fetchProduct();
     }, [productId]);
 
@@ -125,32 +104,29 @@ const ProductDetailPage = () => {
         setTotalPrice(newTotal);
     };
 
-    const handleReviewImageChange = (e) => {
-        if (e.target.files) {
-            const filesArray = Array.from(e.target.files).map(file => URL.createObjectURL(file));
-            setReviewImages(prevImages => prevImages.concat(filesArray));
-        }
-    };
+    const handleReviewSubmit = async (e) => {
+  e.preventDefault();
+  setLoadingReview(true);
+  try {
+    await api.post(
+      `/products/${productId}/reviews`,
+      { rating, comment },
+      {
+        headers: {
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      }
+    );
 
-    const handleReviewSubmit = (e) => {
-        e.preventDefault();
-        const newReview = {
-            user: userInfo ? userInfo.name : 'Anonymous',
-            rating,
-            comment,
-            image: reviewImages.length > 0 ? reviewImages[0] : null,
-        };
-
-        setProduct(prevProduct => ({
-            ...prevProduct,
-            reviews: [newReview, ...(prevProduct.reviews || [])]
-        }));
-
-        setRating(5);
-        setComment('');
-        setReviewImages([]);
-    };
-
+    setLoadingReview(false);
+    setRating(5);
+    setComment('');
+    fetchProduct(); // Re-fetch product to show the new review
+  } catch (err) {
+    setErrorReview(err.response?.data?.message || 'Error submitting review.');
+    setLoadingReview(false);
+  }
+};
     const addToCartHandler = () => {
         const simpleCustomizations = {};
         for (const key in selectedCustomizations) {
@@ -173,6 +149,8 @@ const ProductDetailPage = () => {
     if (error) return <div className="text-center py-20 text-red-500">{error}</div>;
     if (!product) return null;
 
+    const hasUserReviewed = userInfo && (product.reviews || []).some(r => r.user === userInfo._id);
+
     return (
         <div className="bg-[#f2f2f2] font-montserrat">
             <div className="container mx-auto px-4 py-12">
@@ -187,6 +165,10 @@ const ProductDetailPage = () => {
                         <div data-aos="fade-left">
                             <p className="text-sm text-slate-500 uppercase tracking-widest">{product.category}</p>
                             <h1 className="font-marcellus text-4xl md:text-5xl text-slate-900 mt-2">{product.name}</h1>
+                            <div className="flex items-center gap-2 my-4">
+                                <StarRating rating={product.rating} />
+                                <span className="text-slate-500 text-sm">({product.numReviews} reviews)</span>
+                            </div>
                             <p className="text-2xl text-slate-700 my-4">${totalPrice.toFixed(2)}</p>
                         </div>
                         
@@ -212,7 +194,7 @@ const ProductDetailPage = () => {
                 <div className="mt-24" data-aos="fade-up">
                     <div className="border-b border-slate-300 flex space-x-8">
                         <button onClick={() => setActiveTab('description')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'description' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Description</button>
-                        <button onClick={() => setActiveTab('reviews')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'reviews' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Reviews ({(product.reviews || []).length})</button>
+                        <button onClick={() => setActiveTab('reviews')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'reviews' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Reviews ({product.numReviews})</button>
                         <button onClick={() => setActiveTab('sizing')} className={`font-marcellus text-xl pb-2 transition-colors ${activeTab === 'sizing' ? 'border-b-2 border-slate-900 text-slate-900' : 'text-slate-500 hover:text-slate-800'}`}>Size & Fit</button>
                     </div>
 
@@ -220,41 +202,50 @@ const ProductDetailPage = () => {
                         {activeTab === 'description' && (
                             <div className="prose max-w-none text-slate-600">
                                 <p>{product.description}</p>
-                                <p>Our commitment to excellence ensures each garment is not just worn, but experienced. We use traditional techniques passed down through generations, combined with modern precision to deliver a product that is truly one-of-a-kind.</p>
                             </div>
                         )}
                         {activeTab === 'reviews' && (
                             <div>
-                                {(product.reviews || []).map((review, index) => (
-                                    <div key={index} className="border-b border-slate-200 py-6 flex gap-6">
-                                        <img src={review.image || 'https://placehold.co/100x100/f2f2f2/334155?text=Review'} alt={review.user} className="w-16 h-16 rounded-full object-cover"/>
-                                        <div>
+                                {(product.reviews || []).length === 0 && <p>No reviews yet.</p>}
+                                {(product.reviews || []).map((review) => (
+                                    <div key={review._id} className="border-b border-slate-200 py-6">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center font-bold">{review.name.charAt(0)}</div>
+                                            <div>
+                                                <p className="font-bold">{review.name}</p>
+                                                <p className="text-xs text-slate-500">{new Date(review.createdAt).toLocaleDateString()}</p>
+                                            </div>
+                                        </div>
+                                        <div className="mt-4 pl-16">
                                             <StarRating rating={review.rating} />
-                                            <p className="font-bold mt-2">{review.user}</p>
-                                            <p className="text-slate-600 mt-1">{review.comment}</p>
+                                            <p className="text-slate-600 mt-2">{review.comment}</p>
                                         </div>
                                     </div>
                                 ))}
                                 <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
                                     <h3 className="font-marcellus text-2xl mb-4">Write a Review</h3>
-                                    <form onSubmit={handleReviewSubmit}>
-                                        <div className="mb-4">
-                                            <label className="block text-sm font-bold mb-2">Your Rating</label>
-                                            <StarRating rating={rating} setRating={setRating} />
-                                        </div>
-                                        <div className="mb-4">
-                                            <label htmlFor="comment" className="block text-sm font-bold mb-2">Your Review</label>
-                                            <textarea id="comment" value={comment} onChange={(e) => setComment(e.target.value)} rows="4" className="w-full p-3 border border-slate-300 rounded-md" placeholder="Share your experience..."></textarea>
-                                        </div>
-                                        <div className="mb-4">
-                                            <label className="block text-sm font-bold mb-2">Upload Photos</label>
-                                            <input type="file" multiple onChange={handleReviewImageChange} className="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"/>
-                                            <div className="mt-4 flex gap-4">
-                                                {reviewImages.map((image, index) => <img key={index} src={image} alt="Review upload preview" className="w-20 h-20 rounded-md object-cover"/>)}
-                                            </div>
-                                        </div>
-                                        <button type="submit" className="bg-slate-900 text-white font-bold py-2 px-6 rounded-md hover:bg-slate-800 transition-colors">Submit Review</button>
-                                    </form>
+                                    {userInfo ? (
+                                        hasUserReviewed ? (
+                                            <p className="text-blue-600">You have already reviewed this product.</p>
+                                        ) : (
+                                            <form onSubmit={handleReviewSubmit}>
+                                                {errorReview && <p className="text-red-500 mb-4">{errorReview}</p>}
+                                                <div className="mb-4">
+                                                    <label className="block text-sm font-bold mb-2">Your Rating</label>
+                                                    <StarRating rating={rating} setRating={setRating} />
+                                                </div>
+                                                <div className="mb-4">
+                                                    <label htmlFor="comment" className="block text-sm font-bold mb-2">Your Review</label>
+                                                    <textarea id="comment" value={comment} onChange={(e) => setComment(e.target.value)} rows="4" className="w-full p-3 border border-slate-300 rounded-md" placeholder="Share your experience..."></textarea>
+                                                </div>
+                                                <button type="submit" disabled={loadingReview} className="bg-slate-900 text-white font-bold py-2 px-6 rounded-md hover:bg-slate-800 transition-colors disabled:opacity-50">
+                                                    {loadingReview ? 'Submitting...' : 'Submit Review'}
+                                                </button>
+                                            </form>
+                                        )
+                                    ) : (
+                                        <p>Please <Link to="/login" className="font-bold underline hover:text-slate-600">sign in</Link> to write a review.</p>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -263,15 +254,7 @@ const ProductDetailPage = () => {
                                 <p>For a truly bespoke fit, we tailor each garment to your unique profile. Please add or update your measurements in your dashboard.</p>
                                 <h4 className="font-bold mt-4">Key Measurements We Use:</h4>
                                 <ul className="grid grid-cols-2 gap-x-8">
-                                    <li>Neck</li>
-                                    <li>Chest</li>
-                                    <li>Waist</li>
-                                    <li>Hips</li>
-                                    <li>Sleeve Length</li>
-                                    <li>Shoulder Width</li>
-                                    <li>Shirt Length</li>
-                                    <li>Trouser Length</li>
-                                    <li>Inseam</li>
+                                    <li>Neck</li><li>Chest</li><li>Waist</li><li>Hips</li><li>Sleeve Length</li><li>Shoulder Width</li><li>Shirt Length</li><li>Trouser Length</li><li>Inseam</li>
                                 </ul>
                                 <Link to="/profile/measurements" className="inline-block mt-6 bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
                                     Manage My Measurements
