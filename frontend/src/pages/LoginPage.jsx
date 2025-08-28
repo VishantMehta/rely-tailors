@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import { authRequest, authSuccess, authFail } from '../features/auth/authSlice';
 import { fetchUserCart } from '../features/cart/cartSlice';
+import api from '../api/AxiosAPI';
 // A new component for the animated background cubes
 const BackgroundCubes = () => (
   <div className="absolute inset-0 z-0 overflow-hidden">
@@ -44,23 +44,21 @@ const LoginPage = () => {
     e.preventDefault();
     dispatch(authRequest());
     try {
-      const config = {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      };
-      const { data } = await axios.post(
-        '/api/auth/login',
-        { email, password },
-        config
-      );
+      const { data } = await api.post('/auth/login', { email, password });
       dispatch(authSuccess(data));
       dispatch(fetchUserCart());
       navigate('/');
     } catch (err) {
-      dispatch(authFail(err.response && err.response.data.message ? err.response.data.message : err.message));
+      dispatch(
+        authFail(
+          err.response && err.response.data.message
+            ? err.response.data.message
+            : err.message
+        )
+      );
     }
   };
+
 
   return (
     <div className="relative min-h-screen w-full bg-[#f2f2f2] font-montserrat text-slate-800 flex items-center justify-center p-4">

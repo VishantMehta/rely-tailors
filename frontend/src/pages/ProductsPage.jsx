@@ -1,50 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import {
   productListRequest,
   productListSuccess,
   productListFail,
 } from '../features/products/productSlice';
 import ProductCard from '../components/ProductCard';
-import suit from '../assets/suit.jpg';
+import api from '../api/AxiosAPI';
 
-// --- Category Icons ---
 const SuitIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 12a4 4 0 10-8 0 4 4 0 008 0z" />
   </svg>
 );
 const BlazerIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5.982 11.038L12 5.02l6.018 6.018-6.018 6.018-6.018-6.018z" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 21V5" />
   </svg>
 );
 const ShirtIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 16v-5a6 6 0 00-6-6v0a6 6 0 00-6 6v5" />
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 16H3" />
   </svg>
 );
 const AccessoriesIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.494v1.026a2 2 0 01-2 2h-2.236a2 2 0 01-2-2v-1.026a2 2 0 012-2h2.236a2 2 0 012 2z" />
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4" />
   </svg>
 );
 const AllIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
   </svg>
 );
 const KurtaIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.5L15.232 5.232z" />
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15.232 5.232l3.536 3.536" />
   </svg>
 );
 const WeddingIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682" />
   </svg>
 );
 
@@ -61,33 +57,37 @@ const ProductsPage = () => {
   const fetchProducts = async (keywordParam = '', pageParam = 1, categoryParam = '') => {
     try {
       dispatch(productListRequest());
-      const { data } = await axios.get(
-        `/api/products?keyword=${keywordParam}&page=${pageParam}&category=${categoryParam}`
-      );
-      dispatch(productListSuccess(data));
+
+      const { data } = await api.get(`/products?keyword=${keywordParam}&page=${pageParam}&category=${categoryParam}`);
+
+      // Ensure backend response matches expected shape
+      const payload = {
+        products: Array.isArray(data.products) ? data.products : data || [],
+        page: data.page || 1,
+        pages: data.pages || 1,
+      };
+
+      dispatch(productListSuccess(payload));
     } catch (err) {
-      dispatch(
-        productListFail(err.response?.data?.message || err.message)
-      );
+      dispatch(productListFail(err.response?.data?.message || err.message));
     }
   };
 
-
   useEffect(() => {
     fetchProducts(keyword, page);
-  }, [dispatch, keyword, page]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyword, page]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setKeyword(searchInput); // triggers fetch
+    setKeyword(searchInput);
   };
 
   const handleFilter = (category) => {
     setActiveCategory(category);
     const categoryParam = category === 'All' ? '' : category;
-    fetchProducts(keyword, 1, categoryParam); // reset to page 1
+    fetchProducts(keyword, 1, categoryParam);
   };
-
 
   const getCategoryIcon = (category) => {
     switch (category) {
@@ -101,53 +101,42 @@ const ProductsPage = () => {
     }
   };
 
-  // Category filter applied on top of search results
   const filteredProducts =
     activeCategory === 'All'
-      ? products
-      : products.filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase());
+      ? products || []
+      : (products || []).filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase());
 
   return (
-    <div className="bg-[#f2f2f2] font-montserrat">
-      {/* --- Banner Section --- */}
-      <div className="relative bg-slate-800 text-white" data-aos="fade-down">
-        <img
-          src={suit}
-          alt="Man in a stylish suit"
-          className="absolute inset-0 w-full h-full object-cover opacity-30"
-        />
-        <div className="relative container mx-auto px-6 py-32 text-center">
-          <p className="text-sm text-slate-300">Home - Products</p>
-          <h1 className="font-marcellus text-5xl text-white mt-2">All Products</h1>
+    <div className="bg-[#f9f9f9] min-h-screen font-montserrat">
+      <div className="container mx-auto px-6 py-10">
+        {/* --- Heading & Search --- */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+          <h1 className="font-marcellus text-3xl text-slate-900">Shop Our Collection</h1>
+          <form onSubmit={handleSearch} className="flex gap-2 w-full md:w-auto">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              placeholder="Search products..."
+              className="border rounded-md px-4 py-2 w-full md:w-64 shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            />
+            <button
+              type="submit"
+              className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-700 transition"
+            >
+              Search
+            </button>
+          </form>
         </div>
-      </div>
-
-      <div className="container mx-auto px-6 py-12">
-        {/* --- Search Box --- */}
-        <form onSubmit={handleSearch} className="flex justify-center gap-2 mb-8">
-          <input
-            type="text"
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            placeholder="Search products..."
-            className="border rounded-md px-4 py-2 w-64"
-          />
-          <button type="submit" className="bg-slate-900 text-white px-4 py-2 rounded-md">
-            Search
-          </button>
-        </form>
 
         {/* --- Categories --- */}
-        <div data-aos="fade-up">
-          <h2 className="font-marcellus text-3xl text-slate-900 mb-6 text-center">
-            Product Categories
-          </h2>
-          <div className="flex flex-wrap gap-4 justify-center">
+        <div className="mb-10">
+          <div className="flex flex-wrap gap-3 justify-center md:justify-start">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => handleFilter(category)}
-                className={`flex items-center gap-2 py-2 px-4 rounded-md text-sm font-semibold transition-colors duration-300 ${activeCategory === category
+                className={`flex items-center gap-2 py-2 px-4 rounded-full text-sm font-medium shadow-sm transition-colors duration-300 ${activeCategory === category
                   ? 'bg-slate-900 text-white'
                   : 'bg-white text-slate-700 hover:bg-slate-200'
                   }`}
@@ -160,7 +149,7 @@ const ProductsPage = () => {
         </div>
 
         {/* --- Products Grid --- */}
-        <div className="mt-12">
+        <div>
           {loading ? (
             <div className="text-center text-slate-500">Loading products...</div>
           ) : error ? (
@@ -169,7 +158,7 @@ const ProductsPage = () => {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                 {filteredProducts.map((product, index) => (
-                  <div key={product._id} data-aos="fade-up" data-aos-delay={index * 100}>
+                  <div key={product._id || index} data-aos="fade-up" data-aos-delay={index * 100}>
                     <ProductCard product={product} />
                   </div>
                 ))}
@@ -177,40 +166,37 @@ const ProductsPage = () => {
 
               {/* --- Pagination --- */}
               {pages > 1 && (
-                <div className="flex justify-center mt-8 gap-2">
-                  {/* Previous */}
+                <div className="flex justify-center mt-10 gap-2">
                   <button
                     disabled={page === 1}
                     onClick={() => fetchProducts(keyword, page - 1)}
                     className={`px-4 py-2 rounded-md ${page === 1
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-white text-slate-700 hover:bg-slate-200'
+                      : 'bg-white text-slate-700 hover:bg-slate-200 shadow-sm'
                       }`}
                   >
                     Previous
                   </button>
 
-                  {/* Page numbers */}
                   {[...Array(pages).keys()].map((x) => (
                     <button
                       key={x + 1}
                       onClick={() => fetchProducts(keyword, x + 1)}
                       className={`px-4 py-2 rounded-md ${page === x + 1
                         ? 'bg-slate-900 text-white'
-                        : 'bg-white text-slate-700 hover:bg-slate-200'
+                        : 'bg-white text-slate-700 hover:bg-slate-200 shadow-sm'
                         }`}
                     >
                       {x + 1}
                     </button>
                   ))}
 
-                  {/* Next */}
                   <button
                     disabled={page === pages}
                     onClick={() => fetchProducts(keyword, page + 1)}
                     className={`px-4 py-2 rounded-md ${page === pages
                       ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      : 'bg-white text-slate-700 hover:bg-slate-200'
+                      : 'bg-white text-slate-700 hover:bg-slate-200 shadow-sm'
                       }`}
                   >
                     Next
