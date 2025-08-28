@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { mensuitImage, blazerImage, kurtaImage, poloImage, indowesternImage, shirt, wedding, formal, linen, cashmere, nehru, linensuit, shirts, polot, insta1, insta2, insta3, insta4, rely } from '../assets';
 import weddingVideo from '../assets/weddingvideo.mp4';
+import tabish1 from '../assets/tabish1.jpeg';
 
 // Mock data can live outside the component
 const categories = [
@@ -44,6 +45,7 @@ const categories = [
     image: shirt,
     description: 'Crisp, custom-fitted shirts designed for unparalleled comfort and elegance.',
   },
+  
 ];
 
 const gridItems = [
@@ -187,7 +189,7 @@ const instagramPosts = [
   },
   { 
     _id: '6', 
-    image: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?q=80&w=1888&auto=format&fit=crop' 
+    image: tabish1
     // no link
   },
 ];
@@ -472,7 +474,7 @@ const HomePage = () => {
                 </a>
             ))}
         </div>
-         <a href="#" className="inline-block mt-12 bg-slate-900 text-white font-bold py-3 px-8 rounded-sm hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
+         <a href="https://www.instagram.com/reliance_tailor_s?igsh=c3JsZWtxY25jM3Zr" className="inline-block mt-12 bg-slate-900 text-white font-bold py-3 px-8 rounded-sm hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest">
             Follow us on Instagram
         </a>
       </div>

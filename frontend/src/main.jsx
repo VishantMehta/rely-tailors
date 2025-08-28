@@ -24,9 +24,9 @@ import CheckoutPage from './pages/CheckoutPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AdminOrderListPage from './pages/AdminOrderListPage';
-
+import AboutPage from './pages/AboutPage'; // <-- Import the new page
 import AdminUserListPage from './pages/AdminUserListPage'; // <-- Import the new page
-
+import ContactPage from './pages/ContactPage';
 
 // Define your routes
 const router = createBrowserRouter([
@@ -40,7 +40,8 @@ const router = createBrowserRouter([
       { path: 'register', element: <RegisterPage /> },
       { path: 'products', element: <ProductsPage /> },
       { path: 'products/:id', element: <ProductDetailPage /> },
-
+      { path: 'about', element: <AboutPage /> }, // <-- Add the new route
+      { path: 'contact', element: <ContactPage /> },
       // --- Private Routes (for logged-in users) ---
       {
         path: '',
