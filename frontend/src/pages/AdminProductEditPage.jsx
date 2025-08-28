@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux'; // Import useSelector
 import axios from 'axios';
 import api from '../api/AxiosAPI';
+
 const AdminProductEditPage = () => {
     const { id: productId } = useParams();
     const navigate = useNavigate();
 
+    // Form State
     const [name, setName] = useState('');
     const [basePrice, setBasePrice] = useState(0);
     const [imageUrl, setImageUrl] = useState('');
     const [category, setCategory] = useState('');
     const [description, setDescription] = useState('');
     const [customizations, setCustomizations] = useState([]);
-
+    
+    // Status State
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [uploading, setUploading] = useState(false);
     const [loadingUpdate, setLoadingUpdate] = useState(false);
+
+    const { userInfo } = useSelector((state) => state.auth);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -37,6 +44,27 @@ const AdminProductEditPage = () => {
         fetchProduct();
     }, [productId]);
 
+    const uploadFileHandler = async (e) => {
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append('image', file);
+        setUploading(true);
+
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            };
+            const { data } = await api.post('/upload', formData, config);
+            setImageUrl(data.image);
+            setUploading(false);
+        } catch (error) {
+            console.error(error);
+            setUploading(false);
+        }
+    };
+
     const submitHandler = async (e) => {
         e.preventDefault();
         setLoadingUpdate(true);
@@ -57,7 +85,7 @@ const AdminProductEditPage = () => {
     const addCustomization = () => {
         setCustomizations([...customizations, { name: '', options: [] }]);
     };
-
+    
     const handleCustomizationNameChange = (index, value) => {
         const newCustomizations = [...customizations];
         newCustomizations[index].name = value;
@@ -75,13 +103,13 @@ const AdminProductEditPage = () => {
         newCustomizations[custIndex].options[optIndex][field] = value;
         setCustomizations(newCustomizations);
     };
-
+    
     const removeOption = (custIndex, optIndex) => {
         const newCustomizations = [...customizations];
         newCustomizations[custIndex].options.splice(optIndex, 1);
         setCustomizations(newCustomizations);
     };
-
+    
     const removeCustomization = (custIndex) => {
         const newCustomizations = [...customizations];
         newCustomizations.splice(custIndex, 1);
@@ -115,8 +143,10 @@ const AdminProductEditPage = () => {
                                 <div className="md:col-span-2">
                                     <label htmlFor="imageUrl" className="block mb-2 text-sm font-bold text-slate-700">Image URL</label>
                                     <input type="text" id="imageUrl" value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" />
+                                    <input type="file" onChange={uploadFileHandler} className="mt-2 w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"/>
+                                    {uploading && <p className="text-sm text-slate-500 mt-2">Uploading...</p>}
                                 </div>
-                                <div className="md:col-span-2">
+                                 <div className="md:col-span-2">
                                     <label htmlFor="category" className="block mb-2 text-sm font-bold text-slate-700">Category</label>
                                     <input type="text" id="category" value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-2 border border-slate-300 rounded-md" />
                                 </div>
@@ -132,9 +162,9 @@ const AdminProductEditPage = () => {
                                 {customizations.map((cust, custIndex) => (
                                     <div key={custIndex} className="bg-slate-50 p-4 rounded-md mb-4 border">
                                         <div className="flex justify-between items-center mb-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Customization Name (e.g., Fabric)"
+                                            <input 
+                                                type="text" 
+                                                placeholder="Customization Name (e.g., Fabric)" 
                                                 value={cust.name}
                                                 onChange={(e) => handleCustomizationNameChange(custIndex, e.target.value)}
                                                 className="w-full p-2 border border-slate-300 rounded-md font-semibold"
