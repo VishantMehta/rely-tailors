@@ -17,10 +17,10 @@ connectDB();
 
 const app = express();
 
-//CORS config for deployment + development both
+//CORS config for both development and production
 const whitelist = [
     'http://localhost:5173', //local frontend URL
-    'https://rely-tailors.vercel.app', //deployed frontend url
+    'https://rely-tailors.vercel.app', //deployed frontend URL
 ];
 
 const corsOptions = {
@@ -32,7 +32,6 @@ const corsOptions = {
         }
     },
 };
-
 app.use(cors(corsOptions));
 
 app.use(express.json());
@@ -45,20 +44,10 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/cart', cartRoutes);
 
-//for deployment
-if (process.env.NODE_ENV === 'production') {
-    app.use(express.static(path.join(__dirname, '/frontend/dist')));
-
-    //for any route that is not an API route, send the index.html file
-    app.get('*', (req, res) =>
-        res.sendFile(path.resolve(__dirname, 'frontend', 'dist', 'index.html'))
-    );
-} else {
-    app.get('/', (req, res) => {
-        res.send('API is running...');
-    });
-}
-// --- END DEPLOYMENT ---
+//for testing
+app.get('/', (req, res) => {
+    res.send('API is running successfully...');
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Backend server running on port ${PORT}`));
