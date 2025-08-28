@@ -8,6 +8,7 @@ import {
 import ProductCard from '../components/ProductCard';
 import api from '../api/AxiosAPI';
 
+// --- Category Icons ---
 const SuitIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 12a4 4 0 10-8 0 4 4 0 008 0z" />
@@ -58,13 +59,15 @@ const ProductsPage = () => {
     try {
       dispatch(productListRequest());
 
-      const { data } = await api.get(`/products?keyword=${keywordParam}&page=${pageParam}&category=${categoryParam}`);
+      const { data } = await api.get(
+        `/products?keyword=${keywordParam}&page=${pageParam}&category=${categoryParam}`
+      );
 
-      // Ensure backend response matches expected shape
+      // ✅ Always enforce products as array
       const payload = {
-        products: Array.isArray(data.products) ? data.products : data || [],
-        page: data.page || 1,
-        pages: data.pages || 1,
+        products: Array.isArray(data?.products) ? data.products : [],
+        page: data?.page || 1,
+        pages: data?.pages || 1,
       };
 
       dispatch(productListSuccess(payload));
@@ -104,7 +107,9 @@ const ProductsPage = () => {
   const filteredProducts =
     activeCategory === 'All'
       ? products || []
-      : (products || []).filter((p) => p.category.toLowerCase() === activeCategory.toLowerCase());
+      : (products || []).filter(
+        (p) => p.category?.toLowerCase() === activeCategory.toLowerCase()
+      );
 
   return (
     <div className="bg-[#f9f9f9] min-h-screen font-montserrat">
@@ -156,13 +161,21 @@ const ProductsPage = () => {
             <div className="bg-red-100 text-red-700 p-4 rounded text-center">{error}</div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                {filteredProducts.map((product, index) => (
-                  <div key={product._id || index} data-aos="fade-up" data-aos-delay={index * 100}>
-                    <ProductCard product={product} />
-                  </div>
-                ))}
-              </div>
+              {Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                  {filteredProducts.map((product, index) => (
+                    <div
+                      key={product._id || index}
+                      data-aos="fade-up"
+                      data-aos-delay={index * 100}
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-slate-500">No products found.</p>
+              )}
 
               {/* --- Pagination --- */}
               {pages > 1 && (

@@ -17,22 +17,8 @@ connectDB();
 
 const app = express();
 
-//CORS config for both development and production
-const whitelist = [
-    'http://localhost:5173', //local frontend URL
-    'https://rely-tailors.vercel.app', //deployed frontend URL
-];
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-};
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.json());
 

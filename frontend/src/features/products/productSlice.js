@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  products: [],
+  products: [],     // product list
+  product: null,    // single product
   loading: false,
   error: null,
   page: 1,
@@ -12,13 +13,16 @@ export const productSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
+    // --- Product List ---
     productListRequest: (state) => {
       state.loading = true;
       state.error = null;
     },
     productListSuccess: (state, action) => {
       state.loading = false;
-      state.products = action.payload.products; // new API response
+      state.products = Array.isArray(action.payload.products)
+        ? action.payload.products
+        : []; // ✅ safe array
       state.page = action.payload.page;
       state.pages = action.payload.pages;
     },
@@ -26,8 +30,30 @@ export const productSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+
+    // --- Product Details ---
+    productDetailsRequest: (state) => {
+      state.loading = true;
+      state.error = null;
+    },
+    productDetailsSuccess: (state, action) => {
+      state.loading = false;
+      state.product = action.payload;
+    },
+    productDetailsFail: (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    },
   },
 });
 
-export const { productListRequest, productListSuccess, productListFail } = productSlice.actions;
+export const {
+  productListRequest,
+  productListSuccess,
+  productListFail,
+  productDetailsRequest,
+  productDetailsSuccess,
+  productDetailsFail,
+} = productSlice.actions;
+
 export default productSlice.reducer;
