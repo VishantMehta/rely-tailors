@@ -20,7 +20,7 @@ const app = express();
 //CORS config for deployment + development both
 const whitelist = [
     'http://localhost:5173', //local frontend URL
-    'https://your-frontend-url.vercel.app', //deployed frontend url
+    'https://rely-tailors.vercel.app', //deployed frontend url
 ];
 
 const corsOptions = {
