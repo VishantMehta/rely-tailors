@@ -56,6 +56,19 @@ const AdminOrderListPage = () => {
         }));
     };
 
+    // Format timestamp function - fixed to show both date and time clearly
+    const formatTimestamp = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+    };
+
     return (
         <div className="bg-[#f2f2f2] min-h-screen">
             <div className="container mx-auto p-8">
@@ -68,7 +81,7 @@ const AdminOrderListPage = () => {
                                 <tr>
                                     <th className="px-6 py-3">Order ID</th>
                                     <th className="px-6 py-3">Customer</th>
-                                    <th className="px-6 py-3">Date</th>
+                                    <th className="px-6 py-3">Date & Time</th>
                                     <th className="px-6 py-3">Total</th>
                                     <th className="px-6 py-3">Status</th>
                                     <th className="px-6 py-3">Actions</th>
@@ -77,15 +90,21 @@ const AdminOrderListPage = () => {
                             <tbody>
                                 {orders.map(order => (
                                     <tr key={order._id} className="bg-white border-b hover:bg-slate-50">
-                                        <td className="px-6 py-4 font-medium">{order._id}</td>
-                                        <td className="px-6 py-4">{order.user?.name || 'N/A'}</td>
-                                        <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
-                                        <td className="px-6 py-4">${order.totalPrice.toFixed(2)}</td>
+                                        <td className="px-6 py-4 font-medium text-slate-700">{order._id.substring(0, 8)}...</td>
+                                        <td className="px-6 py-4 text-slate-800">{order.user?.name || 'N/A'}</td>
+                                        <td className="px-6 py-4 text-slate-600">
+                                            <div className="flex flex-col">
+                                                <span className="font-medium whitespace-nowrap">
+                                                    {formatTimestamp(order.createdAt)}
+                                                </span>
+                                            </div>
+                                        </td>
+                                        <td className="px-6 py-4 font-semibold text-slate-900">${order.totalPrice.toFixed(2)}</td>
                                         <td className="px-6 py-4">
                                             <select
                                                 value={order.orderStatus}
                                                 onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                                className="p-1 border rounded-md"
+                                                className="p-1 border rounded-md text-slate-700 bg-white"
                                             >
                                                 <option>Confirmed</option>
                                                 <option>Processing</option>
@@ -96,7 +115,7 @@ const AdminOrderListPage = () => {
                                         <td className="px-6 py-4">
                                             <button
                                                 onClick={() => openOrderDetails(order._id)}
-                                                className="font-bold text-slate-800 hover:underline"
+                                                className="font-bold text-blue-600 hover:text-blue-800 hover:underline transition-colors"
                                             >
                                                 View Details
                                             </button>
@@ -118,15 +137,18 @@ const AdminOrderListPage = () => {
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 text-sm md:text-base">
-                                <div>
-                                    <p><strong>Customer:</strong> {selectedOrder.user.name}</p>
-                                    <p><strong>Email:</strong> {selectedOrder.user.email}</p>
+                                <div className="space-y-2">
+                                    <p><strong className="text-slate-700">Customer:</strong> {selectedOrder.user.name}</p>
+                                    <p><strong className="text-slate-700">Email:</strong> {selectedOrder.user.email}</p>
                                 </div>
-                                <div>
-                                    <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
-                                    <p><strong>Order Status:</strong> {selectedOrder.orderStatus}</p>
-                                    <p><strong>Payment Status:</strong> {selectedOrder.paymentStatus}</p>
-                                    <p><strong>Created At:</strong> {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                                <div className="space-y-2">
+                                    <p><strong className="text-slate-700">Payment Method:</strong> {selectedOrder.paymentMethod}</p>
+                                    <p><strong className="text-slate-700">Order Status:</strong> {selectedOrder.orderStatus}</p>
+                                    <p><strong className="text-slate-700">Payment Status:</strong> {selectedOrder.paymentStatus}</p>
+                                    <p><strong className="text-slate-700">Created At:</strong> {formatTimestamp(selectedOrder.createdAt)}</p>
+                                    {selectedOrder.updatedAt !== selectedOrder.createdAt && (
+                                        <p><strong className="text-slate-700">Last Updated:</strong> {formatTimestamp(selectedOrder.updatedAt)}</p>
+                                    )}
                                 </div>
                             </div>
 
@@ -140,27 +162,34 @@ const AdminOrderListPage = () => {
                                         >
                                             <div className="flex items-center">
                                                 <img src={item.imageUrl} alt={item.name} className="w-16 h-16 object-cover rounded-md mr-4" />
-                                                <p className="font-semibold text-lg text-slate-900">{item.name}</p>
+                                                <div>
+                                                    <p className="font-semibold text-lg text-slate-900">{item.name}</p>
+                                                    <p className="text-sm text-slate-600">Qty: {item.qty}</p>
+                                                </div>
                                             </div>
-                                            <span className="text-sm font-semibold text-gray-600">{openItems[item.product] ? '−' : '+'}</span>
+                                            <span className="text-sm font-semibold text-gray-600 bg-gray-200 rounded-full w-6 h-6 flex items-center justify-center">
+                                                {openItems[item.product] ? '−' : '+'}
+                                            </span>
                                         </div>
 
                                         {openItems[item.product] && (
-                                            <div className="px-4 pb-4">
-                                                <p className="text-gray-700">Price: ${item.price.toFixed(2)}</p>
+                                            <div className="px-4 pb-4 space-y-3">
+                                                <p className="text-gray-700"><strong>Price:</strong> ${item.price.toFixed(2)}</p>
+                                                <p className="text-gray-700"><strong>Quantity:</strong> {item.qty}</p>
+                                                <p className="text-gray-700"><strong>Subtotal:</strong> ${(item.price * item.qty).toFixed(2)}</p>
 
-                                                {item.measurements && (
+                                                {item.measurements && Object.keys(item.measurements).length > 0 && (
                                                     <div className="mt-2 text-gray-600">
                                                         <p className="font-semibold text-gray-800">Measurements:</p>
                                                         <ul className="list-disc list-inside ml-2">
                                                             {Object.entries(item.measurements).map(([key, value]) => (
-                                                                <li key={key}>{key}: {value}</li>
+                                                                <li key={key}>{key}: {value}"</li>
                                                             ))}
                                                         </ul>
                                                     </div>
                                                 )}
 
-                                                {item.selectedCustomizations && (
+                                                {item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && (
                                                     <div className="mt-2 text-gray-600">
                                                         <p className="font-semibold text-gray-800">Customizations:</p>
                                                         <ul className="list-disc list-inside ml-2">
@@ -170,8 +199,6 @@ const AdminOrderListPage = () => {
                                                         </ul>
                                                     </div>
                                                 )}
-
-                                                <p className="mt-2 font-semibold">Total: ${item.price.toFixed(2)}</p>
                                             </div>
                                         )}
                                     </div>

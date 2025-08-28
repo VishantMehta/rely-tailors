@@ -59,8 +59,8 @@ const Navbar = () => {
                 <div className="hidden md:flex items-center space-x-8 text-sm uppercase tracking-widest">
                     <Link to="/" className="hover:text-amber-600 transition-colors">Home</Link>
                     <Link to="/products" className="hover:text-amber-600 transition-colors">Shop</Link>
-                    <Link to="#" className="hover:text-amber-600 transition-colors">About</Link>
-                    <Link to="#" className="hover:text-amber-600 transition-colors">Contact</Link>
+                    <Link to="/about" className="hover:text-amber-600 transition-colors">About</Link>
+                    <Link to="/contact" className="hover:text-amber-600 transition-colors">Contact</Link>
                 </div>
 
                 {/* Right Side: User Actions (Desktop) */}
@@ -123,8 +123,8 @@ const Navbar = () => {
                 <div className="flex flex-col space-y-4 p-6 text-sm uppercase tracking-widest">
                     <Link to="/" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Home</Link>
                     <Link to="/products" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Shop</Link>
-                    <Link to="#" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">About</Link>
-                    <Link to="#" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Contact</Link>
+                    <Link to="/about" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">About</Link>
+                    <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Contact</Link>
                     <hr className="border-slate-200" />
                     {userInfo ? (
                         <>
