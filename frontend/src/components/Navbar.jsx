@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
-import { clearCart } from '../features/cart/cartSlice';
+import { clearCart, fetchUserCart } from '../features/cart/cartSlice';
 // Icon SVGs for the navbar
 const UserIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -33,6 +33,13 @@ const Navbar = () => {
     const { cartItems } = useSelector((state) => state.cart); // <-- Add this line
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    //for fixing
+    useEffect(() => {
+        if (userInfo) {
+            dispatch(fetchUserCart());
+        }
+    }, [dispatch, userInfo]);
 
     const logoutHandler = () => {
 

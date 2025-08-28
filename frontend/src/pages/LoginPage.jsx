@@ -35,6 +35,7 @@ const LoginPage = () => {
   // Redirect if user is already logged in
   useEffect(() => {
     if (userInfo) {
+      dispatch(fetchUserCart());
       navigate('/');
     }
   }, [navigate, userInfo]);
