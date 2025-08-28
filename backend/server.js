@@ -27,7 +27,6 @@ app.use('/api/measurements', measurementRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 app.use('/api/cart', cartRoutes);
 
 const PORT = process.env.PORT || 5000;
