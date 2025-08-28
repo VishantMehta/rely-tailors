@@ -1,13 +1,35 @@
 const Product = require('../models/Product.js');
 
-//@desc    Fetch all products
+
+//@desc    Fetch all products with search and pagination
 //@route   GET /api/products
+
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find({});
-        res.json(products);
-    }
-    catch (error) {
+        const pageSize = 8; //how many products to show per page
+        const page = Number(req.query.page) || 1; //get the page number from the URL, default to page 1
+
+        // --- Search Keyword Logic ---
+        const keyword = req.query.keyword
+            ? {
+                name: {
+                    $regex: req.query.keyword,
+                    $options: 'i', //'i' for case-insensitive
+                },
+            }
+            : {}; //If no keyword, the filter is an empty object
+
+        // Get the total count of documents that match the keyword
+        const count = await Product.countDocuments({ ...keyword });
+
+        const products = await Product.find({ ...keyword })
+            .limit(pageSize) // Apply the limit per page
+            .skip(pageSize * (page - 1)); // Skip documents for previous pages
+
+        // Send back the products for the current page, and the page numbers
+        res.json({ products, page, pages: Math.ceil(count / pageSize) });
+
+    } catch (error) {
         res.status(500).json({ message: 'Server Error' });
     }
 };
