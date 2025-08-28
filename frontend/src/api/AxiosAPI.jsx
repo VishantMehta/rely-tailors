@@ -1,8 +1,13 @@
 import axios from 'axios';
 import { store } from '../app/store'; // We need to get the store to access state
 
+const API_URL = import.meta.env.VITE_API_URL || '';
+
 const api = axios.create({
-  baseURL: '/api', // Your backend's base URL
+  // The baseURL is now dynamic.
+  // In production: 'https://rely-tailors-backend.onrender.com/api'
+  // In development: '/api' (which works with the proxy)
+  baseURL: `${API_URL}/api`,
 });
 
 // This is an interceptor. It runs before each request is sent.
