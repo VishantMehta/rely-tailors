@@ -4,6 +4,8 @@ const initialState = {
   products: [],
   loading: false,
   error: null,
+  page: 1,
+  pages: 1,
 };
 
 export const productSlice = createSlice({
@@ -16,7 +18,9 @@ export const productSlice = createSlice({
     },
     productListSuccess: (state, action) => {
       state.loading = false;
-      state.products = action.payload;
+      state.products = action.payload.products; // new API response
+      state.page = action.payload.page;
+      state.pages = action.payload.pages;
     },
     productListFail: (state, action) => {
       state.loading = false;
@@ -26,5 +30,4 @@ export const productSlice = createSlice({
 });
 
 export const { productListRequest, productListSuccess, productListFail } = productSlice.actions;
-
 export default productSlice.reducer;
