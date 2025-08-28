@@ -16,7 +16,25 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+
+//CORS config for deployment + development both
+const whitelist = [
+    'http://localhost:5173', //local frontend URL
+    'https://rely-tailors.vercel.app', //deployed frontend url
+];
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+};
+
+app.use(cors(corsOptions));
+
 app.use(express.json());
 
 app.use('/api/auth', authRoutes);
