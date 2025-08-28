@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
 import {
   productListRequest,
   productListSuccess,
@@ -26,7 +25,7 @@ const AdminProductListPage = () => {
       try {
         dispatch(productListRequest());
         // pass page to backend
-        const { data } = await axios.get(`/api/products?page=${currentPage}`);
+        const { data } = await api.get(`/products?page=${currentPage}`);
         dispatch(productListSuccess(data)); // data = { products, page, pages }
       } catch (err) {
         dispatch(
@@ -44,7 +43,7 @@ const AdminProductListPage = () => {
       try {
         await api.delete(`/products/${id}`);
         // refetch current page after deletion
-        const { data } = await axios.get(`/api/products?page=${currentPage}`);
+        const { data } = await api.get(`/products?page=${currentPage}`);
         dispatch(productListSuccess(data));
       } catch (err) {
         alert('Product could not be deleted.');
@@ -92,21 +91,11 @@ const AdminProductListPage = () => {
               <table className="w-full text-sm text-left text-slate-500">
                 <thead className="text-xs text-slate-700 uppercase bg-slate-50">
                   <tr>
-                    <th scope="col" className="px-6 py-3">
-                      ID
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Name
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Price
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Category
-                    </th>
-                    <th scope="col" className="px-6 py-3">
-                      Actions
-                    </th>
+                    <th scope="col" className="px-6 py-3">ID</th>
+                    <th scope="col" className="px-6 py-3">Name</th>
+                    <th scope="col" className="px-6 py-3">Price</th>
+                    <th scope="col" className="px-6 py-3">Category</th>
+                    <th scope="col" className="px-6 py-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
