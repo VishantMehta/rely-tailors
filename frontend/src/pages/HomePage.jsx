@@ -222,6 +222,27 @@ const TestimonialCarousel = () => {
   );
 };
 
+
+// A new component for the animated background cubes
+const BackgroundCubes = () => (
+  <div className="absolute inset-0 z-0 overflow-hidden">
+    <ul className="circles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+);
+
+
+
 const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-4 text-black-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 const RulerIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-4 text-black-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 8h16M4 16h16" /></svg>;
 const ScissorIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 mx-auto mb-4 text-black-700" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879a1 1 0 01-1.414 0L2 12m12.121-5.879L19 19" /></svg>;
@@ -398,41 +419,53 @@ const HomePage = () => {
       </div>
 
       {/* Wedding Collection Section */}
-      <div className="bg-[#f2f2f2] py-24">
-        <div className="container mx-auto px-4">
-          <div className="bg-white p-12 md:p-12 mx-8 md:mx-20 flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2" data-aos="fade-right">
+     <div className="bg-white py-12 md:py-24 relative">
+       <div className="absolute inset-0 z-0"> {/* Absolute container with lower z-index */}
+    <BackgroundCubes />
+  </div>
+      <div className="container mx-auto px-4">
+        <div className="bg-white p-6 md:p-12 mx-0 md:mx-10 lg:mx-20 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div className="w-full md:w-1/2" data-aos="fade-right">
+            <div className="relative aspect-video md:aspect-auto md:h-[400px] lg:h-[500px]">
               <video
                 src={weddingVideo}
                 alt="Groom getting ready for his wedding"
-                className="w-full h-[500px] object-cover"
+                className="w-full h-full object-cover rounded-sm"
                 autoPlay
                 loop
                 muted
                 playsInline
               />
             </div>
-            <div className="md:w-1/2" data-aos="fade-left">
-              <h2 className="font-marcellus text-5xl text-black text-900 text-left">The Wedding <br /> Collection</h2>
-              <p className="text-black text-600 my-4">
-                For the most important day of your life, settle for nothing less than absolute perfection. Our wedding collection brings together timeless elegance and modern sophistication, offering bespoke suits and tuxedos designed to make you the center of attention. From handpicked fabrics to precision tailoring, every piece is crafted with care, ensuring a flawless fit that reflects your personal style. Whether you envision a classic, regal look or a bold, contemporary statement, we tailor each detail to perfection—so you not only look extraordinary but also feel confident, comfortable, and unforgettable on your big day.
-              </p>
-              <Link
-                // CHANGED: Standardized link format
-                to="/products/category/wedding"
-                className="inline-block bg-black text-white hover:bg-white hover:text-black border border-transparent hover:border-black font-light py-3 px-8 rounded-sm transition-colors duration-300 text-sm uppercase tracking-widest"
-              >
-                Shop Collection
-              </Link>
-            </div>
+          </div>
+          <div className="w-full md:w-1/2" data-aos="fade-left">
+            <h2 className="font-marcellus text-3xl sm:text-4xl lg:text-5xl text-black text-left mb-4">
+              The Wedding <br className="hidden sm:block" /> Collection
+            </h2>
+            <p className="text-black text-base sm:text-lg leading-relaxed mb-6">
+              For the most important day of your life, settle for nothing less than absolute perfection. 
+              Our wedding collection brings together timeless elegance and modern sophistication, offering 
+              bespoke suits and tuxedos designed to make you the center of attention. From handpicked fabrics 
+              to precision tailoring, every piece is crafted with care, ensuring a flawless fit that reflects 
+              your personal style.
+            </p>
+            <Link
+              to="/products/category/wedding"
+              className="inline-block bg-black text-white hover:bg-white hover:text-black border border-transparent hover:border-black font-light py-3 px-8 rounded-sm transition-colors duration-300 text-sm uppercase tracking-widest"
+            >
+              Shop Collection
+            </Link>
           </div>
         </div>
       </div>
+    </div>
 
+      {/* Testimonials Section */}
       <TestimonialCarousel />
 
       {/* Instagram & Newsletter Section */}
       <div className="bg-white py-24 text-center">
+        
         <div className="container mx-auto px-4">
           <h2 className="font-marcellus text-4xl text-slate-900">Sign Up For Our Newsletter</h2>
           <form className="max-w-md mx-auto mt-8 flex">
