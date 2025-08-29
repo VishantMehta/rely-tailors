@@ -1,352 +1,279 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  productListRequest,
+  productListSuccess,
+  productListFail,
+} from '../features/products/productSlice';
+import ProductCard from '../components/ProductCard';
+import api from '../api/AxiosAPI';
+import suit from '../assets/suit.jpg';
+import kurta from '../assets/Crain.jpg';
+import polo from '../assets/polo.jpg';
+import shirts from '../assets/shirts.jpg';
+import blazers from '../assets/blazers.jpg';
+import wedding from '../assets/wedding.jpg';
+import indo from '../assets/indo.jpg';
+import formal from '../assets/formal.jpg';
 
-// Sample reviews data
-const sampleReviews = [
-  {
-    id: 1,
-    productId: 101,
-    productName: 'Premium Slim Fit Suit',
-    productImage: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-    rating: 5,
-    title: 'Excellent Quality!',
-    comment: 'This suit fits perfectly and the material is high quality. Would definitely recommend to others looking for a formal suit.',
-    date: '2023-10-15',
-    helpful: 12,
-    verified: true
-  },
-  {
-    id: 2,
-    productId: 102,
-    productName: 'Classic Wool Blazer',
-    productImage: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-    rating: 4,
-    title: 'Good blazer, runs slightly large',
-    comment: 'The material is nice and it looks great, but I found it runs a bit large. Would suggest sizing down.',
-    date: '2023-10-10',
-    helpful: 5,
-    verified: true
-  },
-  {
-    id: 3,
-    productId: 103,
-    productName: 'Cotton Dress Shirt',
-    productImage: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
-    rating: 3,
-    title: 'Average shirt',
-    comment: 'The shirt is okay for the price, but the fabric is thinner than I expected. Might not hold up well after multiple washes.',
-    date: '2023-10-05',
-    helpful: 2,
-    verified: false
-  }
-];
+const categoryImages = {
+  'All': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+  'Suits': suit,
+  'Blazers': blazers,
+  'Shirts': shirts,
+  'Kurtas': kurta,
+  'Polo T-Shirts': polo,
+  'Indo Western': indo,
+  'Wedding': wedding,
+  'Formal': formal,
+};
 
-const MyReviews = () => {
-  const [reviews, setReviews] = useState(sampleReviews);
-  const [editingId, setEditingId] = useState(null);
-  const [sortBy, setSortBy] = useState('recent');
-  const [filterBy, setFilterBy] = useState('all');
-  const [editForm, setEditForm] = useState({
-    rating: 0,
-    title: '',
-    comment: ''
-  });
+// A simple arrow SVG component for the buttons
+const ChevronArrow = ({ className }) => (
+  <svg className={className} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+  </svg>
+);
 
-  // Sort reviews based on selected option
-  const sortedReviews = [...reviews].sort((a, b) => {
-    switch (sortBy) {
-      case 'recent':
-        return new Date(b.date) - new Date(a.date);
-      case 'rating-high':
-        return b.rating - a.rating;
-      case 'rating-low':
-        return a.rating - b.rating;
-      case 'helpful':
-        return b.helpful - a.helpful;
-      default:
-        return 0;
-    }
-  });
 
-  // Filter reviews based on rating
-  const filteredReviews = sortedReviews.filter(review => {
-    if (filterBy === 'all') return true;
-    return review.rating === parseInt(filterBy);
-  });
+const ProductsPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { products, loading, error, pages } = useSelector((state) => state.products);
+  const { categoryName } = useParams();
 
-  const handleEditReview = (review) => {
-    setEditingId(review.id);
-    setEditForm({
-      rating: review.rating,
-      title: review.title,
-      comment: review.comment
-    });
+  const carouselRef = useRef(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const formatCategoryFromParam = (param) => {
+    if (!param) return 'All';
+    if (param.toLowerCase() === 'polo-t-shirts') return 'Polo T-Shirts';
+    return param.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
-  const handleCancelEdit = () => {
-    setEditingId(null);
-    setEditForm({
-      rating: 0,
-      title: '',
-      comment: ''
-    });
-  };
+  const [searchInput, setSearchInput] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [activeCategory, setActiveCategory] = useState(() => formatCategoryFromParam(categoryName));
 
-  const handleSaveEdit = (id) => {
-    const updatedReviews = reviews.map(review =>
-      review.id === id
-        ? { ...review, ...editForm, date: new Date().toISOString().split('T')[0] }
-        : review
-    );
-    setReviews(updatedReviews);
-    setEditingId(null);
-  };
+  const categories = [
+    'All', 'Suits', 'Blazers', 'Shirts', 'Kurtas',
+    'Polo T-Shirts', 'Indo Western', 'Wedding', 'Formal'
+  ];
 
-  const handleDeleteReview = (id) => {
-    if (window.confirm('Are you sure you want to delete this review?')) {
-      setReviews(reviews.filter(review => review.id !== id));
+  // --- Carousel Scroll Logic ---
+  const checkScrollability = () => {
+    const el = carouselRef.current;
+    if (el) {
+      const isAtStart = el.scrollLeft <= 0;
+      const isAtEnd = el.scrollLeft >= el.scrollWidth - el.clientWidth - 1;
+      setCanScrollLeft(!isAtStart);
+      setCanScrollRight(!isAtEnd);
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditForm({
-      ...editForm,
-      [name]: value
-    });
+  useEffect(() => {
+    const el = carouselRef.current;
+    if (el) {
+      checkScrollability(); // Check on mount and when products change
+      el.addEventListener('scroll', checkScrollability);
+      window.addEventListener('resize', checkScrollability);
+      return () => {
+        el.removeEventListener('scroll', checkScrollability);
+        window.removeEventListener('resize', checkScrollability);
+      };
+    }
+  }, [products]);
+
+  const scroll = (direction) => {
+    const el = carouselRef.current;
+    if (el) {
+      const scrollAmount = el.clientWidth * 0.8; // Scroll 80% of the visible width
+      el.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
   };
 
-  const handleRatingChange = (newRating) => {
-    setEditForm({
-      ...editForm,
-      rating: newRating
-    });
+
+  const fetchProducts = async (keywordParam = '', pageParam = 1, categoryParam = '') => {
+    try {
+      dispatch(productListRequest());
+      const { data } = await api.get(
+        `/products?keyword=${keywordParam}&page=${pageParam}&category=${categoryParam}`
+      );
+      const payload = {
+        products: Array.isArray(data?.products) ? data.products : [],
+        page: data?.page || 1,
+        pages: data?.pages || 1,
+      };
+      dispatch(productListSuccess(payload));
+    } catch (err) {
+      dispatch(productListFail(err.response?.data?.message || err.message));
+    }
   };
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  useEffect(() => {
+    const categoryFromURL = formatCategoryFromParam(categoryName);
+    if (categoryFromURL !== activeCategory) {
+      setActiveCategory(categoryFromURL);
+      setCurrentPage(1);
+      setKeyword('');
+    }
+  }, [categoryName, activeCategory]);
+
+  useEffect(() => {
+    const categoryToFetch = activeCategory === 'All' ? '' : activeCategory;
+    fetchProducts(keyword, currentPage, categoryToFetch);
+  }, [dispatch, keyword, currentPage, activeCategory]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setCurrentPage(1);
+    setKeyword(searchInput);
+    navigate('/products'); // Clear category from URL on search
   };
 
-  const totalReviews = reviews.length;
-  const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
+  const handleFilter = (category) => {
+    setCurrentPage(1);
+    setKeyword('');
+    setSearchInput('');
+    setActiveCategory(category);
+    if (category === 'All') {
+      navigate('/products');
+    } else {
+      const categoryPath = category.replace(/\s+/g, '-').toLowerCase();
+      navigate(`/products/category/${categoryPath}`);
+    }
+  };
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md w-full">
-      <div className="flex flex-col mb-6">
-        <h2 className="font-marcellus text-2xl sm:text-3xl text-slate-900 mb-2">My Reviews</h2>
-        <p className="text-slate-600 text-sm sm:text-base">
-          {totalReviews} review{totalReviews !== 1 ? 's' : ''} • Average: {averageRating.toFixed(1)}/5
-        </p>
-      </div>
-      
-      {/* Sort and Filter Controls - Stacked on mobile */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
-        <div className="w-full sm:w-auto">
-          <label htmlFor="sort" className="block text-slate-700 text-sm mb-1">Sort by:</label>
-          <select
-            id="sort"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="w-full sm:w-40 border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-          >
-            <option value="recent">Most Recent</option>
-            <option value="rating-high">Highest Rating</option>
-            <option value="rating-low">Lowest Rating</option>
-            <option value="helpful">Most Helpful</option>
-          </select>
+    <div className="bg-white min-h-screen font-sans">
+      <div className="container mx-auto px-4 sm:px-6 py-8">
+        {/* --- Heading & Search --- */}
+        <div className="text-center mb-8" data-aos="fade-down">
+          <h1 className="font-marcellus text-3xl md:text-5xl text-slate-900 mb-4">
+            {activeCategory === 'All' ? 'Our Collection' : activeCategory}
+          </h1>
+          <p className="text-slate-500 max-w-2xl mx-auto">
+            Discover our curated selection of high-quality apparel. Use the filters to find exactly what you're looking for.
+          </p>
         </div>
-        
-        <div className="w-full sm:w-auto">
-          <label htmlFor="filter" className="block text-slate-700 text-sm mb-1">Filter by:</label>
-          <select
-            id="filter"
-            value={filterBy}
-            onChange={(e) => setFilterBy(e.target.value)}
-            className="w-full sm:w-40 border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-          >
-            <option value="all">All Ratings</option>
-            <option value="5">5 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="2">2 Stars</option>
-            <option value="1">1 Star</option>
-          </select>
-        </div>
-      </div>
-
-      {reviews.length === 0 ? (
-        <div className="text-center py-10 sm:py-16">
-          <div className="text-slate-300 text-5xl sm:text-6xl mb-4">⭐</div>
-          <h3 className="text-lg sm:text-xl text-slate-700 mb-2">You haven't written any reviews yet</h3>
-          <p className="text-slate-500 text-sm sm:text-base mb-6">Share your thoughts on products you've purchased to help other shoppers.</p>
-          <Link
-            to="/products"
-            className="inline-block bg-slate-900 text-white py-2 px-5 sm:py-3 sm:px-6 rounded-md hover:bg-slate-700 transition text-sm uppercase tracking-widest"
-          >
-            Browse Products
-          </Link>
-        </div>
-      ) : filteredReviews.length === 0 ? (
-        <div className="text-center py-10 sm:py-16">
-          <div className="text-slate-300 text-5xl sm:text-6xl mb-4">🔍</div>
-          <h3 className="text-lg sm:text-xl text-slate-700 mb-2">No reviews match your filter</h3>
-          <p className="text-slate-500 text-sm sm:text-base mb-6">Try changing your filter settings to see your reviews.</p>
+        <form onSubmit={handleSearch} className="flex gap-2 w-full max-w-lg mx-auto mb-12" data-aos="fade-up">
+          <input
+            type="text"
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            placeholder="Search for suits, kurtas, etc..."
+            className="border-gray-300 rounded-lg px-4 py-3 w-full shadow-sm focus:outline-none focus:ring-2 focus:ring-slate-800 transition"
+          />
           <button
-            onClick={() => setFilterBy('all')}
-            className="inline-block bg-slate-900 text-white py-2 px-5 sm:py-3 sm:px-6 rounded-md hover:bg-slate-700 transition text-sm uppercase tracking-widest"
+            type="submit"
+            className="bg-slate-900 text-white px-6 py-3 rounded-lg hover:bg-slate-700 transition-colors duration-300 font-semibold"
           >
-            Show All Reviews
+            Search
           </button>
-        </div>
-      ) : (
-        <div className="space-y-4 sm:space-y-6">
-          {filteredReviews.map((review) => (
-            <div key={review.id} className="border border-slate-200 rounded-lg p-4 sm:p-5">
-              <div className="flex flex-col sm:flex-row gap-4">
-                {/* Product Image */}
-                <div className="flex-shrink-0 self-center sm:self-start">
-                  <Link to={`/product/${review.productId}`}>
+        </form>
+
+        {/* --- Category Carousel with Arrows --- */}
+        <div className="relative group" data-aos="fade-up">
+          <button
+            onClick={() => scroll(-1)}
+            className={`absolute top-1/2 -translate-y-1/2 -left-4 z-10 h-10 w-10 bg-white/80 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center text-slate-800 hover:bg-white transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:cursor-not-allowed`}
+            disabled={!canScrollLeft}
+          >
+            <ChevronArrow className="w-5 h-5 transform rotate-180" />
+          </button>
+          <div
+            ref={carouselRef}
+            className="flex gap-4 md:gap-5 py-4 overflow-x-auto scroll-smooth scrollbar-hide"
+          >
+            {categories.map((category) => (
+              <div
+                key={category}
+                className="group/item flex-shrink-0 w-40 h-52 md:w-48 md:h-56 rounded-xl cursor-pointer transition-all duration-300 transform hover:-translate-y-2"
+                onClick={() => handleFilter(category)}
+              >
+                <div className={`w-full h-full rounded-xl shadow-md overflow-hidden transition-all duration-300 ${activeCategory === category ? 'shadow-lg' : ''}`}>
+                  <div className="h-[70%] overflow-hidden">
                     <img
-                      src={review.productImage}
-                      alt={review.productName}
-                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md"
+                      src={categoryImages[category]}
+                      alt={category}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover/item:scale-110"
                     />
-                  </Link>
-                </div>
-                
-                {/* Review Content */}
-                <div className="flex-grow">
-                  <Link to={`/product/${review.productId}`} className="font-medium text-slate-900 hover:text-slate-700 text-base sm:text-lg">
-                    {review.productName}
-                  </Link>
-                  
-                  <div className="flex flex-col sm:flex-row sm:items-center mt-1 mb-2 gap-2">
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <svg
-                          key={star}
-                          className={`w-4 h-4 sm:w-5 sm:h-5 ${star <= review.rating ? 'text-amber-500' : 'text-slate-300'}`}
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                      ))}
-                    </div>
-                    {review.verified && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded self-start">
-                        Verified Purchase
-                      </span>
-                    )}
                   </div>
-                  
-                  <h4 className="font-medium text-slate-900 text-base sm:text-lg mb-1">{review.title}</h4>
-                  <p className="text-slate-600 text-sm sm:text-base mb-3">{review.comment}</p>
-                  
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="text-xs sm:text-sm text-slate-500">
-                      <span>Reviewed on {formatDate(review.date)}</span>
-                      {review.helpful > 0 && (
-                        <span className="ml-0 sm:ml-3 block sm:inline-block mt-1 sm:mt-0">
-                          {review.helpful} people found this helpful
-                        </span>
-                      )}
-                    </div>
-                    
-                    <div className="flex space-x-3 mt-2 sm:mt-0">
-                      <button
-                        onClick={() => handleEditReview(review)}
-                        className="text-slate-900 hover:text-slate-700 text-xs sm:text-sm font-medium"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDeleteReview(review.id)}
-                        className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium"
-                      >
-                        Delete
-                      </button>
-                    </div>
+                  <div className="h-[30%] bg-white flex flex-col items-center justify-center p-2">
+                    <h3 className="font-semibold text-center text-slate-800">
+                      {category}
+                    </h3>
+                    <div className={`h-[3px] mt-1 rounded-full bg-slate-800 transition-all duration-300 ${activeCategory === category ? 'w-8' : 'w-0 group-hover/item:w-4'}`} />
                   </div>
                 </div>
               </div>
-              
-              {/* Edit Form */}
-              {editingId === review.id && (
-                <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-200">
-                  <h4 className="font-medium text-slate-900 mb-3 text-base sm:text-lg">Edit Your Review</h4>
-                  
-                  <div className="mb-4">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Your Rating</label>
-                    <div className="flex">
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          type="button"
-                          onClick={() => handleRatingChange(star)}
-                          className="focus:outline-none"
-                        >
-                          <svg
-                            className={`w-6 h-6 sm:w-8 sm:h-8 ${star <= editForm.rating ? 'text-amber-500' : 'text-slate-300'}`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                          >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                          </svg>
-                        </button>
-                      ))}
+            ))}
+          </div>
+          <button
+            onClick={() => scroll(1)}
+            className={`absolute top-1/2 -translate-y-1/2 -right-4 z-10 h-10 w-10 bg-white/80 backdrop-blur-sm rounded-full shadow-md flex items-center justify-center text-slate-800 hover:bg-white transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-0 disabled:cursor-not-allowed`}
+            disabled={!canScrollRight}
+          >
+            <ChevronArrow className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* --- Products Grid --- */}
+        <div className="mt-12">
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-slate-900"></div>
+            </div>
+          ) : error ? (
+            <div className="bg-red-100 text-red-700 p-4 rounded-lg text-center">{error}</div>
+          ) : (
+            <>
+              {Array.isArray(products) && products.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
+                  {products.map((product, index) => (
+                    <div
+                      key={product._id || index}
+                      data-aos="fade-up"
+                      data-aos-delay={index * 50}
+                    >
+                      <ProductCard product={product} />
                     </div>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1">Review Title</label>
-                    <input
-                      type="text"
-                      id="title"
-                      name="title"
-                      value={editForm.title}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900"
-                      placeholder="Enter a title for your review"
-                    />
-                  </div>
-                  
-                  <div className="mb-4">
-                    <label htmlFor="comment" className="block text-sm font-medium text-slate-700 mb-1">Your Review</label>
-                    <textarea
-                      id="comment"
-                      name="comment"
-                      value={editForm.comment}
-                      onChange={handleInputChange}
-                      rows="3"
-                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900"
-                      placeholder="Share your experience with this product"
-                    ></textarea>
-                  </div>
-                  
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={() => handleSaveEdit(review.id)}
-                      className="bg-slate-900 text-white py-2 px-4 sm:px-5 rounded-md hover:bg-slate-700 transition text-sm flex-1 sm:flex-none"
-                    >
-                      Save Changes
-                    </button>
-                    <button
-                      onClick={handleCancelEdit}
-                      className="bg-white text-slate-900 py-2 px-4 sm:px-5 rounded-md border border-slate-900 hover:bg-slate-100 transition text-sm flex-1 sm:flex-none"
-                    >
-                      Cancel
-                    </button>
-                  </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-16 bg-slate-50 rounded-lg">
+                  <div className="text-slate-400 text-6xl mb-4">🛍️</div>
+                  <p className="text-slate-600 text-xl font-semibold">No Products Found</p>
+                  <p className="text-slate-500 mt-2">Please try a different search term or category.</p>
                 </div>
               )}
-            </div>
-          ))}
+
+              {/* --- Pagination --- */}
+              {pages > 1 && (
+                <div className="flex justify-center mt-16 gap-2" data-aos="fade-up">
+                  {[...Array(pages).keys()].map((x) => (
+                    <button
+                      key={x + 1}
+                      onClick={() => setCurrentPage(x + 1)}
+                      className={`h-10 w-10 rounded-full font-semibold transition-colors duration-300 ${currentPage === x + 1
+                        ? 'bg-slate-900 text-white'
+                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                        }`}
+                    >
+                      {x + 1}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };
 
-export default MyReviews;
+export default ProductsPage;
