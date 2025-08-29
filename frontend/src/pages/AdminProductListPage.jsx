@@ -36,7 +36,7 @@ const TableSkeleton = () => (
 const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, isLoading }) => (
   <AnimatePresence>
     {isOpen && (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50 p-4">
         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white rounded-lg w-full max-w-sm p-6 shadow-xl">
           <div className="flex items-start">
             <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -62,7 +62,7 @@ const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, isLoad
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   if (totalPages <= 1) return null;
   return (
-    <div className="flex items-center justify-center mt-8 gap-2">
+    <div className="flex items-center justify-center mt-8 gap-2 flex-wrap">
       <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 disabled:opacity-50 transition-colors"><ChevronLeft className="h-5 w-5" /></button>
       {[...Array(totalPages).keys()].map((page) => (
         <button key={page + 1} onClick={() => onPageChange(page + 1)} className={`h-10 w-10 rounded-full font-semibold transition-colors ${currentPage === page + 1 ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-100'}`}>{page + 1}</button>
@@ -141,24 +141,24 @@ const AdminProductListPage = () => {
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8" data-aos="fade-down">
           <div>
-            <h1 className="font-marcellus text-3xl sm:text-4xl text-zinc-900">Manage Products</h1>
-            <p className="text-zinc-500 mt-1">Add, edit, or delete products from your inventory.</p>
+            <h1 className="font-marcellus text-2xl sm:text-3xl md:text-4xl text-zinc-900">Manage Products</h1>
+            <p className="text-zinc-500 mt-1 text-sm sm:text-base">Add, edit, or delete products from your inventory.</p>
           </div>
-          <button onClick={createProductHandler} className="bg-zinc-900 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 self-start sm:self-center">
-            <Plus className="h-5 w-5" />
+          <button onClick={createProductHandler} className="bg-zinc-900 text-white font-bold py-2.5 px-4 sm:px-5 rounded-lg hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 self-start sm:self-center text-sm sm:text-base">
+            <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
             Create Product
           </button>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md" data-aos="fade-up">
           <div className="relative mb-6">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-zinc-400" />
             <input
               type="text"
               placeholder="Search by Product Name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full max-w-lg border-zinc-300 rounded-full pl-12 pr-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-800 focus:border-zinc-800 transition-all"
+              className="w-full max-w-lg border-zinc-300 rounded-full pl-9 sm:pl-12 pr-4 py-2 sm:py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-800 focus:border-zinc-800 transition-all text-sm sm:text-base"
             />
           </div>
 
@@ -170,30 +170,34 @@ const AdminProductListPage = () => {
                 <table className="w-full text-sm text-left">
                   <thead className="text-xs text-zinc-500 uppercase bg-zinc-50/70">
                     <tr>
-                      <th scope="col" className="px-6 py-4">Product</th>
-                      <th scope="col" className="px-6 py-4">Price</th>
-                      <th scope="col" className="px-6 py-4">Category</th>
-                      <th scope="col" className="px-6 py-4 text-center">Actions</th>
+                      <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4">Product</th>
+                      <th scope="col" className="px-2 py-3 sm:px-4 sm:py-4 lg:px-6">Price</th>
+                      <th scope="col" className="px-2 py-3 sm:px-4 sm:py-4 lg:px-6 hidden sm:table-cell">Category</th>
+                      <th scope="col" className="px-4 py-3 sm:px-6 sm:py-4 text-center">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {products.map((product) => (
                       <tr key={product._id} className="bg-white border-b hover:bg-zinc-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-4">
-                            <img src={product.imageUrl} alt={product.name} className="w-16 h-20 object-cover rounded-md bg-zinc-100" />
-                            <div>
-                              <p className="font-semibold text-zinc-800">{product.name}</p>
-                              <p className="text-xs text-zinc-500 font-mono" title={product._id}>{product._id}</p>
+                        <td className="px-4 py-4 sm:px-6">
+                          <div className="flex items-center gap-3 sm:gap-4">
+                            <img src={product.imageUrl} alt={product.name} className="w-12 h-16 sm:w-16 sm:h-20 object-cover rounded-md bg-zinc-100" />
+                            <div className="min-w-0">
+                              <p className="font-semibold text-zinc-800 truncate text-sm sm:text-base">{product.name}</p>
+                              <p className="text-xs text-zinc-500 font-mono truncate max-w-[120px] sm:max-w-xs" title={product._id}>{product._id}</p>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-semibold text-zinc-800">${product.basePrice.toFixed(2)}</td>
-                        <td className="px-6 py-4">{product.category}</td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center justify-center gap-4">
-                            <Link to={`/admin/product/${product._id}/edit`} className="p-2 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"><Edit className="h-5 w-5" /></Link>
-                            <button onClick={() => setProductToDelete(product)} className="p-2 text-zinc-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"><Trash2 className="h-5 w-5" /></button>
+                        <td className="px-2 py-4 sm:px-4 lg:px-6 font-semibold text-zinc-800 whitespace-nowrap text-sm sm:text-base">${product.basePrice.toFixed(2)}</td>
+                        <td className="px-2 py-4 sm:px-4 lg:px-6 hidden sm:table-cell">{product.category}</td>
+                        <td className="px-4 py-4 sm:px-6">
+                          <div className="flex items-center justify-center gap-2 sm:gap-4">
+                            <Link to={`/admin/product/${product._id}/edit`} className="p-1.5 sm:p-2 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors" aria-label="Edit product">
+                              <Edit className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </Link>
+                            <button onClick={() => setProductToDelete(product)} className="p-1.5 sm:p-2 text-zinc-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors" aria-label="Delete product">
+                              <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                            </button>
                           </div>
                         </td>
                       </tr>
