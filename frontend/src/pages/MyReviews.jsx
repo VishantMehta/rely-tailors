@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// Sample reviews data
+// Sample reviews data - in a real app, this would come from your backend
 const sampleReviews = [
   {
     id: 1,
@@ -38,6 +38,18 @@ const sampleReviews = [
     date: '2023-10-05',
     helpful: 2,
     verified: false
+  },
+  {
+    id: 4,
+    productId: 104,
+    productName: 'Designer Silk Kurta',
+    productImage: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    rating: 5,
+    title: 'Beautiful and comfortable',
+    comment: 'The silk material feels luxurious and the embroidery is beautifully done. Perfect for special occasions.',
+    date: '2023-09-28',
+    helpful: 8,
+    verified: true
   }
 ];
 
@@ -124,7 +136,7 @@ const MyReviews = () => {
   };
 
   const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
@@ -132,101 +144,102 @@ const MyReviews = () => {
   const averageRating = reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews;
 
   return (
-    <div className="bg-white p-4 sm:p-6 md:p-8 rounded-lg shadow-md w-full">
-      <div className="flex flex-col mb-6">
-        <h2 className="font-marcellus text-2xl sm:text-3xl text-slate-900 mb-2">My Reviews</h2>
-        <p className="text-slate-600 text-sm sm:text-base">
-          {totalReviews} review{totalReviews !== 1 ? 's' : ''} • Average: {averageRating.toFixed(1)}/5
-        </p>
-      </div>
-      
-      {/* Sort and Filter Controls - Stacked on mobile */}
-      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-6">
-        <div className="w-full sm:w-auto">
-          <label htmlFor="sort" className="block text-slate-700 text-sm mb-1">Sort by:</label>
-          <select
-            id="sort"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="w-full sm:w-40 border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-          >
-            <option value="recent">Most Recent</option>
-            <option value="rating-high">Highest Rating</option>
-            <option value="rating-low">Lowest Rating</option>
-            <option value="helpful">Most Helpful</option>
-          </select>
+    <div className="bg-white p-6 md:p-8 rounded-lg shadow-md w-full">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <div>
+          <h2 className="font-marcellus text-2xl md:text-3xl text-slate-900 mb-2">My Reviews</h2>
+          <p className="text-slate-600">
+            {totalReviews} review{totalReviews !== 1 ? 's' : ''} • Average: {averageRating.toFixed(1)}/5
+          </p>
         </div>
         
-        <div className="w-full sm:w-auto">
-          <label htmlFor="filter" className="block text-slate-700 text-sm mb-1">Filter by:</label>
-          <select
-            id="filter"
-            value={filterBy}
-            onChange={(e) => setFilterBy(e.target.value)}
-            className="w-full sm:w-40 border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-          >
-            <option value="all">All Ratings</option>
-            <option value="5">5 Stars</option>
-            <option value="4">4 Stars</option>
-            <option value="3">3 Stars</option>
-            <option value="2">2 Stars</option>
-            <option value="1">1 Star</option>
-          </select>
+        <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0">
+          <div className="flex items-center">
+            <label htmlFor="sort" className="text-slate-700 text-sm mr-2 whitespace-nowrap">Sort by:</label>
+            <select
+              id="sort"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="border border-slate-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            >
+              <option value="recent">Most Recent</option>
+              <option value="rating-high">Highest Rating</option>
+              <option value="rating-low">Lowest Rating</option>
+              <option value="helpful">Most Helpful</option>
+            </select>
+          </div>
+          
+          <div className="flex items-center">
+            <label htmlFor="filter" className="text-slate-700 text-sm mr-2 whitespace-nowrap">Filter by:</label>
+            <select
+              id="filter"
+              value={filterBy}
+              onChange={(e) => setFilterBy(e.target.value)}
+              className="border border-slate-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
+            >
+              <option value="all">All Ratings</option>
+              <option value="5">5 Stars</option>
+              <option value="4">4 Stars</option>
+              <option value="3">3 Stars</option>
+              <option value="2">2 Stars</option>
+              <option value="1">1 Star</option>
+            </select>
+          </div>
         </div>
       </div>
 
       {reviews.length === 0 ? (
-        <div className="text-center py-10 sm:py-16">
-          <div className="text-slate-300 text-5xl sm:text-6xl mb-4">⭐</div>
-          <h3 className="text-lg sm:text-xl text-slate-700 mb-2">You haven't written any reviews yet</h3>
-          <p className="text-slate-500 text-sm sm:text-base mb-6">Share your thoughts on products you've purchased to help other shoppers.</p>
+        <div className="text-center py-16">
+          <div className="text-slate-300 text-6xl mb-4">⭐</div>
+          <h3 className="text-xl text-slate-700 mb-2">You haven't written any reviews yet</h3>
+          <p className="text-slate-500 mb-6">Share your thoughts on products you've purchased to help other shoppers.</p>
           <Link
             to="/products"
-            className="inline-block bg-slate-900 text-white py-2 px-5 sm:py-3 sm:px-6 rounded-md hover:bg-slate-700 transition text-sm uppercase tracking-widest"
+            className="inline-block bg-slate-900 text-white py-3 px-6 rounded-md hover:bg-slate-700 transition text-sm uppercase tracking-widest"
           >
             Browse Products
           </Link>
         </div>
       ) : filteredReviews.length === 0 ? (
-        <div className="text-center py-10 sm:py-16">
-          <div className="text-slate-300 text-5xl sm:text-6xl mb-4">🔍</div>
-          <h3 className="text-lg sm:text-xl text-slate-700 mb-2">No reviews match your filter</h3>
-          <p className="text-slate-500 text-sm sm:text-base mb-6">Try changing your filter settings to see your reviews.</p>
+        <div className="text-center py-16">
+          <div className="text-slate-300 text-6xl mb-4">🔍</div>
+          <h3 className="text-xl text-slate-700 mb-2">No reviews match your filter</h3>
+          <p className="text-slate-500 mb-6">Try changing your filter settings to see your reviews.</p>
           <button
             onClick={() => setFilterBy('all')}
-            className="inline-block bg-slate-900 text-white py-2 px-5 sm:py-3 sm:px-6 rounded-md hover:bg-slate-700 transition text-sm uppercase tracking-widest"
+            className="inline-block bg-slate-900 text-white py-3 px-6 rounded-md hover:bg-slate-700 transition text-sm uppercase tracking-widest"
           >
             Show All Reviews
           </button>
         </div>
       ) : (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-6">
           {filteredReviews.map((review) => (
-            <div key={review.id} className="border border-slate-200 rounded-lg p-4 sm:p-5">
-              <div className="flex flex-col sm:flex-row gap-4">
+            <div key={review.id} className="border border-slate-200 rounded-lg p-5">
+              <div className="flex flex-col md:flex-row gap-5">
                 {/* Product Image */}
-                <div className="flex-shrink-0 self-center sm:self-start">
+                <div className="flex-shrink-0">
                   <Link to={`/product/${review.productId}`}>
                     <img
                       src={review.productImage}
                       alt={review.productName}
-                      className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-md"
+                      className="w-20 h-20 object-cover rounded-md"
                     />
                   </Link>
                 </div>
                 
                 {/* Review Content */}
                 <div className="flex-grow">
-                  <Link to={`/product/${review.productId}`} className="font-medium text-slate-900 hover:text-slate-700 text-base sm:text-lg">
+                  <Link to={`/product/${review.productId}`} className="font-medium text-slate-900 hover:text-slate-700">
                     {review.productName}
                   </Link>
                   
-                  <div className="flex flex-col sm:flex-row sm:items-center mt-1 mb-2 gap-2">
+                  <div className="flex items-center mt-1 mb-2">
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <svg
                           key={star}
-                          className={`w-4 h-4 sm:w-5 sm:h-5 ${star <= review.rating ? 'text-amber-500' : 'text-slate-300'}`}
+                          className={`w-5 h-5 ${star <= review.rating ? 'text-amber-500' : 'text-slate-300'}`}
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
@@ -235,35 +248,33 @@ const MyReviews = () => {
                       ))}
                     </div>
                     {review.verified && (
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded self-start">
+                      <span className="ml-2 bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
                         Verified Purchase
                       </span>
                     )}
                   </div>
                   
-                  <h4 className="font-medium text-slate-900 text-base sm:text-lg mb-1">{review.title}</h4>
-                  <p className="text-slate-600 text-sm sm:text-base mb-3">{review.comment}</p>
+                  <h4 className="font-medium text-slate-900 text-lg mb-1">{review.title}</h4>
+                  <p className="text-slate-600 mb-3">{review.comment}</p>
                   
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="text-xs sm:text-sm text-slate-500">
+                  <div className="flex flex-wrap items-center justify-between">
+                    <div className="text-sm text-slate-500">
                       <span>Reviewed on {formatDate(review.date)}</span>
                       {review.helpful > 0 && (
-                        <span className="ml-0 sm:ml-3 block sm:inline-block mt-1 sm:mt-0">
-                          {review.helpful} people found this helpful
-                        </span>
+                        <span className="ml-3">{review.helpful} people found this helpful</span>
                       )}
                     </div>
                     
-                    <div className="flex space-x-3 mt-2 sm:mt-0">
+                    <div className="flex space-x-3 mt-2 md:mt-0">
                       <button
                         onClick={() => handleEditReview(review)}
-                        className="text-slate-900 hover:text-slate-700 text-xs sm:text-sm font-medium"
+                        className="text-slate-900 hover:text-slate-700 text-sm font-medium"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDeleteReview(review.id)}
-                        className="text-red-600 hover:text-red-800 text-xs sm:text-sm font-medium"
+                        className="text-red-600 hover:text-red-800 text-sm font-medium"
                       >
                         Delete
                       </button>
@@ -274,8 +285,8 @@ const MyReviews = () => {
               
               {/* Edit Form */}
               {editingId === review.id && (
-                <div className="mt-4 sm:mt-5 pt-4 sm:pt-5 border-t border-slate-200">
-                  <h4 className="font-medium text-slate-900 mb-3 text-base sm:text-lg">Edit Your Review</h4>
+                <div className="mt-5 pt-5 border-t border-slate-200">
+                  <h4 className="font-medium text-slate-900 mb-3">Edit Your Review</h4>
                   
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Your Rating</label>
@@ -288,7 +299,7 @@ const MyReviews = () => {
                           className="focus:outline-none"
                         >
                           <svg
-                            className={`w-6 h-6 sm:w-8 sm:h-8 ${star <= editForm.rating ? 'text-amber-500' : 'text-slate-300'}`}
+                            className={`w-8 h-8 ${star <= editForm.rating ? 'text-amber-500' : 'text-slate-300'}`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                           >
@@ -319,22 +330,22 @@ const MyReviews = () => {
                       name="comment"
                       value={editForm.comment}
                       onChange={handleInputChange}
-                      rows="3"
+                      rows="4"
                       className="w-full px-3 py-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-900"
                       placeholder="Share your experience with this product"
                     ></textarea>
                   </div>
                   
-                  <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex space-x-3">
                     <button
                       onClick={() => handleSaveEdit(review.id)}
-                      className="bg-slate-900 text-white py-2 px-4 sm:px-5 rounded-md hover:bg-slate-700 transition text-sm flex-1 sm:flex-none"
+                      className="bg-slate-900 text-white py-2 px-5 rounded-md hover:bg-slate-700 transition text-sm"
                     >
                       Save Changes
                     </button>
                     <button
                       onClick={handleCancelEdit}
-                      className="bg-white text-slate-900 py-2 px-4 sm:px-5 rounded-md border border-slate-900 hover:bg-slate-100 transition text-sm flex-1 sm:flex-none"
+                      className="bg-white text-slate-900 py-2 px-5 rounded-md border border-slate-900 hover:bg-slate-100 transition text-sm"
                     >
                       Cancel
                     </button>
