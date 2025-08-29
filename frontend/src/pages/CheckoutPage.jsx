@@ -1,58 +1,135 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    ShoppingBag,
+    Trash2,
+    Loader2,
+    AlertCircle,
+    ArrowRight,
+    MapPin,
+    CreditCard,
+    ShieldCheck,
+} from 'lucide-react';
+
 import { fetchUserCart, removeItemFromCart, clearCart } from '../features/cart/cartSlice';
 import api from '../api/AxiosAPI';
 
-// --- Background Cubes Component ---
+// --- Reusable UI Components ---
+
 const BackgroundCubes = () => (
-    <div className="absolute inset-0 z-0 overflow-hidden">
+    <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-50">
         <ul className="circles">
-            <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
+            {[...Array(10)].map((_, i) => <li key={i}></li>)}
         </ul>
     </div>
 );
 
+const LoadingSkeleton = () => (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+        <div className="lg:col-span-2 bg-white/50 p-8 rounded-lg shadow-sm animate-pulse">
+            <div className="h-8 w-1/3 bg-zinc-200 rounded mb-6"></div>
+            <div className="h-28 bg-zinc-200 rounded mb-4"></div>
+            <div className="h-28 bg-zinc-200 rounded"></div>
+        </div>
+        <div className="lg:col-span-1 bg-white/50 p-8 rounded-lg shadow-sm animate-pulse">
+            <div className="h-8 w-1/2 bg-zinc-200 rounded mb-6"></div>
+            <div className="h-6 bg-zinc-200 rounded mb-3"></div>
+            <div className="h-6 bg-zinc-200 rounded mb-4"></div>
+            <div className="h-10 bg-zinc-200 rounded"></div>
+        </div>
+    </div>
+);
+
+const EmptyCart = () => (
+    <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="text-center bg-white p-12 rounded-lg shadow-md border"
+    >
+        <ShoppingBag className="mx-auto h-16 w-16 text-zinc-400" strokeWidth={1.5} />
+        <h2 className="mt-6 text-2xl font-semibold text-zinc-800">Your Cart is Empty</h2>
+        <p className="mt-2 text-zinc-500">Looks like you haven't added anything to your cart yet.</p>
+        <Link
+            to="/products"
+            className="inline-flex items-center gap-2 mt-8 bg-zinc-900 text-white font-bold py-3 px-8 rounded-lg hover:bg-zinc-700 transition-colors duration-300"
+        >
+            Start Shopping
+            <ArrowRight className="h-4 w-4" />
+        </Link>
+    </motion.div>
+);
+
+const ErrorNotification = ({ message, onClear }) => (
+    <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center justify-between gap-4 mb-8"
+    >
+        <div className="flex items-center gap-3">
+            <AlertCircle className="h-5 w-5" />
+            <span className="text-sm font-medium">{message}</span>
+        </div>
+        <button onClick={onClear} className="text-red-500 hover:text-red-700">&times;</button>
+    </motion.div>
+);
+
+
+// --- Main Checkout Page Component ---
+
 const CheckoutPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { cartItems, loading } = useSelector((state) => state.cart);
+
+    // Re-instated Redux selectors to fetch real data
+    const { cartItems, loading, shippingAddress } = useSelector((state) => state.cart);
     const { userInfo } = useSelector((state) => state.auth);
 
+    const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+    const [orderError, setOrderError] = useState('');
+
     useEffect(() => {
+        // Fetch real cart data from the backend via Redux thunk
         dispatch(fetchUserCart());
     }, [dispatch]);
 
-    const subtotal = cartItems.reduce((acc, item) => acc + item.price, 0);
-    const shipping = subtotal > 500 ? 0 : 50;
-    const total = subtotal + shipping;
+    const subtotal = cartItems.reduce((acc, item) => acc + (item.price || 0), 0);
+    const total = subtotal; // Assuming free shipping
 
     const placeOrderHandler = async () => {
+        setOrderError('');
+        if (!shippingAddress) {
+            setOrderError('Please provide a shipping address before placing an order.');
+            navigate('/shipping');
+            return;
+        }
+        setIsPlacingOrder(true);
         try {
             const orderItems = cartItems.map(item => ({
                 name: item.name,
                 imageUrl: item.imageUrl,
                 price: item.price,
-                product: item.product._id || item.product, // ensure ID
-                measurements: userInfo.measurements || {}, // safe fallback
-                selectedCustomizations: item.selectedCustomizations || {}, // safe fallback
+                product: item.product._id || item.product,
+                measurements: userInfo.measurements || {},
+                selectedCustomizations: item.selectedCustomizations || {},
             }));
 
             const { data } = await api.post('/orders', {
                 orderItems,
+                shippingAddress,
                 totalPrice: total,
+                paymentMethod: 'Manual Confirmation',
             });
 
-            // Optional: clear cart on backend (implement endpoint if needed)
-            // await api.put('/cart/clear');
-
-            // Clear Redux cart
             dispatch(clearCart());
-
             navigate(`/orders/${data._id}`);
         } catch (error) {
-            console.error('Order placement failed:', error.response?.data || error.message);
-            alert('Could not place order.');
+            const message = error.response?.data?.message || 'A network error occurred. Please try again.';
+            setOrderError(message);
+        } finally {
+            setIsPlacingOrder(false);
         }
     };
 
@@ -60,85 +137,119 @@ const CheckoutPage = () => {
         dispatch(removeItemFromCart(id));
     };
 
-    return (
-        <div className="relative min-h-screen w-full bg-[#f2f2f2] font-montserrat text-slate-800">
-            <BackgroundCubes />
-            <div className="relative z-10 container mx-auto px-4 py-12">
-                <div data-aos="fade-down" className="text-center mb-12">
-                    <h1 className="font-marcellus text-5xl text-slate-900">Checkout</h1>
-                    <p className="text-slate-500 mt-2">Please review your order details below.</p>
-                </div>
+    const renderContent = () => {
+        if (loading) return <LoadingSkeleton />;
+        if (!cartItems || cartItems.length === 0) return <EmptyCart />;
 
-                {loading ? (
-                    <div className="text-center bg-white p-10 rounded-lg shadow-md" data-aos="fade-up">
-                        <p className="text-slate-500">Loading cart...</p>
+        return (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
+                {/* Left Side: Order Details */}
+                <div className="lg:col-span-2 space-y-8">
+                    {/* Shipping Info */}
+                    <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/20" data-aos="fade-right">
+                        <div className="flex items-center justify-between mb-4">
+                            <h2 className="font-marcellus text-2xl text-zinc-900 flex items-center gap-3"><MapPin className="h-6 w-6 text-zinc-500" /> Shipping Details</h2>
+                            <Link to="/shipping" className="text-sm font-semibold text-zinc-700 hover:underline">
+                                {shippingAddress ? 'Change' : 'Add Address'}
+                            </Link>
+                        </div>
+                        {shippingAddress ? (
+                            <div className="text-zinc-600 text-sm space-y-1 pl-9">
+                                <p className="font-bold text-zinc-800">{shippingAddress.name}</p>
+                                <p>{shippingAddress.address}</p>
+                                <p>{shippingAddress.city}, {shippingAddress.postalCode}, {shippingAddress.country}</p>
+                            </div>
+                        ) : (
+                            <p className="text-zinc-500 text-sm pl-9">No shipping address provided.</p>
+                        )}
                     </div>
-                ) : cartItems.length === 0 ? (
-                    <div className="text-center bg-white p-10 rounded-lg shadow-md" data-aos="fade-up">
-                        <p className="text-slate-500">Your cart is empty.</p>
-                        <Link to="/products" className="inline-block mt-4 bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors">
-                            Continue Shopping
-                        </Link>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-                        {/* Left Side: Order Summary */}
-                        <div className="lg:col-span-2 bg-white/80 backdrop-blur-md p-8 rounded-lg shadow-lg border border-white/20" data-aos="fade-right">
-                            <h2 className="font-marcellus text-3xl text-slate-900 mb-6">Order Summary</h2>
-                            <div className="space-y-6">
+
+                    {/* Order Summary */}
+                    <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/20" data-aos="fade-right" data-aos-delay="100">
+                        <h2 className="font-marcellus text-2xl text-zinc-900 mb-6 flex items-center gap-3"><ShoppingBag className="h-6 w-6 text-zinc-500" /> Order Summary</h2>
+                        <div className="space-y-6">
+                            <AnimatePresence>
                                 {cartItems.map(item => (
-                                    <div key={item._id} className="flex items-start gap-6 border-b pb-6">
-                                        <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md" />
+                                    <motion.div
+                                        key={item._id || item.product}
+                                        layout
+                                        initial={{ opacity: 0 }}
+                                        animate={{ opacity: 1 }}
+                                        exit={{ opacity: 0, x: -50 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="flex items-start gap-4 border-b border-zinc-200/50 pb-6 last:border-b-0 last:pb-0"
+                                    >
+                                        <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md border" />
                                         <div className="flex-1">
-                                            <h3 className="font-bold text-lg">{item.name}</h3>
-                                            <div className="text-xs text-slate-500 mt-1">
-                                                {item.selectedCustomizations &&
-                                                    Object.entries(item.selectedCustomizations).map(([key, value]) => (
-                                                        <p key={key}><span className="font-semibold">{key}:</span> {value}</p>
-                                                    ))
-                                                }
+                                            <h3 className="font-bold text-lg text-zinc-800">{item.name}</h3>
+                                            <div className="text-xs text-zinc-500 mt-1 space-y-0.5">
+                                                {item.selectedCustomizations && Object.entries(item.selectedCustomizations).map(([key, value]) => (
+                                                    <p key={key}><span className="font-semibold capitalize">{key}:</span> {value}</p>
+                                                ))}
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-semibold text-lg">${item.price.toFixed(2)}</p>
-                                            <button onClick={() => removeFromCartHandler(item._id)} className="text-red-500 text-xs hover:underline mt-2">Remove</button>
+                                            <p className="font-semibold text-lg text-zinc-900">${item.price.toFixed(2)}</p>
+                                            <button onClick={() => removeFromCartHandler(item._id)} className="text-red-500 hover:text-red-700 transition-colors mt-2 p-1">
+                                                <Trash2 className="h-4 w-4" />
+                                            </button>
                                         </div>
-                                    </div>
+                                    </motion.div>
                                 ))}
-                            </div>
-                        </div>
-
-                        {/* Right Side: Price & Checkout */}
-                        <div className="lg:col-span-1" data-aos="fade-left">
-                            <div className="bg-white/80 backdrop-blur-md p-8 rounded-lg shadow-lg border border-white/20">
-                                <h2 className="font-marcellus text-3xl text-slate-900 mb-6">Total</h2>
-                                <div className="space-y-4 text-slate-600">
-                                    <div className="flex justify-between">
-                                        <span>Subtotal</span>
-                                        <span className="font-semibold">${subtotal.toFixed(2)}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Shipping</span>
-                                        <span className="font-semibold">{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</span>
-                                    </div>
-                                    <div className="flex justify-between text-slate-900 font-bold text-xl border-t pt-4">
-                                        <span>Total</span>
-                                        <span>${total.toFixed(2)}</span>
-                                    </div>
-                                </div>
-                                <button
-                                    onClick={placeOrderHandler}
-                                    className="w-full mt-8 bg-slate-900 text-white font-bold py-3 px-8 rounded-md hover:bg-slate-800 transition-colors duration-300 text-sm uppercase tracking-widest"
-                                >
-                                    Confirm & Place Order
-                                </button>
-                            </div>
+                            </AnimatePresence>
                         </div>
                     </div>
-                )}
+                </div>
+
+                {/* Right Side: Price & Checkout */}
+                <div className="lg:col-span-1" data-aos="fade-left">
+                    <div className="bg-white/90 backdrop-blur-xl p-8 rounded-lg shadow-xl border border-white/30 sticky top-28">
+                        <h2 className="font-marcellus text-3xl text-zinc-900 mb-6 flex items-center gap-3"><CreditCard className="h-6 w-6 text-zinc-500" /> Price Details</h2>
+                        <div className="space-y-4 text-zinc-600">
+                            <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold">${subtotal.toFixed(2)}</span></div>
+                            <div className="flex justify-between"><span>Shipping</span><span className="font-semibold text-green-600">Free</span></div>
+                            <div className="flex justify-between text-zinc-900 font-bold text-xl border-t border-zinc-200 pt-4 mt-2"><span>Total</span><span>${total.toFixed(2)}</span></div>
+                        </div>
+                        <button
+                            onClick={placeOrderHandler}
+                            disabled={isPlacingOrder || !shippingAddress}
+                            className="w-full mt-8 bg-zinc-900 text-white font-bold py-3.5 px-8 rounded-lg hover:bg-zinc-700 transition-all duration-300 text-sm uppercase tracking-widest flex items-center justify-center gap-2 disabled:bg-zinc-400 disabled:cursor-not-allowed transform hover:scale-105"
+                        >
+                            {isPlacingOrder ? (
+                                <>
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                    <span>Placing Order...</span>
+                                </>
+                            ) : (
+                                <>
+                                    <ShieldCheck className="h-5 w-5" />
+                                    <span>Confirm & Place Order</span>
+                                </>
+                            )}
+                        </button>
+                        {!shippingAddress && <p className="text-xs text-center text-amber-700 mt-3">Please add a shipping address to proceed.</p>}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <div className="relative min-h-screen w-full font-sans text-zinc-800">
+            <BackgroundCubes />
+            <div className="relative z-10 container mx-auto px-4 py-12 md:py-16">
+                <div data-aos="fade-down" className="text-center mb-12">
+                    <h1 className="font-marcellus text-4xl md:text-5xl text-zinc-900">Secure Checkout</h1>
+                    <p className="text-zinc-500 mt-2 text-lg">Complete your purchase in just a few clicks.</p>
+                </div>
+                <AnimatePresence>
+                    {orderError && <ErrorNotification message={orderError} onClear={() => setOrderError('')} />}
+                </AnimatePresence>
+                {renderContent()}
             </div>
         </div>
     );
 };
 
 export default CheckoutPage;
+

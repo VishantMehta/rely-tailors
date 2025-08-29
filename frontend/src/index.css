@@ -4,7 +4,17 @@
 
 
 /* Add this class to hide the scrollbar but keep it scrollable */
-/* Add this class to hide the scrollbar but keep it scrollable */
+.horizontal-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.horizontal-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
@@ -15,7 +25,6 @@
     scrollbar-width: none;
     /* Firefox */
 }
-
 
 
 @layer utilities {

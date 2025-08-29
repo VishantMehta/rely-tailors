@@ -1,6 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Plus, Edit, Trash2, Loader2, AlertTriangle, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useDebounce } from '../hooks/useDebounce'; // Assuming a custom debounce hook
+
 import {
   productListRequest,
   productListSuccess,
@@ -8,46 +12,118 @@ import {
 } from '../features/products/productSlice';
 import api from '../api/AxiosAPI';
 
+// --- Helper Components ---
+
+const TableSkeleton = () => (
+  <div className="animate-pulse">
+    {[...Array(5)].map((_, i) => (
+      <div key={i} className="flex items-center justify-between p-4 border-b border-zinc-200">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 bg-zinc-200 rounded-md"></div>
+          <div className="space-y-2">
+            <div className="h-4 bg-zinc-200 rounded w-48"></div>
+            <div className="h-3 bg-zinc-200 rounded w-24"></div>
+          </div>
+        </div>
+        <div className="h-4 bg-zinc-200 rounded w-20"></div>
+        <div className="h-4 bg-zinc-200 rounded w-24"></div>
+        <div className="h-8 bg-zinc-200 rounded w-20"></div>
+      </div>
+    ))}
+  </div>
+);
+
+const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, isLoading }) => (
+  <AnimatePresence>
+    {isOpen && (
+      <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="bg-white rounded-lg w-full max-w-sm p-6 shadow-xl">
+          <div className="flex items-start">
+            <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 className="text-lg leading-6 font-medium text-zinc-900">{title}</h3>
+              <div className="mt-2"><p className="text-sm text-zinc-500">{message}</p></div>
+            </div>
+          </div>
+          <div className="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse gap-3">
+            <button onClick={onConfirm} disabled={isLoading} className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 sm:w-auto sm:text-sm disabled:bg-red-300">
+              {isLoading ? <Loader2 className="animate-spin h-5 w-5" /> : 'Confirm Delete'}
+            </button>
+            <button onClick={onCancel} disabled={isLoading} className="mt-3 w-full inline-flex justify-center rounded-md border border-zinc-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-zinc-700 hover:bg-zinc-50 sm:mt-0 sm:w-auto sm:text-sm">Cancel</button>
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);
+
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+  if (totalPages <= 1) return null;
+  return (
+    <div className="flex items-center justify-center mt-8 gap-2">
+      <button onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 disabled:opacity-50 transition-colors"><ChevronLeft className="h-5 w-5" /></button>
+      {[...Array(totalPages).keys()].map((page) => (
+        <button key={page + 1} onClick={() => onPageChange(page + 1)} className={`h-10 w-10 rounded-full font-semibold transition-colors ${currentPage === page + 1 ? 'bg-zinc-900 text-white' : 'bg-white border border-zinc-200 text-zinc-700 hover:bg-zinc-100'}`}>{page + 1}</button>
+      ))}
+      <button onClick={() => onPageChange(currentPage + 1)} disabled={currentPage === totalPages} className="h-10 w-10 flex items-center justify-center rounded-full bg-white border border-zinc-200 text-zinc-600 hover:bg-zinc-100 disabled:opacity-50 transition-colors"><ChevronRight className="h-5 w-5" /></button>
+    </div>
+  );
+};
+
+
+// --- Main Component ---
+
 const AdminProductListPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { products, loading, error, page, pages } = useSelector(
-    (state) => state.products
-  );
-  const { userInfo } = useSelector((state) => state.auth);
+  const { products, loading, error, pages } = useSelector((state) => state.products);
 
-  // track current page
   const [currentPage, setCurrentPage] = useState(1);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearchTerm = useDebounce(searchTerm, 500);
+
+  const fetchProducts = useCallback(async (page, keyword) => {
+    try {
+      dispatch(productListRequest());
+      // Build the URL with query parameters based on your API
+      const params = new URLSearchParams();
+      params.append('page', page);
+      if (keyword) {
+        params.append('keyword', keyword);
+      }
+
+      const { data } = await api.get(`/products?${params.toString()}`);
+      dispatch(productListSuccess(data));
+    } catch (err) {
+      dispatch(productListFail(err.response?.data?.message || err.message));
+    }
+  }, [dispatch]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        dispatch(productListRequest());
-        // pass page to backend
-        const { data } = await api.get(`/products?page=${currentPage}`);
-        dispatch(productListSuccess(data)); // data = { products, page, pages }
-      } catch (err) {
-        dispatch(
-          productListFail(
-            err.response?.data?.message ? err.response.data.message : err.message
-          )
-        );
-      }
-    };
-    fetchProducts();
-  }, [dispatch, currentPage]);
+    fetchProducts(currentPage, debouncedSearchTerm);
+  }, [currentPage, debouncedSearchTerm, fetchProducts]);
 
-  const deleteHandler = async (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      try {
-        await api.delete(`/products/${id}`);
-        // refetch current page after deletion
-        const { data } = await api.get(`/products?page=${currentPage}`);
-        dispatch(productListSuccess(data));
-      } catch (err) {
-        alert('Product could not be deleted.');
-      }
+  // Reset to page 1 when a new search is performed
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
+
+  const deleteHandler = async () => {
+    setIsDeleting(true);
+    try {
+      await api.delete(`/products/${productToDelete._id}`);
+      // Refetch current page after deletion
+      fetchProducts(currentPage, debouncedSearchTerm);
+    } catch (err) {
+      console.error('Product could not be deleted.', err);
+    } finally {
+      setIsDeleting(false);
+      setProductToDelete(null);
     }
   };
 
@@ -56,95 +132,89 @@ const AdminProductListPage = () => {
       const { data } = await api.post('/products', {});
       navigate(`/admin/product/${data._id}/edit`);
     } catch (error) {
-      alert('Could not create product.');
+      console.error('Could not create product.', error);
     }
   };
 
   return (
-    <div className="bg-[#f2f2f2] min-h-screen">
+    <div className="bg-zinc-100 min-h-screen font-sans">
       <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-        <div
-          className="flex justify-between items-center mb-8"
-          data-aos="fade-down"
-        >
-          <h1 className="font-marcellus text-3xl sm:text-4xl text-slate-900">
-            Manage Products
-          </h1>
-          <button
-            onClick={createProductHandler}
-            className="bg-slate-900 text-white font-bold py-2 px-4 rounded-md hover:bg-slate-800 transition-colors"
-          >
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-8" data-aos="fade-down">
+          <div>
+            <h1 className="font-marcellus text-3xl sm:text-4xl text-zinc-900">Manage Products</h1>
+            <p className="text-zinc-500 mt-1">Add, edit, or delete products from your inventory.</p>
+          </div>
+          <button onClick={createProductHandler} className="bg-zinc-900 text-white font-bold py-2.5 px-5 rounded-lg hover:bg-zinc-700 transition-colors flex items-center justify-center gap-2 self-start sm:self-center">
+            <Plus className="h-5 w-5" />
             Create Product
           </button>
         </div>
 
-        {loading ? (
-          <p>Loading...</p>
-        ) : error ? (
-          <p className="text-red-500">{error}</p>
-        ) : (
-          <>
-            <div
-              className="bg-white p-4 rounded-lg shadow-md overflow-x-auto"
-              data-aos="fade-up"
-            >
-              <table className="w-full text-sm text-left text-slate-500">
-                <thead className="text-xs text-slate-700 uppercase bg-slate-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3">ID</th>
-                    <th scope="col" className="px-6 py-3">Name</th>
-                    <th scope="col" className="px-6 py-3">Price</th>
-                    <th scope="col" className="px-6 py-3">Category</th>
-                    <th scope="col" className="px-6 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.map((product) => (
-                    <tr key={product._id} className="bg-white border-b">
-                      <td className="px-6 py-4 font-medium text-slate-900">
-                        {product._id}
-                      </td>
-                      <td className="px-6 py-4">{product.name}</td>
-                      <td className="px-6 py-4">${product.basePrice}</td>
-                      <td className="px-6 py-4">{product.category}</td>
-                      <td className="px-6 py-4 flex space-x-2">
-                        <Link
-                          to={`/admin/product/${product._id}/edit`}
-                          className="font-medium text-blue-600 hover:underline"
-                        >
-                          Edit
-                        </Link>
-                        <button
-                          onClick={() => deleteHandler(product._id)}
-                          className="font-medium text-red-600 hover:underline"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div className="bg-white p-6 rounded-lg shadow-md" data-aos="fade-up">
+          <div className="relative mb-6">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
+            <input
+              type="text"
+              placeholder="Search by Product Name..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full max-w-lg border-zinc-300 rounded-full pl-12 pr-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-800 focus:border-zinc-800 transition-all"
+            />
+          </div>
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center space-x-2 mt-6">
-              {[...Array(pages).keys()].map((x) => (
-                <button
-                  key={x + 1}
-                  onClick={() => setCurrentPage(x + 1)}
-                  className={`px-3 py-1 rounded ${currentPage === x + 1
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-200 text-slate-700 hover:bg-slate-300'
-                    }`}
-                >
-                  {x + 1}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+          {loading ? <TableSkeleton /> : error ? (
+            <div className="bg-red-50 text-red-700 p-4 rounded-lg flex items-center gap-3"><AlertTriangle className="h-5 w-5" /> {error}</div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs text-zinc-500 uppercase bg-zinc-50/70">
+                    <tr>
+                      <th scope="col" className="px-6 py-4">Product</th>
+                      <th scope="col" className="px-6 py-4">Price</th>
+                      <th scope="col" className="px-6 py-4">Category</th>
+                      <th scope="col" className="px-6 py-4 text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product) => (
+                      <tr key={product._id} className="bg-white border-b hover:bg-zinc-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-4">
+                            <img src={product.imageUrl} alt={product.name} className="w-16 h-20 object-cover rounded-md bg-zinc-100" />
+                            <div>
+                              <p className="font-semibold text-zinc-800">{product.name}</p>
+                              <p className="text-xs text-zinc-500 font-mono" title={product._id}>{product._id}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-zinc-800">${product.basePrice.toFixed(2)}</td>
+                        <td className="px-6 py-4">{product.category}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center gap-4">
+                            <Link to={`/admin/product/${product._id}/edit`} className="p-2 text-zinc-600 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"><Edit className="h-5 w-5" /></Link>
+                            <button onClick={() => setProductToDelete(product)} className="p-2 text-zinc-600 hover:text-red-600 hover:bg-red-50 rounded-full transition-colors"><Trash2 className="h-5 w-5" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <Pagination currentPage={currentPage} totalPages={pages} onPageChange={setCurrentPage} />
+            </>
+          )}
+        </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={!!productToDelete}
+        title="Delete Product"
+        message={`Are you sure you want to permanently delete "${productToDelete?.name}"? This action cannot be undone.`}
+        onConfirm={deleteHandler}
+        onCancel={() => setProductToDelete(null)}
+        isLoading={isDeleting}
+      />
     </div>
   );
 };
