@@ -1,6 +1,17 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
+const addressSchema = mongoose.Schema({
+    fullName: { type: String, required: true },
+    addressLine1: { type: String, required: true },
+    addressLine2: { type: String },
+    city: { type: String, required: true },
+    state: { type: String, required: true },
+    postalCode: { type: String, required: true },
+    country: { type: String, required: true, default: 'India' },
+    phoneNumber: { type: String, required: true },
+});
+
 const cartItemSchema = mongoose.Schema({
     name: { type: String, required: true },
     imageUrl: { type: String, required: true },
@@ -35,6 +46,7 @@ const userSchema = mongoose.Schema(
             enum: ['customer', 'admin'],
             default: 'customer',
         },
+        addresses: [addressSchema],
         cart: [cartItemSchema],
 
     },

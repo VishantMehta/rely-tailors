@@ -21,6 +21,16 @@ const orderSchema = mongoose.Schema(
                 selectedCustomizations: { type: Object, required: false }, // e.g., { "Fabric": "Linen" }
             },
         ],
+        shippingAddress: {
+            fullName: { type: String, required: true },
+            addressLine1: { type: String, required: true },
+            addressLine2: { type: String },
+            city: { type: String, required: true },
+            state: { type: String, required: true },
+            postalCode: { type: String, required: true },
+            country: { type: String, required: true, default: 'India' },
+            phoneNumber: { type: String, required: true },
+        },
         totalPrice: {
             type: Number,
             required: true,

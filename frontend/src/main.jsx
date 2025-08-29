@@ -26,6 +26,7 @@ import AdminOrderListPage from './pages/AdminOrderListPage';
 import AboutPage from './pages/AboutPage';
 import AdminUserListPage from './pages/AdminUserListPage';
 import ContactPage from './pages/ContactPage';
+import MyAddresses from './pages/MyAddresses';
 
 // Define your routes
 const router = createBrowserRouter([
@@ -53,6 +54,7 @@ const router = createBrowserRouter([
           { path: 'checkout', element: <CheckoutPage /> },
           { path: 'my-orders', element: <MyOrdersPage /> },
           { path: 'orders/:id', element: <OrderDetailPage /> },
+          { path: 'my-addresses', element: <MyAddresses /> },
         ],
       },
 

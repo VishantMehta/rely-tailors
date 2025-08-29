@@ -236,10 +236,10 @@ const OrderDetailPage = () => {
 
                             <aside className="space-y-8" data-aos="fade-left">
                                 <InfoCard icon={MapPin} title="Shipping Address">
-                                    <p className="font-semibold text-zinc-800">{shippingAddress.name || 'N/A'}</p>
-                                    <p>{shippingAddress.address}</p>
-                                    <p>{shippingAddress.city}, {shippingAddress.postalCode}</p>
-                                    <p>{shippingAddress.country}</p>
+                                    <p className="font-semibold text-zinc-800">{shippingAddress.fullName || 'N/A'}</p>
+                                    <p>{shippingAddress.addressLine1 || ''}</p>
+                                    <p>{shippingAddress.city || ''}, {shippingAddress.state || ''} {shippingAddress.postalCode || ''}</p>
+                                    <p>{shippingAddress.phoneNumber || ''}</p>
                                 </InfoCard>
                                 <InfoCard icon={CreditCard} title="Payment Information">
                                     <p className="font-semibold text-zinc-800">{order.paymentMethod || 'N/A'}</p>

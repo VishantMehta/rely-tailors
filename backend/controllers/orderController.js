@@ -7,7 +7,7 @@ const User = require('../models/User.js');
  */
 const addOrderItems = async (req, res) => {
     try {
-        const { orderItems, totalPrice } = req.body;
+        const { orderItems, shippingAddress, totalPrice } = req.body;
 
         if (!orderItems || orderItems.length === 0) {
             return res.status(400).json({ message: 'No order items' });
@@ -16,6 +16,7 @@ const addOrderItems = async (req, res) => {
         const order = new Order({
             user: req.user._id,
             orderItems,
+            shippingAddress,
             totalPrice,
             //baki fields like orderStatus and paymentStatus have default values.
         });

@@ -39,10 +39,48 @@ export const removeItemFromCart = createAsyncThunk(
   }
 );
 
+// --- Address Thunks ---
+export const fetchUserAddress = createAsyncThunk(
+  'cart/fetchUserAddress',
+  async (_, { rejectWithValue }) => {
+    try {
+      const { data } = await api.get('/addresses');
+      return data; // array of addresses
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const addUserAddress = createAsyncThunk(
+  'cart/addUserAddress',
+  async (newAddress, { rejectWithValue }) => {
+    try {
+      const { data } = await api.post('/addresses', newAddress);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+export const deleteUserAddress = createAsyncThunk(
+  'cart/deleteUserAddress',
+  async (addressId, { rejectWithValue }) => {
+    try {
+      const { data } = await api.delete(`/addresses/${addressId}`);
+      return data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 // --- Slice ---
 
 const initialState = {
   cartItems: [],
+  address: [],
   loading: false,
   error: null,
 };
@@ -76,7 +114,19 @@ const cartSlice = createSlice({
       // Remove Item
       .addCase(removeItemFromCart.fulfilled, (state, action) => {
         state.cartItems = action.payload || [];
+      })
+      // Address handlers
+      .addCase(fetchUserAddress.fulfilled, (state, action) => {
+        state.address = action.payload || [];
+      })
+      .addCase(addUserAddress.fulfilled, (state, action) => {
+        state.address = action.payload || [];
+      })
+      .addCase(deleteUserAddress.fulfilled, (state, action) => {
+        state.address = action.payload || [];
       });
+
+
   },
 });
 

@@ -13,7 +13,12 @@ import {
     ShieldCheck,
 } from 'lucide-react';
 
-import { fetchUserCart, removeItemFromCart, clearCart } from '../features/cart/cartSlice';
+import {
+    fetchUserCart,
+    removeItemFromCart,
+    clearCart,
+    fetchUserAddress,
+} from '../features/cart/cartSlice';
 import api from '../api/AxiosAPI';
 
 // --- Reusable UI Components ---
@@ -76,33 +81,39 @@ const ErrorNotification = ({ message, onClear }) => (
     </motion.div>
 );
 
-
 // --- Main Checkout Page Component ---
 
 const CheckoutPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // Re-instated Redux selectors to fetch real data
-    const { cartItems, loading, shippingAddress } = useSelector((state) => state.cart);
+    // Redux selectors
+    const { cartItems, loading, address } = useSelector((state) => state.cart);
     const { userInfo } = useSelector((state) => state.auth);
 
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [orderError, setOrderError] = useState('');
 
+    const [selectedAddress, setSelectedAddress] = useState(null);
+
     useEffect(() => {
-        // Fetch real cart data from the backend via Redux thunk
         dispatch(fetchUserCart());
+        dispatch(fetchUserAddress());
     }, [dispatch]);
+
+    useEffect(() => {
+        if (address && address.length > 0) {
+            setSelectedAddress(address[0]); // default first address
+        }
+    }, [address]);
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price || 0), 0);
     const total = subtotal; // Assuming free shipping
 
     const placeOrderHandler = async () => {
         setOrderError('');
-        if (!shippingAddress) {
+        if (!selectedAddress) {
             setOrderError('Please provide a shipping address before placing an order.');
-            navigate('/shipping');
             return;
         }
         setIsPlacingOrder(true);
@@ -116,12 +127,23 @@ const CheckoutPage = () => {
                 selectedCustomizations: item.selectedCustomizations || {},
             }));
 
-            const { data } = await api.post('/orders', {
+            // ✅ send full address object
+            const orderPayload = {
                 orderItems,
-                shippingAddress,
+                shippingAddress: {
+                    fullName: selectedAddress.fullName,
+                    addressLine1: selectedAddress.addressLine1,
+                    city: selectedAddress.city,
+                    state: selectedAddress.state,
+                    postalCode: selectedAddress.postalCode,
+                    phoneNumber: selectedAddress.phoneNumber,
+                    _id: selectedAddress._id, // optional, if backend wants it
+                },
                 totalPrice: total,
                 paymentMethod: 'Manual Confirmation',
-            });
+            };
+
+            const { data } = await api.post('/orders', orderPayload);
 
             dispatch(clearCart());
             navigate(`/orders/${data._id}`);
@@ -132,6 +154,7 @@ const CheckoutPage = () => {
             setIsPlacingOrder(false);
         }
     };
+
 
     const removeFromCartHandler = (id) => {
         dispatch(removeItemFromCart(id));
@@ -149,19 +172,39 @@ const CheckoutPage = () => {
                     <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/20" data-aos="fade-right">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="font-marcellus text-2xl text-zinc-900 flex items-center gap-3"><MapPin className="h-6 w-6 text-zinc-500" /> Shipping Details</h2>
-                            <Link to="/shipping" className="text-sm font-semibold text-zinc-700 hover:underline">
-                                {shippingAddress ? 'Change' : 'Add Address'}
+                            <Link to="/my-addresses" className="text-sm font-semibold text-zinc-700 hover:underline">
+                                {selectedAddress ? 'Change' : 'Add Address'}
                             </Link>
                         </div>
-                        {shippingAddress ? (
-                            <div className="text-zinc-600 text-sm space-y-1 pl-9">
-                                <p className="font-bold text-zinc-800">{shippingAddress.name}</p>
-                                <p>{shippingAddress.address}</p>
-                                <p>{shippingAddress.city}, {shippingAddress.postalCode}, {shippingAddress.country}</p>
+                        {address && address.length > 0 ? (
+                            <div className="space-y-4 pl-9">
+                                {address.map((addr) => (
+                                    <label
+                                        key={addr._id}
+                                        className={`block p-4 border rounded-lg cursor-pointer transition 
+          ${selectedAddress?._id === addr._id ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-300 hover:border-zinc-500'}`}
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="shippingAddress"
+                                            value={addr._id}
+                                            checked={selectedAddress?._id === addr._id}
+                                            onChange={() => setSelectedAddress(addr)}
+                                            className="mr-3"
+                                        />
+                                        <div className="inline-block align-middle text-sm text-zinc-700">
+                                            <p className="font-bold text-zinc-900">{addr.fullName}</p>
+                                            <p>{addr.addressLine1}</p>
+                                            <p>{addr.city}, {addr.state} {addr.postalCode}</p>
+                                            <p className="text-xs text-zinc-500">Phone: {addr.phoneNumber}</p>
+                                        </div>
+                                    </label>
+                                ))}
                             </div>
                         ) : (
                             <p className="text-zinc-500 text-sm pl-9">No shipping address provided.</p>
                         )}
+
                     </div>
 
                     {/* Order Summary */}
@@ -212,7 +255,7 @@ const CheckoutPage = () => {
                         </div>
                         <button
                             onClick={placeOrderHandler}
-                            disabled={isPlacingOrder || !shippingAddress}
+                            disabled={isPlacingOrder || !selectedAddress}
                             className="w-full mt-8 bg-zinc-900 text-white font-bold py-3.5 px-8 rounded-lg hover:bg-zinc-700 transition-all duration-300 text-sm uppercase tracking-widest flex items-center justify-center gap-2 disabled:bg-zinc-400 disabled:cursor-not-allowed transform hover:scale-105"
                         >
                             {isPlacingOrder ? (
@@ -227,7 +270,7 @@ const CheckoutPage = () => {
                                 </>
                             )}
                         </button>
-                        {!shippingAddress && <p className="text-xs text-center text-amber-700 mt-3">Please add a shipping address to proceed.</p>}
+                        {!selectedAddress && <p className="text-xs text-center text-amber-700 mt-3">Please add a shipping address to proceed.</p>}
                     </div>
                 </div>
             </div>
@@ -252,4 +295,3 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
-

@@ -68,18 +68,41 @@ const ActionMenu = ({ order, onConfirm, onCancel, onDelete, onView, openUpward }
                         className={`absolute right-0 w-48 bg-white rounded-md shadow-lg border z-20 ${menuPositionClasses}`}
                         onMouseLeave={() => setIsOpen(false)}
                     >
-                        {order.orderStatus === 'Pending Confirmation' ? (
+                        {/* Always show "View Details" */}
+                        <button
+                            onClick={() => { onView(order._id); setIsOpen(false); }}
+                            className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 flex items-center gap-2"
+                        >
+                            <Eye className="h-4 w-4" /> View Details
+                        </button>
+
+                        {/* Extra actions only if Pending Confirmation */}
+                        {order.orderStatus === 'Pending Confirmation' && (
                             <>
-                                <button onClick={() => { onConfirm(order._id); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-green-50 flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Confirm</button>
-                                <button onClick={() => { onCancel(order._id); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-yellow-700 hover:bg-yellow-50 flex items-center gap-2"><XCircle className="h-4 w-4" /> Cancel</button>
-                                <button onClick={() => { onDelete(order); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center gap-2"><Trash2 className="h-4 w-4" /> Delete</button>
+                                <button
+                                    onClick={() => { onConfirm(order._id); setIsOpen(false); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-green-50 flex items-center gap-2"
+                                >
+                                    <CheckCircle2 className="h-4 w-4" /> Confirm
+                                </button>
+                                <button
+                                    onClick={() => { onCancel(order._id); setIsOpen(false); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-yellow-700 hover:bg-yellow-50 flex items-center gap-2"
+                                >
+                                    <XCircle className="h-4 w-4" /> Cancel
+                                </button>
+                                <button
+                                    onClick={() => { onDelete(order); setIsOpen(false); }}
+                                    className="w-full text-left px-4 py-2 text-sm text-red-700 hover:bg-red-50 flex items-center gap-2"
+                                >
+                                    <Trash2 className="h-4 w-4" /> Delete
+                                </button>
                             </>
-                        ) : (
-                            <button onClick={() => { onView(order._id); setIsOpen(false); }} className="w-full text-left px-4 py-2 text-sm text-zinc-700 hover:bg-zinc-100 flex items-center gap-2"><Eye className="h-4 w-4" /> View Details</button>
                         )}
                     </motion.div>
                 )}
             </AnimatePresence>
+
         </div>
     );
 };
