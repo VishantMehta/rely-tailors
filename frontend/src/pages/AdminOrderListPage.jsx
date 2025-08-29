@@ -17,8 +17,6 @@ import {
     MoreVertical,
     Eye,
 } from 'lucide-react';
-import { useDebounce } from '../hooks/useDebounce'; // Assuming a simple debounce hook
-
 import { orderListRequest, orderListSuccess, orderListFail } from '../features/orders/orderSlice';
 import api from '../api/AxiosAPI';
 
@@ -142,7 +140,11 @@ const ConfirmationModal = ({ isOpen, title, message, onConfirm, onCancel, isLoad
 const AdminOrderListPage = () => {
     const dispatch = useDispatch();
     const { orders, loading, error } = useSelector((state) => state.orders);
-
+    const [searchTerm, setSearchTerm] = useState('');
+    const filteredOrders = orders.filter(order =>
+        order._id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.user?.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     const [refresh, setRefresh] = useState(0);
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [modalLoading, setModalLoading] = useState(false);
@@ -150,9 +152,6 @@ const AdminOrderListPage = () => {
     const [orderToDelete, setOrderToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    // --- FIX: State for search input and debounced value for API call ---
-    const [searchTerm, setSearchTerm] = useState('');
-    const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
 
     // --- FIX: API call logic now handles search ---
     const fetchAllOrders = useCallback(async (searchQuery) => {
@@ -168,21 +167,9 @@ const AdminOrderListPage = () => {
         }
     }, [dispatch]);
 
-    // --- FIX: useEffect to fetch all orders on mount/refresh ---
     useEffect(() => {
-        // Only fetch all orders if there is no search term
-        if (!debouncedSearchTerm) {
-            fetchAllOrders();
-        }
-    }, [refresh, debouncedSearchTerm, fetchAllOrders]);
-
-    // --- FIX: useEffect to trigger search when debounced term changes ---
-    useEffect(() => {
-        if (debouncedSearchTerm) {
-            fetchAllOrders(debouncedSearchTerm);
-        }
-    }, [debouncedSearchTerm, fetchAllOrders]);
-
+        fetchAllOrders(searchTerm);
+    }, [fetchAllOrders, refresh, searchTerm]);
 
     const handleAction = async (action, successMsg, errorMsg) => {
         try {
@@ -210,7 +197,7 @@ const AdminOrderListPage = () => {
         setModalLoading(true);
         setSelectedOrder(true);
         try {
-            const { data } = await api.get(`/orders/${orderId}`);
+            const { data } = await api.get(`/admin/orders/${orderId}`);
             setSelectedOrder(data);
             setOpenItems({});
         } catch (err) {
@@ -240,9 +227,10 @@ const AdminOrderListPage = () => {
                             type="text"
                             placeholder="Search by Order ID or Customer Name..."
                             value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full max-w-lg border-zinc-300 rounded-full pl-12 pr-4 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-zinc-800 focus:border-zinc-800 transition-all"
+                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
+
                     </div>
 
                     {loading ? <div className="text-center p-10"><Loader2 className="h-8 w-8 animate-spin mx-auto text-zinc-500" /></div> : error ? <p className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</p> : (
@@ -259,7 +247,7 @@ const AdminOrderListPage = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {orders.map((order, index) => ( // --- FIX: Added index ---
+                                    {filteredOrders.map((order, index) => (
                                         <tr key={order._id} className="bg-white border-b hover:bg-zinc-50 transition-colors">
                                             <td className="px-6 py-4 font-mono text-xs font-semibold text-zinc-700" title={order._id}>{order._id}</td>
                                             <td className="px-6 py-4 text-zinc-800 font-medium">{order.user?.name || 'N/A'}</td>
