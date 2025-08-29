@@ -118,31 +118,41 @@ const Navbar = () => {
                 </div>
             </div>
 
-            {/* Mobile Menu Panel */}
-            <div className={`absolute top-0 left-0 w-full bg-[#f2f2f2] border-b border-slate-200 transform transition-transform duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} pt-24`}>
-                <div className="flex flex-col space-y-4 p-6 text-sm uppercase tracking-widest">
-                    <Link to="/" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Home</Link>
-                    <Link to="/products" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Shop</Link>
-                    <Link to="/about" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">About</Link>
-                    <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Contact</Link>
+        {/* Mobile Menu Panel */}
+        <div className={`absolute top-0 left-0 w-full bg-[#f2f2f2] border-b border-slate-200 transform transition-transform duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} pt-24 h-screen`}>
+          <div className="flex flex-col space-y-4 p-6 text-sm uppercase tracking-widest">
+            <Link to="/" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">Home</Link>
+            <Link to="/products" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">Shop</Link>
+            <Link to="/about" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">About</Link>
+            <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">Contact</Link>
+            
+            <hr className="border-slate-200" />
+            
+            {userInfo ? (
+              <>
+                <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">My Profile</Link>
+                <Link to="/my-orders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">My Orders</Link>
+                
+                {/* Admin Options (Mobile) */}
+                {userInfo.role === 'admin' && (
+                  <>
                     <hr className="border-slate-200" />
-                    {userInfo ? (
-                        <>
-                            <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Profile</Link>
-                            <Link to="/my-orders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">My Orders</Link>
-                            {userInfo.role === 'admin' && (
-                                <>
-                                    <hr className="border-slate-200" />
-                                    <Link to="/admin/productlist" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Admin Products</Link>
-                                </>
-                            )}
-                            <button onClick={logoutHandler} className="text-left hover:text-amber-600">Logout</button>
-                        </>
-                    ) : (
-                        <Link to="/login" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600">Login</Link>
-                    )}
-                </div>
-            </div>
+                    <div className="pl-4 border-l-2 border-amber-600">
+                      <p className="text-xs text-gray-500 mb-2">ADMIN</p>
+                      <Link to="/admin/productlist" onClick={() => setIsMenuOpen(false)} className="block hover:text-amber-600 py-2">Products</Link>
+                      <Link to="/admin/orders" onClick={() => setIsMenuOpen(false)} className="block hover:text-amber-600 py-2">Orders</Link>
+                      <Link to="/admin/userlist" onClick={() => setIsMenuOpen(false)} className="block hover:text-amber-600 py-2">Users</Link>
+                    </div>
+                  </>
+                )}
+                
+                <button onClick={() => { logoutHandler(); setIsMenuOpen(false); }} className="text-left hover:text-amber-600 py-2">Logout</button>
+              </>
+            ) : (
+              <Link to="/login" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">Login</Link>
+            )}
+          </div>
+        </div>
         </nav>
     );
 };
