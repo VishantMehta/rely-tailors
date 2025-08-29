@@ -40,7 +40,7 @@ const MyOrdersPage = () => {
                             <tbody>
                                 {orders.map(order => (
                                     <tr key={order._id} className="bg-white border-b hover:bg-slate-50">
-                                        <td className="px-6 py-4 font-medium text-slate-600">#{order._id.substring(0, 8)}...</td>
+                                        <td className="px-6 py-4 font-medium text-slate-600">#{order._id}</td>
                                         <td className="px-6 py-4">{new Date(order.createdAt).toLocaleDateString()}</td>
                                         <td className="px-6 py-4">${order.totalPrice.toFixed(2)}</td>
                                         <td className="px-6 py-4">
@@ -48,7 +48,7 @@ const MyOrdersPage = () => {
                                                 {order.orderStatus}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-right">
+                                        <td className="px-6 py-4">
                                             <Link to={`/orders/${order._id}`} className="font-bold text-slate-800 hover:underline">View Details</Link>
                                         </td>
                                     </tr>

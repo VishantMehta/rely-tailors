@@ -19,13 +19,12 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import ProfilePage from './pages/ProfilePage';
 import AdminProductListPage from './pages/AdminProductListPage';
 import AdminProductEditPage from './pages/AdminProductEditPage';
-// --- Import new order pages ---
 import CheckoutPage from './pages/CheckoutPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import OrderDetailPage from './pages/OrderDetailPage';
 import AdminOrderListPage from './pages/AdminOrderListPage';
-import AboutPage from './pages/AboutPage'; // <-- Import the new page
-import AdminUserListPage from './pages/AdminUserListPage'; // <-- Import the new page
+import AboutPage from './pages/AboutPage';
+import AdminUserListPage from './pages/AdminUserListPage';
 import ContactPage from './pages/ContactPage';
 
 // Define your routes
@@ -39,9 +38,12 @@ const router = createBrowserRouter([
       { path: 'login', element: <LoginPage /> },
       { path: 'register', element: <RegisterPage /> },
       { path: 'products', element: <ProductsPage /> },
+      // ADD THIS ROUTE
+      { path: 'products/category/:categoryName', element: <ProductsPage /> },
       { path: 'products/:id', element: <ProductDetailPage /> },
-      { path: 'about', element: <AboutPage /> }, // <-- Add the new route
+      { path: 'about', element: <AboutPage /> },
       { path: 'contact', element: <ContactPage /> },
+
       // --- Private Routes (for logged-in users) ---
       {
         path: '',

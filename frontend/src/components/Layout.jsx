@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import Footer from './Footer'; // Make sure this is your enhanced footer
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // Import AOS styles
+import ScrollToTop from './ScrollToTop';
 
 const Layout = () => {
   // This effect will run once when the layout is first loaded
@@ -16,6 +17,7 @@ const Layout = () => {
 
   return (
     <div>
+      <ScrollToTop />
       <Navbar />
       <main>
         <Outlet />
