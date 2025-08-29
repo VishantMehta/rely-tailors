@@ -8,9 +8,9 @@ const AdminOrderListPage = () => {
     const { orders, loading, error } = useSelector((state) => state.orders);
 
     const [refresh, setRefresh] = useState(0);
-    const [selectedOrder, setSelectedOrder] = useState(null); // For modal
+    const [selectedOrder, setSelectedOrder] = useState(null);
     const [modalLoading, setModalLoading] = useState(false);
-    const [openItems, setOpenItems] = useState({}); // Track collapsible items in modal
+    const [openItems, setOpenItems] = useState({});
 
     useEffect(() => {
         const fetchAllOrders = async () => {
@@ -25,6 +25,38 @@ const AdminOrderListPage = () => {
         fetchAllOrders();
     }, [dispatch, refresh]);
 
+    const confirmHandler = async (orderId) => {
+        try {
+            await api.put(`/admin/orders/${orderId}/confirm`);
+            alert('Order confirmed successfully!');
+            setRefresh(prev => prev + 1);
+        } catch (err) {
+            alert('Failed to confirm order.');
+        }
+    };
+
+    const cancelHandler = async (orderId) => {
+        try {
+            await api.put(`/admin/orders/${orderId}/cancel`);
+            alert('Order has been cancelled.');
+            setRefresh(prev => prev + 1);
+        } catch (err) {
+            alert('Failed to cancel order.');
+        }
+    };
+
+    const deleteHandler = async (orderId) => {
+        if (window.confirm('Are you sure you want to permanently delete this order?')) {
+            try {
+                await api.delete(`/admin/orders/${orderId}`);
+                alert('Order deleted successfully.');
+                setRefresh(prev => prev + 1);
+            } catch (err) {
+                alert('Failed to delete order.');
+            }
+        }
+    };
+
     const handleStatusChange = async (orderId, newStatus) => {
         try {
             await api.put(`/admin/orders/${orderId}/status`, { orderStatus: newStatus });
@@ -37,9 +69,9 @@ const AdminOrderListPage = () => {
     const openOrderDetails = async (orderId) => {
         try {
             setModalLoading(true);
-            const { data } = await api.get(`/orders/${orderId}`); // make sure admin can access it
+            const { data } = await api.get(`/orders/${orderId}`);
             setSelectedOrder(data);
-            setOpenItems({}); // Reset collapsible state for new order
+            setOpenItems({});
             setModalLoading(false);
         } catch (err) {
             setModalLoading(false);
@@ -56,7 +88,6 @@ const AdminOrderListPage = () => {
         }));
     };
 
-    // Format timestamp function - fixed to show both date and time clearly
     const formatTimestamp = (dateString) => {
         const date = new Date(dateString);
         return date.toLocaleString('en-US', {
@@ -99,26 +130,32 @@ const AdminOrderListPage = () => {
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-4 font-semibold text-slate-900">${order.totalPrice.toFixed(2)}</td>
+                                        <td className="px-6 py-4 font-semibold text-slate-900">${Number(order.totalPrice || 0).toFixed(2)}</td>
                                         <td className="px-6 py-4">
-                                            <select
-                                                value={order.orderStatus}
-                                                onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                                className="p-1 border rounded-md text-slate-700 bg-white"
-                                            >
-                                                <option>Confirmed</option>
-                                                <option>Processing</option>
-                                                <option>Shipped</option>
-                                                <option>Delivered</option>
-                                            </select>
+                                            {order.orderStatus === 'Pending Confirmation' ? (
+                                                <span className="px-2 py-1 text-xs font-semibold rounded-full bg-yellow-200 text-yellow-800">{order.orderStatus}</span>
+                                            ) : (
+                                                <select value={order.orderStatus} onChange={(e) => handleStatusChange(order._id, e.target.value)} className="p-1 border rounded-md text-slate-700 bg-white">
+                                                    <option>Confirmed</option>
+                                                    <option>Processing</option>
+                                                    <option>Shipped</option>
+                                                    <option>Delivered</option>
+                                                    <option>Cancelled</option>
+                                                </select>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <button
-                                                onClick={() => openOrderDetails(order._id)}
-                                                className="font-bold text-blue-600 hover:text-blue-800 hover:underline transition-colors"
-                                            >
-                                                View Details
-                                            </button>
+                                            {order.orderStatus === 'Pending Confirmation' ? (
+                                                <div className="flex items-center space-x-2">
+                                                    <button onClick={() => confirmHandler(order._id)} className="font-bold text-xs bg-green-500 hover:bg-green-600 text-white py-1 px-2 rounded transition-colors">Confirm</button>
+                                                    <button onClick={() => cancelHandler(order._id)} className="font-bold text-xs bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded transition-colors">Cancel</button>
+                                                    <button onClick={() => deleteHandler(order._id)} className="font-bold text-xs bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded transition-colors">Delete</button>
+                                                </div>
+                                            ) : (
+                                                <button onClick={() => openOrderDetails(order._id)} className="font-bold text-blue-600 hover:text-blue-800 hover:underline transition-colors">
+                                                    View Details
+                                                </button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}
@@ -127,7 +164,6 @@ const AdminOrderListPage = () => {
                     </div>
                 )}
 
-                {/* Modal */}
                 {selectedOrder && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-6 z-50 overflow-auto">
                         <div className="bg-white rounded-lg w-full max-w-3xl md:w-3/4 max-h-[90vh] overflow-y-auto shadow-2xl p-6">
@@ -171,13 +207,11 @@ const AdminOrderListPage = () => {
                                                 {openItems[item.product] ? '−' : '+'}
                                             </span>
                                         </div>
-
                                         {openItems[item.product] && (
                                             <div className="px-4 pb-4 space-y-3">
-                                                <p className="text-gray-700"><strong>Price:</strong> ${item.price.toFixed(2)}</p>
+                                                <p className="text-gray-700"><strong>Price:</strong> ${Number(item.price || 0).toFixed(2)}</p>
                                                 <p className="text-gray-700"><strong>Quantity:</strong> {item.qty}</p>
-                                                <p className="text-gray-700"><strong>Subtotal:</strong> ${(item.price * item.qty).toFixed(2)}</p>
-
+                                                <p className="text-gray-700"><strong>Subtotal:</strong> ${(Number(item.price || 0) * Number(item.qty || 1)).toFixed(2)}</p>
                                                 {item.measurements && Object.keys(item.measurements).length > 0 && (
                                                     <div className="mt-2 text-gray-600">
                                                         <p className="font-semibold text-gray-800">Measurements:</p>
@@ -188,7 +222,6 @@ const AdminOrderListPage = () => {
                                                         </ul>
                                                     </div>
                                                 )}
-
                                                 {item.selectedCustomizations && Object.keys(item.selectedCustomizations).length > 0 && (
                                                     <div className="mt-2 text-gray-600">
                                                         <p className="font-semibold text-gray-800">Customizations:</p>
@@ -204,11 +237,9 @@ const AdminOrderListPage = () => {
                                     </div>
                                 ))}
                             </div>
-
                             <div className="mt-6 border-t pt-4 text-right text-lg font-semibold text-slate-900">
-                                Total Order Price: ${selectedOrder.totalPrice.toFixed(2)}
+                                Total Order Price: ${Number(selectedOrder.totalPrice || 0).toFixed(2)}
                             </div>
-
                             <div className="mt-6 text-right">
                                 <button
                                     onClick={closeModal}

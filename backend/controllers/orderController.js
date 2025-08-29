@@ -119,10 +119,68 @@ const updateOrderStatus = async (req, res) => {
     }
 };
 
+/**
+ * @desc    Confirm an order
+ * @route   PUT /api/admin/orders/:id/confirm
+ * @access  Private/Admin
+ */
+const confirmOrder = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        if (order.orderStatus === 'Pending Confirmation') {
+            order.orderStatus = 'Confirmed';
+            const updatedOrder = await order.save();
+            res.json(updatedOrder);
+        } else {
+            res.status(400).json({ message: 'Order has already been processed' });
+        }
+    } else {
+        res.status(404).json({ message: 'Order not found' });
+    }
+};
+
+/**
+ * @desc    Cancel an order
+ * @route   PUT /api/admin/orders/:id/cancel
+ * @access  Private/Admin
+ */
+const cancelOrder = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        order.orderStatus = 'Cancelled';
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } else {
+        res.status(404).json({ message: 'Order not found' });
+    }
+};
+
+/**
+ * @desc    Delete an order
+ * @route   DELETE /api/admin/orders/:id
+ * @access  Private/Admin
+ */
+const deleteOrder = async (req, res) => {
+    const order = await Order.findById(req.params.id);
+
+    if (order) {
+        await order.deleteOne();
+        res.json({ message: 'Order removed' });
+    } else {
+        res.status(404).json({ message: 'Order not found' });
+    }
+};
+
+
 module.exports = {
     addOrderItems,
     getMyOrders,
     getOrderById,
     getAllOrders,
     updateOrderStatus,
+    confirmOrder,
+    cancelOrder,
+    deleteOrder,
 };

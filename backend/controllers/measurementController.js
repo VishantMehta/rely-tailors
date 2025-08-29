@@ -28,6 +28,13 @@ const addOrUpdateMeasurement = async (req, res) => {
             measurement.profileName = profileName || measurement.profileName;
             measurement.neck = neck || measurement.neck;
             measurement.chest = chest || measurement.chest;
+            measurement.waist = waist || measurement.waist;
+            measurement.hips = hips || measurement.hips;
+            measurement.sleeveLength = sleeveLength || measurement.sleeveLength;
+            measurement.shoulderWidth = shoulderWidth || measurement.shoulderWidth;
+            measurement.shirtLength = shirtLength || measurement.shirtLength;
+            measurement.trouserLength = trouserLength || measurement.trouserLength;
+            measurement.inseam = inseam || measurement.inseam;
             const updatedMeasurement = await measurement.save();
             res.json(updatedMeasurement);
         }
@@ -37,6 +44,13 @@ const addOrUpdateMeasurement = async (req, res) => {
                 profileName,
                 neck,
                 chest,
+                waist,
+                hips,
+                sleeveLength,
+                shoulderWidth,
+                shirtLength,
+                trouserLength,
+                inseam,
             });
 
             const createdMeasurement = await newMeasurement.save();
