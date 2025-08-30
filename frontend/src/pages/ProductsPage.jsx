@@ -7,25 +7,8 @@ import { productListRequest, productListSuccess, productListFail } from '../feat
 import ProductCard from '../components/ProductCard';
 import api from '../api/AxiosAPI';
 
-// --- Asset Imports (Assuming these are correct) ---
-import suit from '../assets/suit.jpg';
-import kurta from '../assets/Crain.jpg';
-import polo from '../assets/polo.jpg';
-import shirts from '../assets/shirts.jpg';
-import blazers from '../assets/blazers.jpg';
-import wedding from '../assets/wedding.jpg';
-import indo from '../assets/indo.jpg';
-import formal from '../assets/formal.jpg';
-
-// --- Data & Configuration ---
-const categoryImages = {
-  'All': 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-  'Suits': suit, 'Blazers': blazers, 'Shirts': shirts, 'Kurtas': kurta,
-  'Polo T-Shirts': polo, 'Indo Western': indo, 'Wedding': wedding, 'Formal': formal,
-};
 const categories = ['All', 'Suits', 'Blazers', 'Shirts', 'Kurtas', 'Polo T-Shirts', 'Indo Western', 'Wedding', 'Formal'];
 
-// --- Reusable UI Components (Unchanged) ---
 
 const ProductGridSkeleton = () => (
   <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-8 md:gap-x-6 md:gap-y-12 animate-pulse">
@@ -99,7 +82,6 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 };
 
 
-// --- Main Page Component (Refactored for Desktop) ---
 const ProductsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -187,7 +169,6 @@ const ProductsPage = () => {
 
       <div className="container mx-auto px-4 sm:px-6 py-8 md:py-12">
 
-        {/* --- MOBILE/TABLET HEADER & CONTROLS (lg:hidden) --- */}
         <div className="lg:hidden">
           <header className="text-center mb-6">
             <h1 className="text-4xl font-bold text-zinc-900 font-marcellus">

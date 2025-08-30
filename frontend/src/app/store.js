@@ -3,7 +3,7 @@ import authReducer from '../features/auth/authSlice';
 import productReducer from '../features/products/productSlice';
 import orderReducer from '../features/orders/orderSlice';
 import cartReducer from '../features/cart/cartSlice';
-import userReducer from '../features/users/userSlice.js'; // <-- Import user reducer
+import userReducer from '../features/users/userSlice.js';
 import wishlistReducer from "../features/wishlist/wishlistSlice";
 
 export const store = configureStore({
@@ -12,7 +12,7 @@ export const store = configureStore({
     products: productReducer,
     orders: orderReducer,
     cart: cartReducer,
-    users: userReducer, // <-- Add user reducer
+    users: userReducer,
     wishlist: wishlistReducer,
   },
 });

@@ -8,7 +8,14 @@
     display: none;
 }
 
-.horizontal-scrollbar {
+/* html,
+body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    /* 🚀 hides vertical scrollbar */
+/* } */
+
+*/ .horizontal-scrollbar {
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
@@ -190,6 +197,14 @@
     animation-delay: 0s;
     animation-duration: 11s;
 }
+
+.HomePageWrapper {
+    /* wrap the whole HomePage content */
+    position: relative;
+    overflow: hidden;
+    /* prevents inner scroll caused by animated cubes */
+}
+
 
 @keyframes animate {
     0% {

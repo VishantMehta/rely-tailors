@@ -33,7 +33,7 @@ export const updateUserRole = createAsyncThunk(
     async ({ id, role }, { rejectWithValue }) => {
         try {
             const { data } = await api.put(`/admin/users/${id}`, { role });
-            return data; // returns updated user object
+            return data;
         } catch (error) {
             return rejectWithValue(error.response.data.message);
         }

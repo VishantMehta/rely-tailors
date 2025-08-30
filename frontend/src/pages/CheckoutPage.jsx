@@ -127,7 +127,6 @@ const CheckoutPage = () => {
                 selectedCustomizations: item.selectedCustomizations || {},
             }));
 
-            // ✅ send full address object
             const orderPayload = {
                 orderItems,
                 shippingAddress: {
@@ -137,7 +136,7 @@ const CheckoutPage = () => {
                     state: selectedAddress.state,
                     postalCode: selectedAddress.postalCode,
                     phoneNumber: selectedAddress.phoneNumber,
-                    _id: selectedAddress._id, // optional, if backend wants it
+                    _id: selectedAddress._id,
                 },
                 totalPrice: total,
                 paymentMethod: 'Manual Confirmation',

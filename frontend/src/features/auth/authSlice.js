@@ -31,17 +31,13 @@ export const authSlice = createSlice({
       state.userInfo = null;
       localStorage.removeItem('userInfo');
     },
-    // --- ADD THIS NEW REDUCER ---
     updateUserProfile: (state, action) => {
-      // Merge the updated fields into the existing user info
       state.userInfo = { ...state.userInfo, ...action.payload };
-      // Save the completely new user info object to local storage
       localStorage.setItem('userInfo', JSON.stringify(state.userInfo));
     },
   },
 });
 
-// Export the new action
 export const { authRequest, authSuccess, authFail, logout, updateUserProfile } = authSlice.actions;
 
 export default authSlice.reducer;

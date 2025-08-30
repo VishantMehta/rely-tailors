@@ -8,7 +8,6 @@ import MyAddresses from '../pages/MyAddresses';
 import MyWishlist from './MyWishlist';
 // import MyReviews from './MyReviews';
 
-// --- Enhanced Background with SVG Effects ---
 const BackgroundPattern = () => (
   <div className="absolute inset-0 z-0 overflow-hidden opacity-10">
     <svg className="absolute w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -317,14 +316,12 @@ const ProfileForm = () => {
   const [profileImage, setProfileImage] = useState(userInfo?.profileImage || 'https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?q=80&w=1887&auto=format&fit=crop');
   const fileInputRef = useRef(null);
 
-  // Form state now initializes from Redux store
   const [name, setName] = useState(userInfo ? userInfo.name : '');
   const [email, setEmail] = useState(userInfo ? userInfo.email : '');
   const [phone, setPhone] = useState(userInfo?.phone || '+1 123 456 7890');
 
   const handleSave = (e) => {
     e.preventDefault();
-    // Dispatch the update action with the new data
     dispatch(updateUserProfile({ name, email, phone, profileImage }));
     setIsEditing(false);
   };
@@ -336,7 +333,7 @@ const ProfileForm = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      // Use FileReader to convert image to base64 string for persistence
+      // Used FileReader to convert image to base64 string 
       const reader = new FileReader();
       reader.onloadend = () => {
         setProfileImage(reader.result);
@@ -441,7 +438,6 @@ const ProfilePage = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close on outside click or Esc
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {

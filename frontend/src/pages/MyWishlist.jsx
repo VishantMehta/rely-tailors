@@ -55,7 +55,6 @@ const MyWishlist = () => {
     setAddingToCart(item._id);
 
     try {
-      // Use the same cart action as ProductCard
       const newItem = {
         product: item._id,
         name: item.name,
@@ -67,7 +66,6 @@ const MyWishlist = () => {
 
       dispatch(addItemToCart(newItem));
 
-      // Remove from wishlist after successful cart addition
       await dispatch(removeFromWishlist(item._id)).unwrap();
 
       // Show success feedback

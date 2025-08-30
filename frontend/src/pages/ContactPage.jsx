@@ -22,7 +22,6 @@ const ContactPage = () => {
     message: ''
   });
 
-  // This useEffect hook initializes the scroll animations
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -41,7 +40,6 @@ const ContactPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Here you would typically handle form submission
     alert('Thank you for your message! We will get back to you soon.');
     setFormData({
       firstName: '',
@@ -55,7 +53,6 @@ const ContactPage = () => {
 
   return (
     <div className="bg-white font-montserrat text-slate-800 overflow-x-hidden">
-      {/* Add Font Awesome CSS for icons */}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
       {/* --- Hero Section --- */}

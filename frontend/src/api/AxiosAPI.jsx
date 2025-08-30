@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { store } from '../app/store'; // We need to get the store to access state
+import { store } from '../app/store';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
 

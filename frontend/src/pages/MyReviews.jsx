@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// Sample reviews data - in a real app, this would come from your backend
 const sampleReviews = [
   {
     id: 1,
@@ -152,7 +151,7 @@ const MyReviews = () => {
             {totalReviews} review{totalReviews !== 1 ? 's' : ''} • Average: {averageRating.toFixed(1)}/5
           </p>
         </div>
-        
+
         <div className="flex flex-col sm:flex-row gap-4 mt-4 md:mt-0">
           <div className="flex items-center">
             <label htmlFor="sort" className="text-slate-700 text-sm mr-2 whitespace-nowrap">Sort by:</label>
@@ -168,7 +167,7 @@ const MyReviews = () => {
               <option value="helpful">Most Helpful</option>
             </select>
           </div>
-          
+
           <div className="flex items-center">
             <label htmlFor="filter" className="text-slate-700 text-sm mr-2 whitespace-nowrap">Filter by:</label>
             <select
@@ -227,13 +226,13 @@ const MyReviews = () => {
                     />
                   </Link>
                 </div>
-                
+
                 {/* Review Content */}
                 <div className="flex-grow">
                   <Link to={`/product/${review.productId}`} className="font-medium text-slate-900 hover:text-slate-700">
                     {review.productName}
                   </Link>
-                  
+
                   <div className="flex items-center mt-1 mb-2">
                     <div className="flex">
                       {[1, 2, 3, 4, 5].map((star) => (
@@ -253,10 +252,10 @@ const MyReviews = () => {
                       </span>
                     )}
                   </div>
-                  
+
                   <h4 className="font-medium text-slate-900 text-lg mb-1">{review.title}</h4>
                   <p className="text-slate-600 mb-3">{review.comment}</p>
-                  
+
                   <div className="flex flex-wrap items-center justify-between">
                     <div className="text-sm text-slate-500">
                       <span>Reviewed on {formatDate(review.date)}</span>
@@ -264,7 +263,7 @@ const MyReviews = () => {
                         <span className="ml-3">{review.helpful} people found this helpful</span>
                       )}
                     </div>
-                    
+
                     <div className="flex space-x-3 mt-2 md:mt-0">
                       <button
                         onClick={() => handleEditReview(review)}
@@ -282,12 +281,12 @@ const MyReviews = () => {
                   </div>
                 </div>
               </div>
-              
+
               {/* Edit Form */}
               {editingId === review.id && (
                 <div className="mt-5 pt-5 border-t border-slate-200">
                   <h4 className="font-medium text-slate-900 mb-3">Edit Your Review</h4>
-                  
+
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-slate-700 mb-2">Your Rating</label>
                     <div className="flex">
@@ -309,7 +308,7 @@ const MyReviews = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div className="mb-4">
                     <label htmlFor="title" className="block text-sm font-medium text-slate-700 mb-1">Review Title</label>
                     <input
@@ -322,7 +321,7 @@ const MyReviews = () => {
                       placeholder="Enter a title for your review"
                     />
                   </div>
-                  
+
                   <div className="mb-4">
                     <label htmlFor="comment" className="block text-sm font-medium text-slate-700 mb-1">Your Review</label>
                     <textarea
@@ -335,7 +334,7 @@ const MyReviews = () => {
                       placeholder="Share your experience with this product"
                     ></textarea>
                   </div>
-                  
+
                   <div className="flex space-x-3">
                     <button
                       onClick={() => handleSaveEdit(review.id)}

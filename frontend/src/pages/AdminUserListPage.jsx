@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Trash2, Loader2, AlertTriangle, Search, Shield, UserCheck, UserX } from 'lucide-react';
 import { fetchUsers, deleteUser, updateUserRole } from '../features/users/userSlice';
 
-// --- Helper Components ---
 
 const BackgroundCubes = () => (
     <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-50">

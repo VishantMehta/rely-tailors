@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { authRequest, authSuccess, authFail } from '../features/auth/authSlice';
 import { fetchUserCart } from '../features/cart/cartSlice';
 import api from '../api/AxiosAPI';
-// A new component for the animated background cubes
 const BackgroundCubes = () => (
   <div className="absolute inset-0 z-0 overflow-hidden">
     <ul className="circles">

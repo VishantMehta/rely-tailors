@@ -109,12 +109,10 @@ const AdminProductEditPage = () => {
         try {
             const config = { headers: { 'Content-Type': 'multipart/form-data' } };
             const { data } = await api.post('/upload', formData, config);
-            setImageUrl(data.image); // Assuming the main image URL is updated
-            // For a gallery, you might want to append to the gallery array
+            setImageUrl(data.image);
             setGallery(prev => [...prev, data.image]);
         } catch (error) {
             console.error(error);
-            // Add user-facing error handling, e.g., a toast notification
         } finally {
             setUploading(false);
         }
@@ -135,7 +133,6 @@ const AdminProductEditPage = () => {
             });
             navigate('/admin/productlist');
         } catch (err) {
-            // Replace alert with a more modern notification (e.g., toast)
             console.error('Product could not be updated.', err);
             setLoadingUpdate(false);
         }

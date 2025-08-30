@@ -16,7 +16,6 @@ import {
 
 import api from '../api/AxiosAPI';
 
-// --- Configuration & Helpers ---
 
 const formatDate = (dateString) => {
     if (!dateString) return 'N/A';
@@ -141,7 +140,6 @@ const OrderDetailPage = () => {
 
     const handleWhatsAppConfirm = () => {
         if (!order) return;
-        // IMPORTANT: Replace with the owner's actual phone number
         const ownerPhoneNumber = '917463997367';
         const message = `Hi, I've just placed Order #${order._id}. I'd like to confirm the details and payment.`;
         const encodedMessage = encodeURIComponent(message);

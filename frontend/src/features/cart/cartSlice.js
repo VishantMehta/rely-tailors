@@ -1,13 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import api from '../../api/AxiosAPI'; // Axios instance with token interceptor
-
-// --- Async Thunks ---
+import api from '../../api/AxiosAPI';
 
 export const fetchUserCart = createAsyncThunk(
   'cart/fetchUserCart',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get('/cart'); // token auto-injected by interceptor
+      const { data } = await api.get('/cart');
       return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -39,13 +37,12 @@ export const removeItemFromCart = createAsyncThunk(
   }
 );
 
-// --- Address Thunks ---
 export const fetchUserAddress = createAsyncThunk(
   'cart/fetchUserAddress',
   async (_, { rejectWithValue }) => {
     try {
       const { data } = await api.get('/addresses');
-      return data; // array of addresses
+      return data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
     }
@@ -95,7 +92,6 @@ const cartSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch Cart
       .addCase(fetchUserCart.pending, (state) => {
         state.loading = true;
       })
@@ -111,11 +107,9 @@ const cartSlice = createSlice({
       .addCase(addItemToCart.fulfilled, (state, action) => {
         state.cartItems = action.payload || [];
       })
-      // Remove Item
       .addCase(removeItemFromCart.fulfilled, (state, action) => {
         state.cartItems = action.payload || [];
       })
-      // Address handlers
       .addCase(fetchUserAddress.fulfilled, (state, action) => {
         state.address = action.payload || [];
       })

@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../features/auth/authSlice';
 import { clearCart, fetchUserCart } from '../features/cart/cartSlice';
 import { ChevronDown } from "lucide-react";
-import relyLogo from '../assets/rely.png'; // Import your logo image
+import { relyLogo } from '../assets/index';
 
 // Icon SVGs for the navbar
 const UserIcon = () => (
@@ -15,11 +15,6 @@ const UserIcon = () => (
 const CartIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-    </svg>
-);
-const SearchIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
     </svg>
 );
 const AdminIcon = () => (
@@ -33,7 +28,7 @@ const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isAdminDropdownOpen, setIsAdminDropdownOpen] = useState(false);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-    
+
     const { userInfo } = useSelector((state) => state.auth);
     const { cartItems } = useSelector((state) => state.cart);
     const dispatch = useDispatch();
@@ -47,7 +42,6 @@ const Navbar = () => {
         }
     }, [dispatch, userInfo]);
 
-    // Close dropdowns if clicked outside
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (adminDropdownRef.current && !adminDropdownRef.current.contains(event.target)) {
@@ -75,7 +69,7 @@ const Navbar = () => {
                 {/* Left Side: Logo */}
                 <Link to="/">
                     <span className="hidden md:block text-3xl font-marcellus tracking-wider">RELY TAILORS</span>
-                    <img src={relyLogo} alt="Rely Tailors Logo" className="block md:hidden h-20 w-auto"/>
+                    <img src={relyLogo} alt="Rely Tailors Logo" className="block md:hidden h-20 w-auto" />
                 </Link>
 
                 {/* Center: Main Navigation (Desktop) */}
@@ -128,14 +122,11 @@ const Navbar = () => {
                         <CartIcon />
                         <span>({cartItems ? cartItems.length : 0})</span>
                     </Link>
-                    <button className="hover:text-amber-600">
-                        <SearchIcon />
-                    </button>
                 </div>
 
                 {/* Hamburger Menu Button (Mobile) */}
                 <div className="md:hidden flex items-center gap-4">
-                     <Link to="/checkout" className="flex items-center space-x-1 hover:text-amber-600">
+                    <Link to="/checkout" className="flex items-center space-x-1 hover:text-amber-600">
                         <CartIcon />
                         <span>({cartItems ? cartItems.length : 0})</span>
                     </Link>
@@ -154,14 +145,14 @@ const Navbar = () => {
                     <Link to="/products" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">Shop</Link>
                     <Link to="/about" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">About</Link>
                     <Link to="/contact" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">Contact</Link>
-                    
+
                     <hr className="border-slate-200" />
-                    
+
                     {userInfo ? (
                         <>
                             <Link to="/profile" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">My Profile</Link>
                             <Link to="/my-orders" onClick={() => setIsMenuOpen(false)} className="hover:text-amber-600 py-2">My Orders</Link>
-                            
+
                             {userInfo.role === 'admin' && (
                                 <>
                                     <hr className="border-slate-200" />
@@ -173,7 +164,7 @@ const Navbar = () => {
                                     </div>
                                 </>
                             )}
-                            
+
                             <button onClick={() => { logoutHandler(); setIsMenuOpen(false); }} className="text-left hover:text-amber-600 py-2">Logout</button>
                         </>
                     ) : (

@@ -1,4 +1,3 @@
-// backend/routes/addressRoutes.js
 const express = require('express');
 const router = express.Router();
 const { getAddresses, addAddress, deleteAddress } = require('../controllers/addressController.js');

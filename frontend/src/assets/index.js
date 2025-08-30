@@ -24,8 +24,16 @@ const weddingVideo = 'https://res.cloudinary.com/dheocxwze/image/upload/v1756455
 const tabish1 = 'https://res.cloudinary.com/dheocxwze/image/upload/v1756455158/rely-tailors/hjlx0im1tnteypghjnjg.jpg';
 const f1 = 'https://res.cloudinary.com/dheocxwze/image/upload/v1756455723/rely-tailors/be0ym3pe3nkywrlz9sxd.jpg';
 const f2 = 'https://res.cloudinary.com/dheocxwze/image/upload/v1756455744/rely-tailors/fx9exs1kqusmzeg4ytlk.jpg';
-
-
+const blazers = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560712/rely-tailors/mhgtejiodnthaag0wrgl.jpg";
+const chote = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560726/rely-tailors/imm7rdxrzfzmj1svx8gh.jpg";
+const Crain = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560726/rely-tailors/imm7rdxrzfzmj1svx8gh.jpg";
+const formal1 = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560762/rely-tailors/m4frlpgemrowmwlbwasu.jpg";
+const indo = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560784/rely-tailors/vtaob0jcy3uoqhidwdkr.jpg";
+const polo = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560797/rely-tailors/ne8ifzvcgturysmfxnad.jpg";
+const relyLogo = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560811/rely-tailors/fcelbd5rhwvr8qrjtg5o.png";
+const shirts1 = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560822/rely-tailors/rgdda9b2pxbpkocbj3ek.jpg";
+const wedding1 = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560835/rely-tailors/wu8uarntch5wl2srfrlw.jpg";
+const suit = "https://res.cloudinary.com/dheocxwze/image/upload/v1756560857/rely-tailors/eiy0fkcqh1cpdbgm8oib.jpg";
 export {
   mensuitImage,
   blazerImage,
@@ -47,5 +55,5 @@ export {
   insta4,
   rely,
   weddingVideo,
-  tabish1, f1, f2
+  tabish1, f1, f2, blazers, Crain, formal1, chote, indo, polo, relyLogo, shirts1, wedding1, suit
 };

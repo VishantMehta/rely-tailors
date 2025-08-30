@@ -63,7 +63,7 @@ const MyAddresses = () => {
     if (!window.confirm('Are you sure you want to delete this address?')) return;
     try {
       const res = await api.delete(`/addresses/${id}`);
-      setAddresses(res.data); // backend returns updated list
+      setAddresses(res.data);
     } catch (err) {
       console.error('Error deleting address', err);
     }

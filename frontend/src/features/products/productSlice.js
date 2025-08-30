@@ -1,8 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  products: [],     // product list
-  product: null,    // single product
+  products: [],
+  product: null,
   loading: false,
   error: null,
   page: 1,
@@ -22,7 +22,7 @@ export const productSlice = createSlice({
       state.loading = false;
       state.products = Array.isArray(action.payload.products)
         ? action.payload.products
-        : []; // ✅ safe array
+        : [];
       state.page = action.payload.page;
       state.pages = action.payload.pages;
     },

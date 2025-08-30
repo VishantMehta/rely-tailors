@@ -12,7 +12,7 @@ const ProductCard = ({ product }) => {
 
   const addToCartHandler = (e) => {
     e.preventDefault();
-    e.stopPropagation(); // Prevent link navigation when clicking the button
+    e.stopPropagation();
 
     const newItem = {
       product: product._id,
@@ -89,7 +89,6 @@ const ProductCard = ({ product }) => {
           </p>
         </div>
 
-        {/* --- 'Add to Cart' block (appears on hover) --- */}
         <div className="absolute inset-0 flex items-center justify-center p-4 transition-opacity duration-300 opacity-0 group-hover:opacity-100">
           <button
             onClick={addToCartHandler}

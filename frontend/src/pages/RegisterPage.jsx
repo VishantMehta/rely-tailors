@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import api from '../api/AxiosAPI';
 import { authRequest, authSuccess, authFail } from '../features/auth/authSlice';
 
-// A new component for the animated background cubes
 const BackgroundCubes = () => (
   <div className="absolute inset-0 z-0 overflow-hidden">
     <ul className="circles">
@@ -45,7 +44,7 @@ const RegisterPage = () => {
     dispatch(authRequest());
     try {
       const { data } = await api.post(
-        '/auth/register', // ✅ no /api prefix, since baseURL already has /api
+        '/auth/register',
         { name, email, password }
       );
       dispatch(authSuccess(data));

@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { insta1, insta2, insta3 } from '../assets/index';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-// import ProductsPage from './ProductsPage';
-import chote from '../assets/chote.webp';
+import { chote } from '../assets/index.js';
 
 // Animated Background Component
 const BackgroundCubes = () => (
@@ -35,7 +34,7 @@ const AboutPage = () => {
   }, []);
 
   return (
-    <div className="bg-white font-montserrat text-slate-800 overflow-x-hidden">
+    <div className="HomePageWrapper  bg-white font-montserrat text-slate-800 overflow-x-hidden">
 
       {/* --- Hero Section --- */}
       <div className="container mx-auto px-6 py-16 md:py-24">

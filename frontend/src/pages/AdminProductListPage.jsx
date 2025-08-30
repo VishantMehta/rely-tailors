@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit, Trash2, Loader2, AlertTriangle, Search, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
-import { useDebounce } from '../hooks/useDebounce'; // Assuming a custom debounce hook
+import { useDebounce } from '../hooks/useDebounce';
 
 import {
   productListRequest,
@@ -12,7 +12,6 @@ import {
 } from '../features/products/productSlice';
 import api from '../api/AxiosAPI';
 
-// --- Helper Components ---
 
 const ProductListSkeleton = () => (
   <div className="animate-pulse">
