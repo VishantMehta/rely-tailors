@@ -220,15 +220,15 @@ const OrderDetailPage = () => {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <p className="font-semibold text-lg text-zinc-900 ml-auto">${Number(item.price || 0).toFixed(2)}</p>
+                                                <p className="font-semibold text-lg text-zinc-900 ml-auto">₹{Number(item.price || 0).toFixed(2)}</p>
                                             </div>
                                         ))}
                                     </div>
                                     <div className="flex justify-end mt-6 pt-6 border-t border-zinc-200">
                                         <div className="w-full max-w-sm space-y-2 text-zinc-600">
-                                            <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold text-zinc-800">${Number(order.totalPrice || 0).toFixed(2)}</span></div>
+                                            <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold text-zinc-800">₹{Number(order.totalPrice || 0).toFixed(2)}</span></div>
                                             <div className="flex justify-between"><span>Shipping</span><span className="font-semibold text-zinc-800">Free</span></div>
-                                            <div className="flex justify-between font-bold text-xl text-zinc-900 mt-2 pt-2 border-t border-zinc-200"><span>Total</span><span>${Number(order.totalPrice || 0).toFixed(2)}</span></div>
+                                            <div className="flex justify-between font-bold text-xl text-zinc-900 mt-2 pt-2 border-t border-zinc-200"><span>Total</span><span>₹{Number(order.totalPrice || 0).toFixed(2)}</span></div>
                                         </div>
                                     </div>
                                 </div>

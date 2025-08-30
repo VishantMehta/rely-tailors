@@ -283,8 +283,8 @@ const MyWishlist = () => {
 
                       {/* Price */}
                       <div className="mb-4">
-                        <span className="text-2xl font-bold text-gray-900">
-                          ${itemPrice.toFixed(2)}
+                        <span className="text-2xl font-semibold text-gray-900">
+                          ₹{itemPrice.toFixed(2)}
                         </span>
                       </div>
 

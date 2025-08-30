@@ -6,7 +6,7 @@ import MyMeasurements from '../pages/MyMeasurements';
 import MyOrders from '../pages/MyOrdersPage';
 import MyAddresses from '../pages/MyAddresses';
 import MyWishlist from './MyWishlist';
-import MyReviews from './MyReviews';
+// import MyReviews from './MyReviews';
 
 // --- Enhanced Background with SVG Effects ---
 const BackgroundPattern = () => (
@@ -33,7 +33,7 @@ const BackgroundPattern = () => (
 // --- Dashboard Components ---
 const DashboardStats = () => {
   const { userInfo } = useSelector((state) => state.auth);
-  
+
   return (
     <div className="bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20 mb-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
@@ -193,8 +193,8 @@ const CurrentProjects = () => {
                 <td className="py-4 px-4">
                   <div className="flex items-center">
                     <div className="w-16 bg-slate-200 rounded-full h-2 mr-2">
-                      <div 
-                        className="bg-gradient-to-r from-slate-900 to-slate-700 h-2 rounded-full transition-all duration-500" 
+                      <div
+                        className="bg-gradient-to-r from-slate-900 to-slate-700 h-2 rounded-full transition-all duration-500"
                         style={{ width: `${project.progress}%` }}
                       ></div>
                     </div>
@@ -221,7 +221,7 @@ const RecentActivity = () => {
   return (
     <div className="bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
       <h2 className="font-marcellus text-xl text-slate-900 mb-6">Recent Activity</h2>
-      
+
       <div className="space-y-4">
         {activities.map((activity, index) => (
           <div key={index} className="flex group">
@@ -258,7 +258,7 @@ const QuickActions = () => {
   return (
     <div className="bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
       <h2 className="font-marcellus text-xl text-slate-900 mb-6">Quick Actions</h2>
-      
+
       <div className="grid grid-cols-2 gap-4">
         {actions.map((action, index) => (
           <Link
@@ -280,12 +280,12 @@ const Dashboard = () => {
   return (
     <div className="space-y-6">
       <DashboardStats />
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <CurrentProjects />
         </div>
-        
+
         <div className="space-y-6">
           <RecentActivity />
           <QuickActions />
@@ -297,6 +297,7 @@ const Dashboard = () => {
 
 // --- Placeholder Components for Sidebar Navigation ---
 const Settings = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">Settings</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
+const MyReviews = () => <div className="text-center p-10 bg-white rounded-lg shadow-md"><h2 className="font-marcellus text-2xl">My Reviews</h2><p className="text-slate-500 mt-2">This section is under construction.</p></div>;
 
 // --- Sidebar Icon Components ---
 const UserIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
@@ -438,72 +439,206 @@ const ProfilePage = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
-  if (!userInfo) {
-    return null;
-  }
+  // Close on outside click or Esc
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
 
-  const getLinkClass = (path) => {
-    return location.pathname === path
-      ? "flex items-center gap-3 p-3 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-900 rounded-md font-bold shadow-sm"
-      : "flex items-center gap-3 p-3 hover:bg-slate-100 rounded-md transition-colors";
-  };
+  if (!userInfo) return null;
+
+  const activeClass =
+    "flex items-center gap-3 p-3 bg-gradient-to-r from-slate-100 to-slate-200 text-slate-900 rounded-md font-bold shadow-sm";
+  const inactiveClass =
+    "flex items-center gap-3 p-3 hover:bg-slate-100 rounded-md transition-colors";
+  const getLinkClass = (path) =>
+    location.pathname === path ||
+      (path === "/profile/my-profile" && location.pathname === "/profile")
+      ? activeClass
+      : inactiveClass;
 
   return (
     <div className="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen font-montserrat relative">
       <BackgroundPattern />
+
       <div className="container mx-auto p-4 sm:p-6 lg:p-8 relative z-10">
-        {/* Mobile Menu Button */}
-        <div className="md:hidden mb-4">
+        {/* Mobile: trigger + dropdown */}
+        <div ref={menuRef} className="md:hidden mb-4 relative">
           <button
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="bg-white/90 backdrop-blur-md p-3 rounded-lg shadow-md w-full flex items-center justify-between"
+            onClick={() => setIsMobileMenuOpen((v) => !v)}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobileMenuPanel"
+            className="bg-white/90 backdrop-blur-md p-3 rounded-lg shadow-md w-full flex items-center justify-between transition-colors"
           >
             <span className="font-medium">Dashboard Menu</span>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
+            <svg
+              className={`w-5 h-5 transition-transform duration-200 ${isMobileMenuOpen ? "rotate-90" : ""
+                }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={
+                  isMobileMenuOpen
+                    ? "M6 18L18 6M6 6l12 12"
+                    : "M4 6h16M4 12h16M4 18h16"
+                }
+              />
             </svg>
           </button>
+
+          {/* Backdrop (mobile only) */}
+          <div
+            className={`fixed inset-0 z-20 bg-black/20 transition-opacity duration-200 ${isMobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
+              } md:hidden`}
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+
+          {/* Dropdown panel with smooth transition */}
+          <div
+            id="mobileMenuPanel"
+            className="absolute top-full left-0 right-0 z-30 mt-2 rounded-xl shadow-xl border border-white/20 bg-white/95 backdrop-blur-md overflow-hidden transition-all duration-300 ease-out will-change-transform"
+            style={{
+              opacity: isMobileMenuOpen ? 1 : 0,
+              transform: `translateY(${isMobileMenuOpen ? "0" : "-8px"})`,
+              maxHeight: isMobileMenuOpen ? "70vh" : 0,
+            }}
+          >
+            <div className="p-6">
+              <h2 className="font-marcellus text-xl text-slate-900 mb-6">
+                RELY TAILORS
+              </h2>
+              <nav className="space-y-2">
+                <Link
+                  to="/profile/my-profile"
+                  className={getLinkClass("/profile/my-profile")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <UserIcon /> My Profile
+                </Link>
+                <Link
+                  to="/profile/measurements"
+                  className={getLinkClass("/profile/measurements")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <RulerIcon /> My Measurements
+                </Link>
+                <Link
+                  to="/profile/orders"
+                  className={getLinkClass("/profile/orders")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <OrdersIcon /> My Orders
+                </Link>
+                <Link
+                  to="/profile/addresses"
+                  className={getLinkClass("/profile/addresses")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <AddressIcon /> My Addresses
+                </Link>
+                <Link
+                  to="/profile/wishlist"
+                  className={getLinkClass("/profile/wishlist")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <WishlistIcon /> My Wishlist
+                </Link>
+                <Link
+                  to="/profile/reviews"
+                  className={getLinkClass("/profile/reviews")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <ReviewsIcon /> My Reviews
+                </Link>
+                <Link
+                  to="/profile/settings"
+                  className={getLinkClass("/profile/settings")}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <SettingsIcon /> Settings
+                </Link>
+              </nav>
+            </div>
+          </div>
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
-          {/* --- Left Sidebar --- */}
-          <aside className={`md:w-1/4 ${isMobileMenuOpen ? 'block' : 'hidden'} md:block`} data-aos="fade-right">
+          {/* Desktop sidebar only */}
+          <aside className="hidden md:block md:w-1/4" data-aos="fade-right">
             <div className="bg-white/90 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-              <h2 className="font-marcellus text-xl md:text-2xl text-slate-900 mb-6">RELY TAILORS</h2>
+              <h2 className="font-marcellus text-xl md:text-2xl text-slate-900 mb-6">
+                RELY TAILORS
+              </h2>
               <nav className="space-y-2">
-                <Link to="/profile" className={getLinkClass("/profile")} onClick={() => setIsMobileMenuOpen(false)}>
-                  <DashboardIcon /> Overview
-                </Link>
-                <Link to="/profile/my-profile" className={getLinkClass("/profile/my-profile")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/my-profile"
+                  className={getLinkClass("/profile/my-profile")}
+                >
                   <UserIcon /> My Profile
                 </Link>
-                <Link to="/profile/measurements" className={getLinkClass("/profile/measurements")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/measurements"
+                  className={getLinkClass("/profile/measurements")}
+                >
                   <RulerIcon /> My Measurements
                 </Link>
-                <Link to="/profile/orders" className={getLinkClass("/profile/orders")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/orders"
+                  className={getLinkClass("/profile/orders")}
+                >
                   <OrdersIcon /> My Orders
                 </Link>
-                <Link to="/profile/addresses" className={getLinkClass("/profile/addresses")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/addresses"
+                  className={getLinkClass("/profile/addresses")}
+                >
                   <AddressIcon /> My Addresses
                 </Link>
-                <Link to="/profile/wishlist" className={getLinkClass("/profile/wishlist")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/wishlist"
+                  className={getLinkClass("/profile/wishlist")}
+                >
                   <WishlistIcon /> My Wishlist
                 </Link>
-                <Link to="/profile/reviews" className={getLinkClass("/profile/reviews")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/reviews"
+                  className={getLinkClass("/profile/reviews")}
+                >
                   <ReviewsIcon /> My Reviews
                 </Link>
-                <Link to="/profile/settings" className={getLinkClass("/profile/settings")} onClick={() => setIsMobileMenuOpen(false)}>
+                <Link
+                  to="/profile/settings"
+                  className={getLinkClass("/profile/settings")}
+                >
                   <SettingsIcon /> Settings
                 </Link>
               </nav>
             </div>
           </aside>
 
-          {/* --- Main Content --- */}
+          {/* Main content — Profile is default */}
           <main className="flex-1" data-aos="fade-up">
             <Routes>
-              <Route index element={<Dashboard />} />
+              <Route index element={<ProfileForm />} />
               <Route path="my-profile" element={<ProfileForm />} />
               <Route path="measurements" element={<MyMeasurements />} />
               <Route path="orders" element={<MyOrders />} />

@@ -118,7 +118,7 @@ const OrderRow = ({ order, index }) => {
     const mobileInfo = [
         { icon: Hash, label: 'Order ID', value: `#${order._id}` },
         { icon: Calendar, label: 'Date', value: formatDate(order.createdAt) },
-        { icon: CircleDollarSign, label: 'Total', value: `$${Number(order.totalPrice || 0).toFixed(2)}`, valueClass: 'font-bold text-zinc-800' },
+        { icon: CircleDollarSign, label: 'Total', value: `₹${Number(order.totalPrice || 0).toFixed(2)}`, valueClass: 'font-bold text-zinc-800' },
     ];
 
     return (
@@ -144,7 +144,7 @@ const OrderRow = ({ order, index }) => {
                         </p>
                         <p className="flex items-center gap-2">
                             <CircleDollarSign className="h-4 w-4 text-zinc-400" />
-                            <span className="font-semibold text-zinc-800">${Number(order.totalPrice || 0).toFixed(2)}</span>
+                            <span className="font-semibold text-zinc-800">₹{Number(order.totalPrice || 0).toFixed(2)}</span>
                         </p>
                     </div>
                 </div>
@@ -153,7 +153,7 @@ const OrderRow = ({ order, index }) => {
                 <div className="hidden md:grid grid-cols-[2fr,1fr,1fr,1.5fr,auto] gap-6 items-center px-6 py-5">
                     <p className="font-mono text-sm text-zinc-700 font-semibold truncate" title={order._id}>#{order._id}</p>
                     <p className="text-zinc-600 text-sm">{formatDate(order.createdAt)}</p>
-                    <p className="font-semibold text-zinc-800 text-sm">${Number(order.totalPrice || 0).toFixed(2)}</p>
+                    <p className="font-semibold text-zinc-800 text-sm">₹{Number(order.totalPrice || 0).toFixed(2)}</p>
                     <div><StatusBadge status={order.orderStatus} /></div>
                     <div className="text-right">
                         <ChevronRight className="h-5 w-5 text-zinc-400 group-hover:text-zinc-700 transition-colors" />
