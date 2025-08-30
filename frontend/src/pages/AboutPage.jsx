@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { insta1, insta2, insta3 } from '../assets/index';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { chote } from '../assets/index.js';
+import chote from '../assets/chote.webp';
 
 // Animated Background Component
 const BackgroundCubes = () => (
