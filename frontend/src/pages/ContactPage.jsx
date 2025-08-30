@@ -54,7 +54,7 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="bg-white font-montserrat text-slate-800">
+    <div className="bg-white font-montserrat text-slate-800 overflow-x-hidden">
       {/* Add Font Awesome CSS for icons */}
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
@@ -202,7 +202,7 @@ const ContactPage = () => {
                       />
                     </div>
                     <div>
-              _id: '6',
+{/*               _id: '6', */}
                 <label htmlFor="phone" className="block text-sm font-semibold text-slate-700 mb-2">Phone Number</label>
                       <input
                         type="tel"
