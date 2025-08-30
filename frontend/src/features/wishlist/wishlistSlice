@@ -1,0 +1,104 @@
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import api from "../../api/AxiosAPI";
+
+// Fetch wishlist
+export const fetchWishlist = createAsyncThunk(
+    "wishlist/fetchWishlist",
+    async (_, thunkAPI) => {
+        try {
+            const { data } = await api.get("/wishlist");
+            return data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// Add to wishlist
+export const addToWishlist = createAsyncThunk(
+    "wishlist/addToWishlist",
+    async (productId, thunkAPI) => {
+        try {
+            const { data } = await api.post("/wishlist", { productId });
+            return data; // full wishlist array
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+// Remove from wishlist
+export const removeFromWishlist = createAsyncThunk(
+    "wishlist/removeFromWishlist",
+    async (productId, thunkAPI) => {
+        try {
+            const { data } = await api.delete(`/wishlist/${productId}`);
+            return data; // full wishlist array
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+const wishlistSlice = createSlice({
+    name: "wishlist",
+    initialState: {
+        items: [],
+        loading: false,
+        error: null,
+    },
+    reducers: {
+        // Clear error action
+        clearWishlistError: (state) => {
+            state.error = null;
+        },
+        // Clear loading state (useful for manual control)
+        clearWishlistLoading: (state) => {
+            state.loading = false;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            // fetch
+            .addCase(fetchWishlist.pending, (state) => {
+                state.loading = true;
+                state.error = null; // Clear previous errors
+            })
+            .addCase(fetchWishlist.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.items = action.payload;
+            })
+            .addCase(fetchWishlist.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            // add
+            .addCase(addToWishlist.pending, (state) => {
+                state.error = null; // Clear errors when adding
+            })
+            .addCase(addToWishlist.fulfilled, (state, action) => {
+                state.error = null;
+                state.items = action.payload;
+            })
+            .addCase(addToWishlist.rejected, (state, action) => {
+                state.error = action.payload;
+            })
+            // remove
+            .addCase(removeFromWishlist.pending, (state) => {
+                state.error = null; // Clear errors when removing
+            })
+            .addCase(removeFromWishlist.fulfilled, (state, action) => {
+                state.error = null;
+                state.items = action.payload;
+            })
+            .addCase(removeFromWishlist.rejected, (state, action) => {
+                state.error = action.payload;
+            });
+    },
+});
+
+// Export actions
+export const { clearWishlistError, clearWishlistLoading } = wishlistSlice.actions;
+
+export default wishlistSlice.reducer;

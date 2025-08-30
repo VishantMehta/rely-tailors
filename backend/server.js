@@ -12,6 +12,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const addressRoutes = require('./routes/addressRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
 
 dotenv.config();
 connectDB();
@@ -31,6 +32,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/addresses', addressRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 //for testing
 app.get('/', (req, res) => {

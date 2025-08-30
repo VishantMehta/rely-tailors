@@ -5,7 +5,7 @@ const Product = require('../models/Product.js');
 //@route   GET /api/products
 const getProducts = async (req, res) => {
     try {
-        const pageSize = 8;
+        const pageSize = 9;
         const page = Number(req.query.page) || 1;
 
         // search keyword ---

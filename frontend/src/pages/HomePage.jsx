@@ -72,37 +72,37 @@ const gridItems = [
 
 const newArrivals = [
   {
-    _id: '1',
+    _id: '68b15e83966360f5b90c2936',
     name: 'Linen Blend Suit',
     price: '450.00',
     image: linensuit
   },
   {
-    _id: '2',
+    _id: '68b17de7843fba334ca746db',
     name: 'Silk Nehru Jacket',
     price: '250.00',
     image: nehru
   },
   {
-    _id: '3',
+    _id: '68b17e15843fba334ca74730',
     name: 'Custom Monogrammed Shirt',
     price: '150.00',
     image: shirts
   },
   {
-    _id: '4',
+    _id: '68b17e5d843fba334ca74778',
     name: 'WindowPayne Utility Jacket',
     price: '200.00',
     image: cashmere
   },
   {
-    _id: '5',
+    _id: '68b17e62843fba334ca747be',
     name: 'Panel Polo T-Shirt',
     price: '150.00',
     image: polot
   },
   {
-    _id: '6',
+    _id: '68b17e65843fba334ca74804',
     name: 'Cuban Linen Shirt',
     price: '200.00',
     image: linen
@@ -406,7 +406,7 @@ const HomePage = () => {
                       <img src={product.image} alt={product.name} className="w-full h-96 object-cover group-hover:scale-105 transition-transform duration-500" />
                     </div>
                     <h3 className="font-marcellus text-xl mt-4">{product.name}</h3>
-                    <p className="text-slate-500">${product.price}</p>
+                    <p className="text-slate-500">₹{product.price}</p>
                   </Link>
                 </div>
               ))}
@@ -419,53 +419,53 @@ const HomePage = () => {
       </div>
 
       {/* Wedding Collection Section */}
-     <div className="bg-white py-12 md:py-24 relative">
-       <div className="absolute inset-0 z-0"> {/* Absolute container with lower z-index */}
-    <BackgroundCubes />
-  </div>
-      <div className="container mx-auto px-4">
-        <div className="bg-white p-6 md:p-12 mx-0 md:mx-10 lg:mx-20 flex flex-col md:flex-row items-center gap-8 md:gap-12">
-          <div className="w-full md:w-1/2" data-aos="fade-right">
-            <div className="relative aspect-video md:aspect-auto md:h-[400px] lg:h-[500px]">
-              <video
-                src={weddingVideo}
-                alt="Groom getting ready for his wedding"
-                className="w-full h-full object-cover rounded-sm"
-                autoPlay
-                loop
-                muted
-                playsInline
-              />
+      <div className="bg-white py-12 md:py-24 relative">
+        <div className="absolute inset-0 z-0"> {/* Absolute container with lower z-index */}
+          <BackgroundCubes />
+        </div>
+        <div className="container mx-auto px-4">
+          <div className="bg-white p-6 md:p-12 mx-0 md:mx-10 lg:mx-20 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+            <div className="w-full md:w-1/2" data-aos="fade-right">
+              <div className="relative aspect-video md:aspect-auto md:h-[400px] lg:h-[500px]">
+                <video
+                  src={weddingVideo}
+                  alt="Groom getting ready for his wedding"
+                  className="w-full h-full object-cover rounded-sm"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                />
+              </div>
             </div>
-          </div>
-          <div className="w-full md:w-1/2" data-aos="fade-left">
-            <h2 className="font-marcellus text-3xl sm:text-4xl lg:text-5xl text-black text-left mb-4">
-              The Wedding <br className="hidden sm:block" /> Collection
-            </h2>
-            <p className="text-black text-base sm:text-lg leading-relaxed mb-6">
-              For the most important day of your life, settle for nothing less than absolute perfection. 
-              Our wedding collection brings together timeless elegance and modern sophistication, offering 
-              bespoke suits and tuxedos designed to make you the center of attention. From handpicked fabrics 
-              to precision tailoring, every piece is crafted with care, ensuring a flawless fit that reflects 
-              your personal style.
-            </p>
-            <Link
-              to="/products/category/wedding"
-              className="inline-block bg-black text-white hover:bg-white hover:text-black border border-transparent hover:border-black font-light py-3 px-8 rounded-sm transition-colors duration-300 text-sm uppercase tracking-widest"
-            >
-              Shop Collection
-            </Link>
+            <div className="w-full md:w-1/2" data-aos="fade-left">
+              <h2 className="font-marcellus text-3xl sm:text-4xl lg:text-5xl text-black text-left mb-4">
+                The Wedding <br className="hidden sm:block" /> Collection
+              </h2>
+              <p className="text-black text-base sm:text-lg leading-relaxed mb-6">
+                For the most important day of your life, settle for nothing less than absolute perfection.
+                Our wedding collection brings together timeless elegance and modern sophistication, offering
+                bespoke suits and tuxedos designed to make you the center of attention. From handpicked fabrics
+                to precision tailoring, every piece is crafted with care, ensuring a flawless fit that reflects
+                your personal style.
+              </p>
+              <Link
+                to="/products/category/wedding"
+                className="inline-block bg-black text-white hover:bg-white hover:text-black border border-transparent hover:border-black font-light py-3 px-8 rounded-sm transition-colors duration-300 text-sm uppercase tracking-widest"
+              >
+                Shop Collection
+              </Link>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
       {/* Testimonials Section */}
       <TestimonialCarousel />
 
       {/* Instagram & Newsletter Section */}
       <div className="bg-white py-24 text-center">
-        
+
         <div className="container mx-auto px-4">
           <h2 className="font-marcellus text-4xl text-slate-900">Sign Up For Our Newsletter</h2>
           <form className="max-w-md mx-auto mt-8 flex">
