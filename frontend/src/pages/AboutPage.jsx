@@ -4,6 +4,7 @@ import { insta1, insta2, insta3 } from '../assets/index';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 // import ProductsPage from './ProductsPage';
+import chote from '../assets/chote.webp';
 
 // Animated Background Component
 const BackgroundCubes = () => (
@@ -118,9 +119,9 @@ const AboutPage = () => {
           <div data-aos="zoom-in" data-aos-delay="300" className="flex justify-center">
             <div className="relative w-full max-w-md">
               <img
-                src={insta3}
+                src={chote}
                 alt="Tailor at work"
-                className="w-full h-80 object-contain rounded-lg shadow-md"
+                className="w-full h-90 object-contain rounded-lg shadow-md"
               />
               <div className="absolute -bottom-4 -left-4 bg-amber-600 text-white p-3 rounded-lg shadow-lg">
                 <span className="block text-sm">Master Tailor</span>
