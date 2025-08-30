@@ -222,16 +222,7 @@ const TestimonialCarousel = () => {
 const BackgroundCubes = () => (
   <div className="absolute inset-0 z-0 overflow-hidden">
     <ul className="circles">
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
-      <li></li>
+      <li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li>
     </ul>
   </div>
 );
@@ -288,7 +279,7 @@ const HomePage = () => {
   return (
     <div className="bg-[#f2f2f2] text-slate-800 font-montserrat overflow-x-hidden">
       {/* Hero Section */}
-      <div className="container mx-auto text-center pt-16 sm:pt-20 md:pt-24 pb-12 px-4" data-aos="fade-up">
+      <div className="container mx-auto text-center pt-20 md:pt-28 pb-12 px-4" data-aos="fade-up">
         <h1 className="font-marcellus text-5xl sm:text-6xl md:text-7xl mb-4 text-slate-900">Rely Tailors</h1>
         <p className="max-w-xl sm:max-w-2xl mx-auto text-slate-600 text-base sm:text-lg">
           With over 35 years of masterful craftsmanship, we create more than just suits; we tailor experiences. Each stitch is a testament to our legacy of quality and precision, ensuring you look and feel exceptional.
@@ -377,8 +368,8 @@ const HomePage = () => {
       <div className="bg-white py-24" data-aos="fade-up">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-12">
-            <h2 className="font-marcellus text-4xl text-black text-900">Our New Arrivals</h2>
-            <Link to="/products" className="text-lg text- black font-bold tracking-widest uppercase border-b-2 border-slate-400 hover:border-amber-600 transition-colors ml-4">
+            <h2 className="font-marcellus text-3xl sm:text-4xl">Our New Arrivals</h2>
+            <Link to="/products" className="text-sm sm:text-base font-bold tracking-widest uppercase border-b-2 border-slate-400 hover:border-amber-600 transition-colors ml-4">
               View All Products
             </Link>
           </div>
@@ -413,11 +404,11 @@ const HomePage = () => {
 
       {/* Wedding Collection Section */}
       <div className="bg-white py-12 md:py-24 relative">
-        <div className="absolute inset-0 z-0"> {/* Absolute container with lower z-index */}
+        <div className="absolute inset-0 z-0">
           <BackgroundCubes />
         </div>
         <div className="container mx-auto px-4">
-          <div className="bg-white p-6 md:p-12 mx-0 md:mx-10 lg:mx-20 flex flex-col md:flex-row items-center gap-8 md:gap-12">
+          <div className="bg-white p-6 md:p-12 mx-4 sm:mx-8 md:mx-10 lg:mx-20 flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div className="w-full md:w-1/2" data-aos="fade-right">
               <div className="relative aspect-video md:aspect-auto md:h-[400px] lg:h-[500px]">
                 <video
@@ -461,10 +452,10 @@ const HomePage = () => {
 
         <div className="container mx-auto px-4 relative">
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
-            <span className="text-7xl md:text-9xl font-black text-slate-100 opacity-50 uppercase">Newsletter</span>
+            <span className="text-6xl sm:text-7xl md:text-9xl font-black text-slate-100 opacity-50 uppercase">Newsletter</span>
           </div>
           <div className="relative z-10">
-            <h2 className="font-marcellus text-4xl text-slate-900">Sign Up For Our Newsletter</h2>
+            <h2 className="font-marcellus text-3xl sm:text-4xl">Sign Up For Our Newsletter</h2>
             <form className="max-w-md mx-auto mt-8 flex">
               <input type="email" placeholder="Your Email Address" className="w-full p-3 border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-400" />
               <button
