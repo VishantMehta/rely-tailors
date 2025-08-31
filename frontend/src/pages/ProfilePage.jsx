@@ -29,6 +29,8 @@ const BackgroundPattern = () => (
   </div>
 );
 
+
+
 // --- Dashboard Components ---
 const DashboardStats = () => {
   const { userInfo } = useSelector((state) => state.auth);
