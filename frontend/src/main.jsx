@@ -29,6 +29,7 @@ import AdminUserListPage from './pages/AdminUserListPage';
 import ContactPage from './pages/ContactPage';
 import MyAddresses from './pages/MyAddresses';
 import MyWishlist from './pages/MyWishlist'; // Add this import
+import DevelopersPage from './pages/DevelopersPage';
 
 // Error Boundary wrapper for routes
 const ErrorBoundaryWrapper = ({ children }) => (
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
       { path: 'products/:id', element: <ErrorBoundaryWrapper><ProductDetailPage /></ErrorBoundaryWrapper> },
       { path: 'about', element: <ErrorBoundaryWrapper><AboutPage /></ErrorBoundaryWrapper> },
       { path: 'contact', element: <ErrorBoundaryWrapper><ContactPage /></ErrorBoundaryWrapper> },
+      { path: 'developers', element: <ErrorBoundaryWrapper><DevelopersPage /></ErrorBoundaryWrapper> },
 
       // --- Private Routes (for logged-in users) ---
       {
