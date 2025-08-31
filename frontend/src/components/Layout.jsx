@@ -5,6 +5,7 @@ import Footer from './Footer';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import ScrollToTop from './ScrollToTop';
+import { Toaster } from 'react-hot-toast';
 
 const Layout = () => {
   useEffect(() => {
@@ -16,6 +17,12 @@ const Layout = () => {
 
   return (
     <div>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 4000,
+        }}
+      />
       <ScrollToTop />
       <Navbar />
       <main>

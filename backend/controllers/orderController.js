@@ -1,5 +1,7 @@
 const Order = require('../models/Order.js');
 const User = require('../models/User.js');
+const sendEmail = require('../utils/emailService');
+const { getOrderConfirmationHTML, getOrderStatusUpdateHTML } = require('../utils/emailTemplates');
 
 /**
  * @desc    Create a new order
@@ -27,6 +29,16 @@ const addOrderItems = async (req, res) => {
         if (user) {
             user.cart = [];
             await user.save();
+        }
+
+        try {
+            await sendEmail({
+                to: req.user.email,
+                subject: `Your Rely Tailors Order Confirmation [#${createdOrder._id}]`,
+                html: getOrderConfirmationHTML(req.user.name, createdOrder)
+            });
+        } catch (emailError) {
+            console.error('Confirmation email could not be sent:', emailError);
         }
 
         res.status(201).json(createdOrder);
@@ -119,6 +131,21 @@ const updateOrderStatus = async (req, res) => {
         }
 
         const updatedOrder = await order.save();
+
+        const importantStatuses = ['Processing', 'Shipped', 'Completed'];
+        if (importantStatuses.includes(updatedOrder.orderStatus)) {
+            try {
+                const orderUser = await User.findById(order.user);
+                await sendEmail({
+                    to: orderUser.email,
+                    subject: `Update on your Rely Tailors Order [#${updatedOrder._id}]`,
+                    html: getOrderStatusUpdateHTML(orderUser.name, updatedOrder)
+                });
+            } catch (emailError) {
+                console.error('Status update email could not be sent:', emailError);
+            }
+        }
+
         res.json(updatedOrder);
     } catch (error) {
         res.status(500).json({ message: 'Server Error: ' + error.message });
@@ -139,6 +166,18 @@ const confirmOrder = async (req, res) => {
         if (order.orderStatus === 'Pending Confirmation') {
             order.orderStatus = 'Confirmed';
             const updatedOrder = await order.save();
+
+            try {
+                const orderUser = await User.findById(order.user);
+                await sendEmail({
+                    to: orderUser.email,
+                    subject: `Your Rely Tailors Order is Confirmed [#${updatedOrder._id}]`,
+                    html: getOrderStatusUpdateHTML(orderUser.name, updatedOrder)
+                });
+            } catch (emailError) {
+                console.error('Confirmation email could not be sent:', emailError);
+            }
+
             res.json(updatedOrder);
         } else {
             res.status(400).json({ message: 'Order has already been processed' });
@@ -161,6 +200,18 @@ const cancelOrder = async (req, res) => {
 
         order.orderStatus = 'Cancelled';
         const updatedOrder = await order.save();
+
+        try {
+            const orderUser = await User.findById(order.user);
+            await sendEmail({
+                to: orderUser.email,
+                subject: `Your Rely Tailors Order has been Cancelled [#${updatedOrder._id}]`,
+                html: getOrderStatusUpdateHTML(orderUser.name, updatedOrder)
+            });
+        } catch (emailError) {
+            console.error('Cancellation email could not be sent:', emailError);
+        }
+
         res.json(updatedOrder);
     } catch (error) {
         res.status(500).json({ message: 'Server Error: ' + error.message });

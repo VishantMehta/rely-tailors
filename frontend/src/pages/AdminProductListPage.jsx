@@ -73,7 +73,7 @@ const ProductCard = ({ product, onEdit, onDelete }) => (
       />
       <div className="flex-1">
         <p className="font-semibold text-zinc-800 break-words leading-tight">{product.name}</p>
-        <p className="text-sm font-bold text-zinc-900 mt-1">${product.basePrice.toFixed(2)}</p>
+        <p className="text-sm font-bold text-zinc-900 mt-1">₹{product.basePrice.toFixed(2)}</p>
         <p className="text-xs text-zinc-500 mt-1 capitalize">{product.category}</p>
       </div>
     </div>
@@ -266,7 +266,7 @@ const AdminProductListPage = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-semibold text-zinc-800">${product.basePrice.toFixed(2)}</td>
+                        <td className="px-6 py-4 font-semibold text-zinc-800">₹{product.basePrice.toFixed(2)}</td>
                         <td className="px-6 py-4 capitalize">{product.category}</td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-center gap-4">

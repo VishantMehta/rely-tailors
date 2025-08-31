@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const sendEmail = require('../utils/emailService');
+const { getWelcomeEmailHTML } = require('../utils/emailTemplates');
 const generateToken = (id) => {
     return jwt.sign({ id }, process.env.JWT_SECRET, {
         expiresIn: '10d',
@@ -23,6 +25,19 @@ const registerUser = async (req, res) => {
             password,
         });
         if (user) {
+            try {
+                const message = getWelcomeEmailHTML(user.name);
+
+                await sendEmail({
+                    to: user.email,
+                    subject: 'Welcome to Rely Tailors!',
+                    html: message,
+                });
+            } catch (emailError) {
+                console.error('Email could not be sent:', emailError);
+                //For now, We don't stop the registration process if the email fails
+            }
+
             res.status(201).json({
                 _id: user._id,
                 name: user.name,

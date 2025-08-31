@@ -189,7 +189,7 @@ const AdminProductEditPage = () => {
                             </FormCard>
 
                             <FormCard title="Pricing & Media">
-                                <FormInput label="Base Price ($)" type="number" value={basePrice} onChange={(e) => setBasePrice(e.target.value)} />
+                                <FormInput label="Base Price (₹)" type="number" value={basePrice} onChange={(e) => setBasePrice(e.target.value)} />
                                 <div>
                                     <label className="block mb-2 text-sm font-bold text-zinc-700">Product Image</label>
                                     <div className="flex items-center gap-4">
