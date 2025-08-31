@@ -231,7 +231,7 @@ const CheckoutPage = () => {
                                             </div>
                                         </div>
                                         <div className="text-right">
-                                            <p className="font-semibold text-lg text-zinc-900">${item.price.toFixed(2)}</p>
+                                            <p className="font-semibold text-lg text-zinc-900">₹{item.price.toFixed(2)}</p>
                                             <button onClick={() => removeFromCartHandler(item._id)} className="text-red-500 hover:text-red-700 transition-colors mt-2 p-1">
                                                 <Trash2 className="h-4 w-4" />
                                             </button>
@@ -248,9 +248,9 @@ const CheckoutPage = () => {
                     <div className="bg-white/90 backdrop-blur-xl p-8 rounded-lg shadow-xl border border-white/30 sticky top-28">
                         <h2 className="font-marcellus text-3xl text-zinc-900 mb-6 flex items-center gap-3"><CreditCard className="h-6 w-6 text-zinc-500" /> Price Details</h2>
                         <div className="space-y-4 text-zinc-600">
-                            <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold">${subtotal.toFixed(2)}</span></div>
+                            <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold">₹{subtotal.toFixed(2)}</span></div>
                             <div className="flex justify-between"><span>Shipping</span><span className="font-semibold text-green-600">Free</span></div>
-                            <div className="flex justify-between text-zinc-900 font-bold text-xl border-t border-zinc-200 pt-4 mt-2"><span>Total</span><span>${total.toFixed(2)}</span></div>
+                            <div className="flex justify-between text-zinc-900 font-bold text-xl border-t border-zinc-200 pt-4 mt-2"><span>Total</span><span>₹{total.toFixed(2)}</span></div>
                         </div>
                         <button
                             onClick={placeOrderHandler}

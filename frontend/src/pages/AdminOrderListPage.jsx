@@ -91,7 +91,7 @@ const OrderCard = ({ order, onStatusChange, onConfirm, onCancel, onDelete, onVie
         <div className="border-t border-zinc-100 pt-3 text-sm space-y-2">
             <div className="flex items-center gap-2"><User className="h-4 w-4 text-zinc-400" /><span className="font-medium text-zinc-700">{order.user?.name || 'N/A'}</span></div>
             <div className="flex items-center gap-2"><Calendar className="h-4 w-4 text-zinc-400" /><span className="text-zinc-600">{new Date(order.createdAt).toLocaleDateString()}</span></div>
-            <div className="flex items-center gap-2"><CircleDollarSign className="h-4 w-4 text-zinc-400" /><span className="font-semibold text-zinc-800">${Number(order.totalPrice || 0).toFixed(2)}</span></div>
+            <div className="flex items-center gap-2"><CircleDollarSign className="h-4 w-4 text-zinc-400" /><span className="font-semibold text-zinc-800">₹{Number(order.totalPrice || 0).toFixed(2)}</span></div>
         </div>
 
         <div className="border-t border-zinc-100 pt-3 flex items-center justify-between gap-2">
@@ -293,7 +293,7 @@ const AdminOrderListPage = () => {
                                                 <td className="px-6 py-4 font-mono text-xs font-semibold text-zinc-700" title={order._id}>{order._id}</td>
                                                 <td className="px-6 py-4 text-zinc-800 font-medium">{order.user?.name || 'N/A'}</td>
                                                 <td className="px-6 py-4 text-zinc-600">{formatTimestamp(order.createdAt)}</td>
-                                                <td className="px-6 py-4 font-semibold text-zinc-900">${Number(order.totalPrice || 0).toFixed(2)}</td>
+                                                <td className="px-6 py-4 font-semibold text-zinc-900">₹{Number(order.totalPrice || 0).toFixed(2)}</td>
                                                 <td className="px-6 py-4">
                                                     {order.orderStatus === 'Pending Confirmation' ?
                                                         <StatusBadge status={order.orderStatus} /> :
@@ -347,7 +347,7 @@ const AdminOrderListPage = () => {
                                                             <img src={item.imageUrl} alt={item.name} className="w-16 h-20 object-cover rounded-md" />
                                                             <div>
                                                                 <p className="font-semibold text-zinc-900">{item.name}</p>
-                                                                <p className="text-sm text-zinc-600">${Number(item.price || 0).toFixed(2)}</p>
+                                                                <p className="text-sm text-zinc-600">₹{Number(item.price || 0).toFixed(2)}</p>
                                                             </div>
                                                         </div>
                                                         <ChevronDown className={`transition-transform ${openItems[item.product] ? 'rotate-180' : ''}`} />
@@ -375,7 +375,7 @@ const AdminOrderListPage = () => {
                                 )}
                             </div>
                             <div className="mt-auto border-t p-4 sm:p-6 text-right text-lg font-semibold text-zinc-900 bg-zinc-100">
-                                Total Order Price: ${Number(selectedOrder?.totalPrice || 0).toFixed(2)}
+                                Total Order Price: ₹{Number(selectedOrder?.totalPrice || 0).toFixed(2)}
                             </div>
                         </motion.div>
                     </div>
