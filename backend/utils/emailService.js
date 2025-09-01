@@ -12,7 +12,7 @@ const sendEmail = async (options) => {
     });
 
     const mailOptions = {
-        from: 'Rely Tailors <onboarding@resend.dev>',
+        from: 'Rely Tailors <admin@relytailors.work.gd>',
         to: options.to,
         subject: options.subject,
         html: options.html,
