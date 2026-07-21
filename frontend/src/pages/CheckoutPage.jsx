@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-    ShoppingBag,
-    Trash2,
-    Loader2,
-    AlertCircle,
-    ArrowRight,
-    MapPin,
-    CreditCard,
+import { 
+    ShoppingBag, 
+    Trash2, 
+    Loader2, 
+    AlertCircle, 
+    ArrowRight, 
+    MapPin, 
+    CreditCard, 
     ShieldCheck,
+    Truck,
+    Package
 } from 'lucide-react';
 
 import {
@@ -23,61 +25,52 @@ import api from '../api/AxiosAPI';
 
 // --- Reusable UI Components ---
 
-const BackgroundCubes = () => (
-    <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-50">
-        <ul className="circles">
-            {[...Array(10)].map((_, i) => <li key={i}></li>)}
-        </ul>
-    </div>
-);
-
 const LoadingSkeleton = () => (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
-        <div className="lg:col-span-2 bg-white/50 p-8 rounded-lg shadow-sm animate-pulse">
-            <div className="h-8 w-1/3 bg-zinc-200 rounded mb-6"></div>
-            <div className="h-28 bg-zinc-200 rounded mb-4"></div>
-            <div className="h-28 bg-zinc-200 rounded"></div>
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 animate-pulse">
+        <div className="lg:col-span-2 space-y-6">
+            <div className="h-48 bg-stone-200 rounded-sm"></div>
+            <div className="h-64 bg-stone-200 rounded-sm"></div>
         </div>
-        <div className="lg:col-span-1 bg-white/50 p-8 rounded-lg shadow-sm animate-pulse">
-            <div className="h-8 w-1/2 bg-zinc-200 rounded mb-6"></div>
-            <div className="h-6 bg-zinc-200 rounded mb-3"></div>
-            <div className="h-6 bg-zinc-200 rounded mb-4"></div>
-            <div className="h-10 bg-zinc-200 rounded"></div>
+        <div className="lg:col-span-1">
+            <div className="h-80 bg-stone-200 rounded-sm"></div>
         </div>
     </div>
 );
 
 const EmptyCart = () => (
-    <motion.div
+    <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="text-center bg-white p-12 rounded-lg shadow-md border"
+        className="flex flex-col items-center justify-center py-20 text-center"
     >
-        <ShoppingBag className="mx-auto h-16 w-16 text-zinc-400" strokeWidth={1.5} />
-        <h2 className="mt-6 text-2xl font-semibold text-zinc-800">Your Cart is Empty</h2>
-        <p className="mt-2 text-zinc-500">Looks like you haven't added anything to your cart yet.</p>
-        <Link
-            to="/products"
-            className="inline-flex items-center gap-2 mt-8 bg-zinc-900 text-white font-bold py-3 px-8 rounded-lg hover:bg-zinc-700 transition-colors duration-300"
+        <div className="bg-stone-100 p-6 rounded-full mb-6 text-stone-400">
+            <ShoppingBag size={48} strokeWidth={1} />
+        </div>
+        <h2 className="font-marcellus text-3xl text-stone-900 mb-2">Your Bag is Empty</h2>
+        <p className="text-stone-500 mb-8 max-w-md font-light">
+            Looks like you haven't added any pieces to your collection yet.
+        </p>
+        <Link 
+            to="/products" 
+            className="bg-stone-900 text-white px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-amber-700 transition-colors flex items-center gap-2"
         >
-            Start Shopping
-            <ArrowRight className="h-4 w-4" />
+            Start Shopping <ArrowRight size={14} />
         </Link>
     </motion.div>
 );
 
 const ErrorNotification = ({ message, onClear }) => (
-    <motion.div
+    <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
-        className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg flex items-center justify-between gap-4 mb-8"
+        className="bg-red-50 border border-red-100 text-red-800 p-4 rounded-sm flex items-center justify-between gap-4 mb-8 text-sm"
     >
         <div className="flex items-center gap-3">
-            <AlertCircle className="h-5 w-5" />
-            <span className="text-sm font-medium">{message}</span>
+            <AlertCircle size={18} />
+            <span>{message}</span>
         </div>
-        <button onClick={onClear} className="text-red-500 hover:text-red-700">&times;</button>
+        <button onClick={onClear} className="text-red-400 hover:text-red-700">&times;</button>
     </motion.div>
 );
 
@@ -93,7 +86,6 @@ const CheckoutPage = () => {
 
     const [isPlacingOrder, setIsPlacingOrder] = useState(false);
     const [orderError, setOrderError] = useState('');
-
     const [selectedAddress, setSelectedAddress] = useState(null);
 
     useEffect(() => {
@@ -103,19 +95,21 @@ const CheckoutPage = () => {
 
     useEffect(() => {
         if (address && address.length > 0) {
-            setSelectedAddress(address[0]); // default first address
+            // Default to first address if not selected
+            if (!selectedAddress) setSelectedAddress(address[0]);
         }
-    }, [address]);
+    }, [address, selectedAddress]);
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price || 0), 0);
-    const total = subtotal; // Assuming free shipping
+    const total = subtotal; // Free shipping logic can be added here
 
     const placeOrderHandler = async () => {
         setOrderError('');
         if (!selectedAddress) {
-            setOrderError('Please provide a shipping address before placing an order.');
+            setOrderError('Please select a shipping address to proceed.');
             return;
         }
+        
         setIsPlacingOrder(true);
         try {
             const orderItems = cartItems.map(item => ({
@@ -139,21 +133,19 @@ const CheckoutPage = () => {
                     _id: selectedAddress._id,
                 },
                 totalPrice: total,
-                paymentMethod: 'Manual Confirmation',
+                paymentMethod: 'Manual Confirmation', 
             };
 
             const { data } = await api.post('/orders', orderPayload);
-
             dispatch(clearCart());
             navigate(`/orders/${data._id}`);
         } catch (error) {
-            const message = error.response?.data?.message || 'A network error occurred. Please try again.';
+            const message = error.response?.data?.message || 'Unable to place order. Please try again.';
             setOrderError(message);
         } finally {
             setIsPlacingOrder(false);
         }
     };
-
 
     const removeFromCartHandler = (id) => {
         dispatch(removeItemFromCart(id));
@@ -164,130 +156,187 @@ const CheckoutPage = () => {
         if (!cartItems || cartItems.length === 0) return <EmptyCart />;
 
         return (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 md:gap-12">
-                {/* Left Side: Order Details */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
+                
+                {/* --- Left Column: Address & Items --- */}
                 <div className="lg:col-span-2 space-y-8">
-                    {/* Shipping Info */}
-                    <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/20" data-aos="fade-right">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="font-marcellus text-2xl text-zinc-900 flex items-center gap-3"><MapPin className="h-6 w-6 text-zinc-500" /> Shipping Details</h2>
-                            <Link to="/my-addresses" className="text-sm font-semibold text-zinc-700 hover:underline">
-                                {selectedAddress ? 'Change' : 'Add Address'}
+                    
+                    {/* Shipping Address Section */}
+                    <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-stone-100">
+                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-100">
+                            <h2 className="font-marcellus text-xl text-stone-900 flex items-center gap-2">
+                                <MapPin size={20} className="text-amber-700" /> Shipping Address
+                            </h2>
+                            <Link to="/my-addresses" className="text-xs font-bold uppercase tracking-widest text-stone-500 hover:text-amber-700 transition-colors">
+                                {address?.length > 0 ? 'Manage Addresses' : 'Add New'}
                             </Link>
                         </div>
+
                         {address && address.length > 0 ? (
-                            <div className="space-y-4 pl-9">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {address.map((addr) => (
-                                    <label
+                                    <div 
                                         key={addr._id}
-                                        className={`block p-4 border rounded-lg cursor-pointer transition 
-          ${selectedAddress?._id === addr._id ? 'border-zinc-900 bg-zinc-50' : 'border-zinc-300 hover:border-zinc-500'}`}
+                                        onClick={() => setSelectedAddress(addr)}
+                                        className={`relative p-4 border rounded-sm cursor-pointer transition-all duration-300 ${selectedAddress?._id === addr._id ? 'border-amber-700 bg-amber-50/20' : 'border-stone-200 hover:border-stone-400'}`}
                                     >
-                                        <input
-                                            type="radio"
-                                            name="shippingAddress"
-                                            value={addr._id}
-                                            checked={selectedAddress?._id === addr._id}
-                                            onChange={() => setSelectedAddress(addr)}
-                                            className="mr-3"
-                                        />
-                                        <div className="inline-block align-middle text-sm text-zinc-700">
-                                            <p className="font-bold text-zinc-900">{addr.fullName}</p>
-                                            <p>{addr.addressLine1}</p>
-                                            <p>{addr.city}, {addr.state} {addr.postalCode}</p>
-                                            <p className="text-xs text-zinc-500">Phone: {addr.phoneNumber}</p>
-                                        </div>
-                                    </label>
+                                        {selectedAddress?._id === addr._id && (
+                                            <div className="absolute top-2 right-2 text-amber-700">
+                                                <ShieldCheck size={16} />
+                                            </div>
+                                        )}
+                                        <p className="font-bold text-stone-900 text-sm mb-1">{addr.fullName}</p>
+                                        <p className="text-stone-600 text-xs leading-relaxed">{addr.addressLine1}</p>
+                                        <p className="text-stone-600 text-xs leading-relaxed">{addr.city}, {addr.state} {addr.postalCode}</p>
+                                        <p className="text-stone-500 text-xs mt-2 font-mono">{addr.phoneNumber}</p>
+                                    </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-zinc-500 text-sm pl-9">No shipping address provided.</p>
+                            <div className="text-center py-8 border-2 border-dashed border-stone-200 rounded-sm">
+                                <p className="text-stone-500 mb-4 font-light text-sm">You haven't added any addresses yet.</p>
+                                <Link to="/my-addresses" className="inline-block px-6 py-2 bg-stone-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-stone-800 transition-colors">
+                                    Add Address
+                                </Link>
+                            </div>
                         )}
+                    </section>
 
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="bg-white/80 backdrop-blur-md p-6 rounded-lg shadow-lg border border-white/20" data-aos="fade-right" data-aos-delay="100">
-                        <h2 className="font-marcellus text-2xl text-zinc-900 mb-6 flex items-center gap-3"><ShoppingBag className="h-6 w-6 text-zinc-500" /> Order Summary</h2>
+                    {/* Cart Items Section */}
+                    <section className="bg-white p-6 md:p-8 rounded-sm shadow-sm border border-stone-100">
+                        <h2 className="font-marcellus text-xl text-stone-900 mb-6 flex items-center gap-2 pb-4 border-b border-stone-100">
+                            <ShoppingBag size={20} className="text-amber-700" /> Order Items ({cartItems.length})
+                        </h2>
+                        
                         <div className="space-y-6">
                             <AnimatePresence>
-                                {cartItems.map(item => (
-                                    <motion.div
+                                {cartItems.map((item) => (
+                                    <motion.div 
                                         key={item._id || item.product}
                                         layout
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0, x: -50 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="flex items-start gap-4 border-b border-zinc-200/50 pb-6 last:border-b-0 last:pb-0"
+                                        initial={{ opacity: 0 }} 
+                                        animate={{ opacity: 1 }} 
+                                        exit={{ opacity: 0, height: 0 }}
+                                        className="flex gap-4 sm:gap-6"
                                     >
-                                        <img src={item.imageUrl} alt={item.name} className="w-24 h-32 object-cover rounded-md border" />
-                                        <div className="flex-1">
-                                            <h3 className="font-bold text-lg text-zinc-800">{item.name}</h3>
-                                            <div className="text-xs text-zinc-500 mt-1 space-y-0.5">
-                                                {item.selectedCustomizations && Object.entries(item.selectedCustomizations).map(([key, value]) => (
-                                                    <p key={key}><span className="font-semibold capitalize">{key}:</span> {value}</p>
-                                                ))}
-                                            </div>
+                                        <div className="w-20 h-28 sm:w-24 sm:h-32 bg-stone-100 rounded-sm overflow-hidden flex-shrink-0 border border-stone-200">
+                                            <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
                                         </div>
-                                        <div className="text-right">
-                                            <p className="font-semibold text-lg text-zinc-900">₹{item.price.toFixed(2)}</p>
-                                            <button onClick={() => removeFromCartHandler(item._id)} className="text-red-500 hover:text-red-700 transition-colors mt-2 p-1">
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
+                                        
+                                        <div className="flex-1 flex flex-col justify-between py-1">
+                                            <div>
+                                                <h3 className="font-marcellus text-lg text-stone-900 leading-tight">{item.name}</h3>
+                                                {/* Customizations Display */}
+                                                <div className="mt-2 space-y-1">
+                                                    {item.selectedCustomizations && Object.entries(item.selectedCustomizations).map(([key, value]) => (
+                                                        <p key={key} className="text-xs text-stone-500">
+                                                            <span className="font-semibold uppercase tracking-wider text-stone-400 mr-1">{key}:</span> 
+                                                            {value}
+                                                        </p>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="flex items-center justify-between mt-4">
+                                                <p className="font-bold text-stone-900">₹{item.price.toFixed(2)}</p>
+                                                <button 
+                                                    onClick={() => removeFromCartHandler(item._id)}
+                                                    className="flex items-center gap-1 text-xs text-stone-400 hover:text-red-600 transition-colors uppercase tracking-widest font-bold"
+                                                >
+                                                    <Trash2 size={14} /> Remove
+                                                </button>
+                                            </div>
                                         </div>
                                     </motion.div>
                                 ))}
                             </AnimatePresence>
                         </div>
+                    </section>
+                </div>
+
+                {/* --- Right Column: Order Summary --- */}
+                <div className="lg:col-span-1">
+                    <div className="sticky top-28">
+                        <div className="bg-white p-6 md:p-8 rounded-sm shadow-xl border border-stone-100 relative overflow-hidden">
+                            {/* Decorative background element */}
+                            <div className="absolute -top-10 -right-10 w-32 h-32 bg-amber-50 rounded-full blur-3xl pointer-events-none"></div>
+
+                            <h2 className="font-marcellus text-xl text-stone-900 mb-6 flex items-center gap-2 relative z-10">
+                                <CreditCard size={20} className="text-amber-700" /> Payment Summary
+                            </h2>
+
+                            <div className="space-y-3 mb-6 text-sm text-stone-600 relative z-10">
+                                <div className="flex justify-between">
+                                    <span>Subtotal</span>
+                                    <span className="font-medium text-stone-900">₹{subtotal.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between items-center">
+                                    <span className="flex items-center gap-1"><Truck size={14} /> Shipping</span>
+                                    <span className="text-amber-700 font-bold text-xs uppercase tracking-widest">Free</span>
+                                </div>
+                                <div className="pt-4 border-t border-stone-100 flex justify-between items-end">
+                                    <span className="font-marcellus text-lg text-stone-900">Total</span>
+                                    <span className="font-bold text-2xl text-stone-900">₹{total.toFixed(2)}</span>
+                                </div>
+                            </div>
+
+                            <div className="bg-stone-50 p-3 mb-6 rounded-sm text-xs text-stone-500 flex items-start gap-2">
+                                <ShieldCheck size={14} className="mt-0.5 text-stone-400 flex-shrink-0" />
+                                <p>Secure Checkout. Your payment information is encrypted and processed securely.</p>
+                            </div>
+
+                            <button
+                                onClick={placeOrderHandler}
+                                disabled={isPlacingOrder || !selectedAddress}
+                                className="w-full bg-stone-900 text-white py-4 px-6 text-xs font-bold uppercase tracking-[0.15em] hover:bg-amber-700 transition-all duration-300 disabled:bg-stone-300 disabled:cursor-not-allowed shadow-lg shadow-stone-900/10 flex items-center justify-center gap-2 relative z-10"
+                            >
+                                {isPlacingOrder ? (
+                                    <>
+                                        <Loader2 size={16} className="animate-spin" /> Processing...
+                                    </>
+                                ) : (
+                                    <>
+                                        Place Order <Package size={16} />
+                                    </>
+                                )}
+                            </button>
+                            
+                            {!selectedAddress && (
+                                <p className="text-center text-red-500 text-xs mt-3 font-medium animate-pulse">
+                                    * Select a shipping address
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
 
-                {/* Right Side: Price & Checkout */}
-                <div className="lg:col-span-1" data-aos="fade-left">
-                    <div className="bg-white/90 backdrop-blur-xl p-8 rounded-lg shadow-xl border border-white/30 sticky top-28">
-                        <h2 className="font-marcellus text-3xl text-zinc-900 mb-6 flex items-center gap-3"><CreditCard className="h-6 w-6 text-zinc-500" /> Price Details</h2>
-                        <div className="space-y-4 text-zinc-600">
-                            <div className="flex justify-between"><span>Subtotal</span><span className="font-semibold">₹{subtotal.toFixed(2)}</span></div>
-                            <div className="flex justify-between"><span>Shipping</span><span className="font-semibold text-green-600">Free</span></div>
-                            <div className="flex justify-between text-zinc-900 font-bold text-xl border-t border-zinc-200 pt-4 mt-2"><span>Total</span><span>₹{total.toFixed(2)}</span></div>
-                        </div>
-                        <button
-                            onClick={placeOrderHandler}
-                            disabled={isPlacingOrder || !selectedAddress}
-                            className="w-full mt-8 bg-zinc-900 text-white font-bold py-3.5 px-8 rounded-lg hover:bg-zinc-700 transition-all duration-300 text-sm uppercase tracking-widest flex items-center justify-center gap-2 disabled:bg-zinc-400 disabled:cursor-not-allowed transform hover:scale-105"
-                        >
-                            {isPlacingOrder ? (
-                                <>
-                                    <Loader2 className="h-5 w-5 animate-spin" />
-                                    <span>Placing Order...</span>
-                                </>
-                            ) : (
-                                <>
-                                    <ShieldCheck className="h-5 w-5" />
-                                    <span>Confirm & Place Order</span>
-                                </>
-                            )}
-                        </button>
-                        {!selectedAddress && <p className="text-xs text-center text-amber-700 mt-3">Please add a shipping address to proceed.</p>}
-                    </div>
-                </div>
             </div>
         );
     };
 
     return (
-        <div className="relative min-h-screen w-full font-sans text-zinc-800">
-            <BackgroundCubes />
-            <div className="relative z-10 container mx-auto px-4 py-12 md:py-16">
-                <div data-aos="fade-down" className="text-center mb-12">
-                    <h1 className="font-marcellus text-4xl md:text-5xl text-zinc-900">Secure Checkout</h1>
-                    <p className="text-zinc-500 mt-2 text-lg">Complete your purchase in just a few clicks.</p>
+        <div className="min-h-screen bg-[#FDFBF7] font-montserrat text-stone-800">
+            <div className="container mx-auto px-4 py-12 md:py-20">
+                {/* Header */}
+                <div className="text-center mb-12">
+                    <h1 className="font-marcellus text-4xl md:text-5xl text-stone-900 mb-3">Checkout</h1>
+                    <div className="h-[1px] w-20 bg-amber-700 mx-auto mb-4"></div>
+                    <p className="text-stone-500 font-light text-sm tracking-wide">
+                        Complete your purchase to receive your royal attire.
+                    </p>
                 </div>
+
                 <AnimatePresence>
-                    {orderError && <ErrorNotification message={orderError} onClear={() => setOrderError('')} />}
+                    {orderError && (
+                        <div className="max-w-4xl mx-auto">
+                            <ErrorNotification message={orderError} onClear={() => setOrderError('')} />
+                        </div>
+                    )}
                 </AnimatePresence>
-                {renderContent()}
+
+                <div className="max-w-6xl mx-auto">
+                    {renderContent()}
+                </div>
             </div>
         </div>
     );

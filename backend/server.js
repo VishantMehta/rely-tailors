@@ -34,7 +34,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 
-//for testing
+
 app.get('/', (req, res) => {
     res.send('API is running successfully...');
 });
